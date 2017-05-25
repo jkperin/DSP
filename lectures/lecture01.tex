@@ -1,0 +1,438 @@
+\documentclass{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usetikzlibrary{calc}
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{positioning}
+
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{calc}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\title[EE 264]{EE 264: Digital Signal Processing}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\section{Introduction}
+
+
+\begin{frame}
+\frametitle{Teaching staff}
+
+\begin{block}{Instructor}
+Jose Krause Perin \\
+Office hours: Thursdays 2--4pm, \href{https://campus-map.stanford.edu/?id=04-040&lat=37.42879024&lng=-122.1740029&zoom=17&srch=spilker}{Spilker building}, room 216, or by appointment \\
+e-mail: jkperin@stanford.edu
+\end{block}
+\vskip 1cm
+\begin{block}{TA}
+XX \\
+Office hours: XX XXpm, Spilker building, room 216, or by appointment \\
+e-mail: XX@stanford.edu
+\end{block}
+    	
+\end{frame}
+
+%
+\begin{frame}{Why {\bf Digital} Signal Processing?}
+
+\begin{itemize}
+  \item Flexibility
+  \item System/implementation does not age
+  \item “Easy” implementation
+  \item Reusable hardware
+  \item Sophisticated processing
+  \item Process on a computer
+  \item (Today) Computation is cheaper and better
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Why learn DSP?}
+
+\begin{itemize}
+	\item Swiss-Army-Knife of modern EE
+    \item Impacts all aspects of modern life
+    \item Communications (wireless, internet, GPS...)
+    \item Control and monitoring (cars, machines...)
+    \item Multimedia (mp3, cameras, videos, restoration ...)
+    \item Health (medical devices, imaging....)
+    \item Economy (stock market, prediction)
+    \item More....
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Example: speech recognition}
+
+Siri
+
+Spectrogram 
+
+Recurrent neural net
+
+\end{frame}
+
+%
+\begin{frame}{Example: image processing}
+
+Cellphone camera prep-processing
+
+\end{frame}
+
+%
+\begin{frame}{Example: digital communication}
+
+OFDM, equalization
+
+\end{frame}
+
+%
+\begin{frame}{What you'll learn}
+
+\begin{itemize}
+\item 
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Administrative}
+
+%
+\begin{frame}{Administrative: resources}
+\begin{block}{Required textbook}
+\begin{itemize}
+\item ``Discrete-time signal processing'', Oppenheim and Schafer, 3rd edition, 2010.
+\item Available on 4-hour reserve at the \href{https://campus-map.stanford.edu/?id=04-080&lat=37.42787956&lng=-122.17429865&zoom=17&srch=engineeri}{Engineering Library (Terman)}
+\end{itemize}
+\end{block}
+
+\begin{block}{Canvas: \href{https://canvas.stanford.edu/}{canvas.stanford.edu/}}
+\begin{itemize}
+\item Lecture notes, homework assignments, discussion
+\item Submit homework on Canvas
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+%
+\begin{frame}{Administrative: tentative schedule}
+
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}{c|c|l|c|c}
+\hline
+Date & Lecture	& Lecture Topic	& Reading\footnotemark & Assigned \\
+\hline
+27-Jun &	1	& Introduction and review	& Chaps. 2, 3	& \\
+29-Jun	& 2	& Discrete-time random signals	& 2.10, App. A & HW1 \\
+\hline
+4-Jul	&  &	Independence Day, no classes & & \\
+6-Jul	& 3 &	Sampling, reconstruction and DT filtering &	4.1--4.4 & HW2 \\
+\hline
+11-Jul	& 4 &	Changing the sampling rate by digital filtering	& 4.6, 4.7	& \\
+13-Jul	& 5	& Quantization of samples, oversampling & 4.8, 4.9 &	HW3 \\
+\hline
+18-Jul	& 6	& Properties of LTI systems	& 5.1--5.7 & \\
+20-Jul	& 7	& Linear Phase Systems, Digital Filter Structures &	6.1--6.6	& HW4 \\
+\hline
+25-Jul	& 8	& Quantization in digital filter implementations & 6.7--6.10	& \\
+27-Jul	& 9	& Filter Design & Chap. 7	& HW5 \\
+\hline
+1-Aug	& &	In-class Midterm Exam & & \\
+3-Aug	& 10 & The DFT and its properties, FFT	& 8.1--8.7, 9.1--9.3	& HW6 \\
+\hline
+8-Aug	& 11 & FFT and Spectrum analysis using the DFT	& 9.1--9.3, 10.1, 10.2 & \\
+10-Aug	& 12 & Time-dependent spectrum analysis & 10.3--10.5 & HW7 \\
+\hline
+15-Aug	& 13 & Spectrum analysis of random signals	& 10.6--10.7	& \\
+17-Aug & 14	& Parametric signal modeling	& 11.1--11.7 & 	\\
+\hline
+19-Aug	& & Final Exam	& \\
+\hline
+\end{tabular}
+}
+\footnotetext[1]{Reading assignments in ``Discrete-time signal processing'', Oppenheim and Schafer, 3rd edition}
+
+\end{frame}
+
+%
+\begin{frame}{Administrative: grading basis}
+
+\begin{block}{Homework assignments, $30\%$}
+\begin{itemize} 
+\item Homework will typically be released on Thursday and due on the following Thursday at 11:59pm.
+\item Submissions should be made online on Canvas. Submit a single .pdf file with your solutions. 
+\end{itemize}
+\end{block}
+
+\begin{block}{Midterm, $30\%$}
+\begin{itemize} 
+\item In-class midterm on August, 1st. 
+\item Midterm covers lectures 1 to 9 (homework 1 to 4)
+\item Midterm is open book and open notes
+\end{itemize}
+\end{block}
+
+\begin{block}{Final, $40\%$}
+\begin{itemize} 
+\item Final exam on XXX
+\item Final exam is open book and open notes
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Review}
+
+\begin{frame}{Review}
+
+\begin{itemize}
+\item Sampling and reconstruction
+\item Discrete-time signals and systems
+\item Signal representations: impulse response, frequency response, difference equation
+\item The $z$-transform
+\item Discrete-time Fourier transform
+\item Discrete Fourier transform and FFT
+\end{itemize}
+
+\end{frame}
+
+\subsection{Sampling and reconstruction}
+%
+\begin{frame}{Digital processing of analog signals}
+
+\begin{figure}[t!]
+	\centering
+	\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\label{fig:adc-dsp-dac}
+\end{figure}
+
+\begin{block}{A-to-D: analog-to-digital converter}
+Filtering, sampling, and quantization
+\end{block}
+
+\begin{block}{Digital signal processor}
+\begin{itemize} \itemsep 0pt
+	\item Performs some operation e.g., convolution, DFT
+	\item May be implemented on PCs with 64-bit floating-point precision, or may be implemented on DSP chips or ASICs with finite arithmetic precision (e.g., 6 bits of resolution).
+\end{itemize}
+\end{block}
+\begin{block}{D-to-A: digital-to-analog converter}
+Quantization and filtering
+\end{block}
+
+\end{frame}
+
+%
+\begin{frame}{Sampling}
+
+
+
+
+\end{frame}
+
+%
+\begin{frame}{Discrete-time Fourier transform (DTFT)}
+
+\begin{block}{Definition}
+\begin{equation} \tag{Direct transform}
+X(e^{j\omega}) = \sum_{n=-\infty}^{\infty} x[n]e^{-j\omega n} 
+\end{equation}
+
+\begin{equation}\tag{Inverse transform}
+x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})e^{j\omega n}\mathrm{d}\omega
+\end{equation}
+\end{block}
+
+\begin{block}{Properties}
+The DTFT is a periodic function
+\begin{equation*}
+X(e^{j(\omega + 2\pi)}) = X(e^{j\omega})
+\end{equation*}
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Example: the ideal lowpass filter}
+
+\begin{figure}
+	\centering
+	\resizebox{0.5\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
+	\label{fig:ideal-lpf}
+\end{figure}
+
+
+\end{frame}
+
+%
+\begin{frame}{DTFT properties}
+\begin{itemize}
+\item Linearity
+\begin{equation*}
+ax_1[n]  + bx_2[n] \Longleftrightarrow aX_1(e^{j\omega})+bX_2(e^{j\omega})
+\end{equation*}
+\item Time shift, delay for $n_d > 0$ delay, advance for $n_d < 0$
+\begin{equation*}
+x[n-n_d] \Longleftrightarrow e^{-j\omega n_d}X(e^{j\omega})
+\end{equation*}
+\item Frequency shift (modulation)
+\begin{equation*}
+e^{j\omega_0n}x[n] \Longleftrightarrow X(e^{j(\omega-\omega_0)})
+\end{equation*}
+\item Convolution
+\begin{equation*}
+y[n] = x[n]\ast h[n] \Longleftrightarrow Y(e^{j\omega}) = X(e^{j\omega})H(e^{j\omega})
+\end{equation*}
+\item Time reversal
+\begin{equation*}
+x[-n] \Longleftrightarrow X(e^{-j\omega})
+\end{equation*}
+
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{DTFT properties}
+\begin{itemize}
+	\item Linear weighting
+	\begin{equation*}
+	nx[n] \Longleftrightarrow j\frac{dX(e^{j\omega})}{d\omega}
+	\end{equation*}
+	\item Multiplication of sequences (windowing)
+	\begin{equation*}
+	x[n]w[n] \Longleftrightarrow \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\theta})W(e^{j(\omega-\theta)}){d\theta}
+	\end{equation*}
+	\item Parseval's theorem
+	\begin{equation*}
+	\sum_{n=-\infty}^{\infty}x[n]y^*[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})Y^*(e^{j\omega})\mathrm{d}\omega
+	\end{equation*}
+	\item Signal energy
+	\begin{equation*}
+	\sum_{n=-\infty}^{\infty}|x[n]|^2 = \frac{1}{2\pi}\int_{-\pi}^{\pi}|X(e^{j\omega})|^2\mathrm{d}\omega
+	\end{equation*}	
+	\item Deterministic autocorrelation function
+	\begin{equation*}
+	c_{xx}[n] = \sum_{m=-\infty}^{\infty}x[m]x[n+m] \Longleftrightarrow X(e^{j\omega})X^*(e^{j\omega}) = |X(e^{j\omega})|^2
+	\end{equation*}	
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Obtaining frequency response from difference equation}
+
+\begin{block}{Difference equation}
+\begin{equation*}
+\sum_{k=0}^N a_k y[n-k] = \sum_{k=0}^Mb_k x[n-k]
+\end{equation*}
+\end{block}
+
+Using the linearity and time shift properties of the DTFT it follows that
+
+\begin{align*}
+\sum_{k=0}^N a_kY(e^{j\omega})e^{-j\omega k} = \sum_{k=0}^M b_kX(e^{j\omega})e^{-j\omega k} \\
+\frac{Y(e^{j\omega})}{X(e^{j\omega})} = \frac{\sum_{k=0}^M b_ke^{-j\omega k}}{\sum_{k=0}^N a_ke^{-j\omega k}}
+\end{align*}
+
+\end{frame}
+
+
+\begin{frame}{The $z$-Transform}
+
+\begin{block}{Definition}
+	\begin{equation} \tag{Direct transform}
+	X(z) = \sum_{n=-\infty}^{\infty} x[n]z^{-n} 
+	\end{equation}
+	
+	\begin{equation}\tag{Inverse transform}
+	x[n] = \frac{1}{2j\pi}\int_{C}X(z)z^{n-1}\mathrm{d}z
+	\end{equation}
+\end{block}
+
+\begin{itemize}
+	\item Note that the infinite sum in the direct transform may not converge for all values of $z$. We must always specify for which values of $z$ the sum exist, which is known as \textbf{region of converge (ROC)}.
+	\item The inverse transform is given by the contour integral over some path $C$. This is generally laborious, so we'll obtain the inverse $z$-transform using indirect ways.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Region of convergence}
+
+Defined as the values of $z$ for which
+
+\begin{equation*}
+|X(z)| = \bigg|\sum_{n=-\infty}^{\infty}x[n]z^{-n}\bigg| \leq \sum_{n=-\infty}^{\infty} |x[n]||z|^{-n} < \infty
+\end{equation*}
+
+As long as $|z|^{-n}$ decays faster than $|x[n]|$ grows, the sum will be bounded.
+
+\end{frame}
+
+
+\begin{frame}{Region of convergence}
+
+\begin{block}{Example 1: right-sided (causal) exponential signal}
+Right-sided exponential signal: $x[n] = a^nu[n]$
+\begin{equation} 
+X(z) = \sum_{n=0}^\infty a^nz^{-n} = (az^{-1})^n 
+\end{equation}
+
+This sum converges only if $|az^{-1}| < 1$ geometric progression:
+\begin{equation} 
+X(z) = \frac{1}{1-az^{-1}} = \frac{z}{z-a}
+\end{equation}
+
+	
+\end{block}
+
+\end{frame}
+
+\end{document}
