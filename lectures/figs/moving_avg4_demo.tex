@@ -1,0 +1,36 @@
+\def\layersep{3cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) at (0, 0 cm) {};
+    \node[block, text width = 2cm, align= center, right of=xc] (DSP) {$h[n], H(z)$};
+	\coordinate[right of=DSP] (yc) {};
+		
+    \path[->, >=stealth, shorten >= 0pt] (xc) edge (DSP);
+    \path[->, >=stealth, shorten >= 0pt] (DSP) edge (yc);
+    
+	\onslide<1-2|handout:1>{
+		\node[block, draw=none, scale=0.5] (tx_signal1) at ($(xc.north) + (-1.5cm, 3cm)$) {\resizebox{12cm}{!}{\input{figs/moving_avg4_input.tex}}};
+		\node[below = 0.5mm of xc] {$x[n] = \cos(\omega_0n)$};	
+		\node[below = 0.5mm of yc] {$y[n] = x[n]\ast h[n]$};
+	}
+	\onslide<2|handout:1>{
+		\node[block, draw=none, scale=0.5] (rx_signal1) at ($(yc.north) + (1.5cm, 3cm)$) {\resizebox{12cm}{!}{\input{figs/moving_avg4_output.tex}}};
+	}
+
+	\onslide<3-4|handout:2>{
+	\node[block, draw=none, scale=0.5] (tx_signal1) at ($(xc.north) + (-1.5cm, 3cm)$) {\resizebox{12cm}{!}{\input{figs/moving_avg4_input2.tex}}};
+	\node[below = 0.5mm of xc] {$x[n] = \cos(\omega_0n)$};	
+	\node[below = 0.5mm of yc] {$y[n] = x[n]\ast h[n]$};
+	}
+	\onslide<4|handout:2>{
+		\node[block, draw=none, scale=0.5] (rx_signal1) at ($(yc.north) + (1.5cm, 3cm)$) {\resizebox{12cm}{!}{\input{figs/moving_avg4_output2.tex}}};
+	}
+
+
+\end{tikzpicture}

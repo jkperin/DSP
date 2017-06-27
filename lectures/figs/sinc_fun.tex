@@ -1,0 +1,32 @@
+% \xmin, \xmax, \samples, and \w must be defined before calling this function
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = true,
+ymin=-0.1,
+ymax=1.2*\w/pi,
+xmin=\xmin,
+xmax=\xmax,
+axis line style={->,>=stealth},
+xlabel={$n$},
+ylabel={$h_{lpf}[n]$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+ytick=\empty,
+xtick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=\xmin:\xmax, samples=\samples] {sin(deg(\w*x))/(pi*x) + \w/pi*(x == 0)};
+\addplot[smooth, black!20, line width=1pt, domain=\xmin:\xmax, samples=\samples] {sin(deg(\w*x))/(pi*x) + \w/pi*(x == 0)};
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,47 @@
+% \A, \Legend, \ymin, \ymax must be defined
+% \def\A{0.6}
+% \def\Legend{$0 < a < 1$}
+% \def\ymin{0}
+% \def\ymax{1}
+
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = true,
+ymin=\ymin,
+ymax=\ymax,
+xmin=-1,
+xmax=5,
+axis line style={->,>=stealth},
+xlabel={\Large $n$},
+ylabel={\Large $x[n]$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+%xtick=\empty,
+ytick={1},
+xtick=\empty,
+%xtick={-3.14, -1, 1, 3.14},
+%xticklabels={$-\pi$, $-\omega_c$, $\omega_c$, $\pi$},
+%xmajorgrids,
+%ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:5, samples=6] {pow(\A, x)};
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	-1 0 \\
+};
+\node (alpha) at (axis cs: 2.5, 2) {\Large \tikz[baseline]{
+		\node[fill=blue!20,anchor=base] (t1) {\Legend}}};
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,99 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = true,
+hide y axis,
+axis line style={->,>=stealth},
+xmin=0.00,
+xmax= 65.00,
+ymin=0.00,
+ymax=2.00,
+xlabel={\Large $t$},
+ylabel={},
+xtick=\empty,
+ytick=\empty,
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+]
+\node at (axis cs: 67, 0.25) {\Large$\ldots$};
+\node at (axis cs: -3, 0.25) {\Large$\ldots$};
+\node[align=center] at (axis cs: 6, 0) {\Large$0$};
+\node[align=center] at (axis cs: 17, 0.8) {\Large$1$};
+\node[align=center] at (axis cs: 28, 0) {\Large$0$};
+\node[align=center] at (axis cs: 39, 0.8) {\Large$1$};
+\node[align=center] at (axis cs: 50, 0.8) {\Large$1$};
+\node[align=center] at (axis cs: 61, 0) {\Large$0$};
+\addplot [color=black, solid, line width=1.5pt, forget plot]
+table[row sep=crcr]{
+	1 0.34531 \\
+	2 0.2509 \\
+	3 0.17942 \\
+	4 0.12656 \\
+	5 0.08873 \\
+	6 0.060467 \\
+	7 0.050325 \\
+	8 0.10454 \\
+	9 0.23495 \\
+	10 0.39081 \\
+	11 0.5345 \\
+	12 0.65463 \\
+	13 0.74906 \\
+	14 0.82055 \\
+	15 0.87342 \\
+	16 0.91126 \\
+	17 0.93952 \\
+	18 0.94967 \\
+	19 0.89545 \\
+	20 0.76505 \\
+	21 0.60919 \\
+	22 0.4655 \\
+	23 0.34537 \\
+	24 0.25094 \\
+	25 0.17945 \\
+	26 0.12658 \\
+	27 0.08874 \\
+	28 0.060478 \\
+	29 0.050327 \\
+	30 0.10455 \\
+	31 0.23495 \\
+	32 0.39082 \\
+	33 0.53449 \\
+	34 0.65464 \\
+	35 0.74903 \\
+	36 0.8206 \\
+	37 0.87332 \\
+	38 0.9115 \\
+	39 0.93866 \\
+	40 0.95781 \\
+	41 0.97113 \\
+	42 0.98037 \\
+	43 0.98669 \\
+	44 0.99104 \\
+	45 0.99395 \\
+	46 0.99598 \\
+	47 0.99725 \\
+	48 0.99829 \\
+	49 0.99857 \\
+	50 1.0001 \\
+	51 0.99134 \\
+	52 0.92397 \\
+	53 0.78446 \\
+	54 0.62233 \\
+	55 0.47438 \\
+	56 0.35133 \\
+	57 0.25497 \\
+	58 0.18208 \\
+	59 0.12846 \\
+	60 0.089694 \\
+	61 0.062125 \\
+	62 0.04272 \\
+	63 0.02921 \\
+	64 0.019864 \\
+	65 0.013453 \\
+	66 0.0090723 \\
+};
+
+\end{axis}
+\end{tikzpicture}

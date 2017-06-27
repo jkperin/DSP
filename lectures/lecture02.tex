@@ -1,0 +1,763 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsfonts}
+\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{calc}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\pgfmathdeclarefunction{gauss}{2}{%
+	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\tikzset{
+	declare function={
+		sign(\x) = (and(\x<0, 1) * -1) +
+		(and(\x>0, 1) * 1);
+}
+}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\input{figs/color_pallete.tex}
+
+\title[EE 264]{Discrete-Time Random Signals}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 29, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\begin{frame}{Administrative}
+
+\begin{itemize}
+	\item Please \textbf{enroll for 3 units}. EE 264 is not offered for 4 units during the Summer quarter. Deadline: July, 7.
+	\item Homework 1 will be released today and it is due next Thursday
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Last lecture}
+
+\begin{block}{Review of discrete-time signals and systems}
+	\begin{itemize}
+		\item Systems can be linear, time-invariant, memoryless, causal, and stable \\
+		\item LTI systems are completely characterized by their impulse response \\
+		\item The output of an LTI system to any signal is given by the convolution sum \\
+		\item The complex exponential $e^{j\omega n}$, and more generally $z^n$, are eigenfunctions of LTI systems
+		\item Frequency-domain representation of signals
+		\begin{itemize}
+			\item DTFT 
+			\item $z$-transform and ROC
+		\end{itemize}
+	\end{itemize}
+\end{block}
+
+\end{frame}
+
+\section{Introduction}
+\begin{frame}{Today's lecture} 
+
+How to analyze discrete-time systems when the input is random?
+
+\begin{block}{Motivation}
+	\begin{itemize}
+		\item Many signals vary in complicated patterns that
+		cannot easily be described by simple equations
+		\item It is often convenient and useful to consider
+		such signals as being created by some sort of
+		random mechanism
+	\end{itemize}   	
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Example: speech signals}
+
+Speech signals are well described by Laplacian distribution
+
+\begin{figure}
+	\centering
+	\resizebox{\linewidth}{!}{\input{figs/speech_and_distribution.tex}}
+	\label{fig:speech_and_dist}
+\end{figure} 
+
+\end{frame}
+
+
+%
+\begin{frame}{Example: quantization}
+
+Quantization noise is well described by an uniform distribution
+\vspace{-0.7cm}
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/quantization_example.tex}}
+\end{center}
+
+\only<4>{More about quantization in lectures 5 and 8.}
+
+\end{frame}
+
+%
+\begin{frame}{Example: noise and interference}
+
+Noise and interfering signals are typically modeled as \textbf{random processes}
+
+\begin{enumerate}
+	\item What's the effect of the noise on the output? 
+	\item How can we design the system to minimize the noise at the output?	
+\end{enumerate}
+
+\begin{figure}
+	\centering
+	\resizebox{\linewidth}{!}{\input{figs/system_with_signal_and_noise_inputs.tex}}
+\end{figure} 
+
+\end{frame}
+
+\section{Random processes}
+\begin{frame}{Random processes}
+
+\begin{block}{Definition}
+	A random process (or \textit{stochastic process}) is an indexed set of random variables $x_n$, which are distributed according to some probability distribution $p_{x_n}(x)$
+\end{block}	
+
+\begin{block}{Examples}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		Consecutive coin tosses
+	\end{column}
+	\begin{column}{0.5\textwidth}  %%<--- here
+		Random bit stream
+	\end{column}
+\end{columns}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{tikzpicture}[draw=black!50, node distance=1cm]
+		\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\node[block] (C1) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Obv.png}}};
+		\node[block,right of=C1] (C2) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Rev.png}}};
+		\node[block,right of=C2] (C3) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Rev.png}}};
+		\node[block,right of=C3] (C4) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Obv.png}}};
+		\node[block,right of=C4] (C5) {\Large$~~~\cdots$};
+		\end{tikzpicture}
+	\end{column}
+	\begin{column}{0.5\textwidth}  %%<--- here
+		\resizebox{0.8\linewidth}{!}{\input{figs/random_bit_sequence.tex}}
+	\end{column}
+\end{columns}
+\end{block}
+\end{frame}
+
+\begin{frame}{Random processes}
+A random process can be viewed as a function $X(n, \chi)$ of two variables, time $n$ and the outcome of the underlying random experiment $\chi$. 
+\begin{itemize}
+	\pause\item For fixed $n$, $X(n, \chi)$ is a random variable
+	
+	In the example of the fair coin tossing, 
+	\begin{equation*}
+	X(n=1, \chi) = \begin{cases}
+	\mathrm{H},~\text{with probability}~0.5 \\
+	\mathrm{T},~\text{with probability}~0.5
+	\end{cases}
+	\end{equation*}
+	\pause\item For fixed $\chi$, $X(n, \chi)$ is a deterministic function of $n$ called a \textbf{sample function} or \textbf{sample sequence}
+	
+	\vspace{3mm}
+	\centering
+	\begin{tikzpicture}[draw=black!50, node distance=1cm]
+		\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\node[block] (C1) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Obv.png}}};
+		\node[block,right of=C1] (C2) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Rev.png}}};
+		\node[block,right of=C2] (C3) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Rev.png}}};
+		\node[block,right of=C3] (C4) {\resizebox{1.5cm}{!}{\includegraphics{figs/US_One_Cent_Obv.png}}};
+		\node[block,right of=C4] (C5) {\Large$~~~\cdots$};
+		\node[below of=C1, scale=0.7] (res1) {$X(1, \chi) = \mathrm{H}$};
+		\node[below of=C4, scale=0.7] (res4) {$X(4, \chi) = \mathrm{H}$};
+		\node[scale=0.7] at ($(res1.east)!0.5!(res4.west)$) {$\cdots$};
+	\end{tikzpicture}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Ensemble of sample sequences}
+The ensemble of sample sequences is a collection af all possible sequences generated by a random process.
+
+\centering
+\resizebox{0.9\linewidth}{!}{\input{figs/ensemble_transitions.tex}}
+
+\end{frame}
+
+\begin{frame}{Averages of a random variable}
+
+\textbf{Mean or expected value}
+\begin{equation*}
+	\mu_{x_n} = \E(x_n) = \int_{-\infty}^{\infty}xp_{x_n}(x)dx
+\end{equation*}
+
+\textbf{Second moment or average power}
+\begin{equation*} 
+	\E(|x_n|^2) = \int_{-\infty}^{\infty}|x|^2p_{x_n}(x)dx
+\end{equation*}
+
+\textbf{Variance}
+\begin{align*}
+\sigma^2_{x_n} &= \E(|x_n-\mu_{x_n}|^2) = \int_{-\infty}^{\infty}|x|^2p_{x_n}(x)dx \\
+&= \E(|x_n|^2) - \mu_{x_n}^2
+\end{align*}
+
+The integrals should be replaced by sums when the random variable is discrete.
+
+\end{frame}
+
+\begin{frame}{Joint averages of random variables}
+Expected value of a function of two random variables
+\begin{equation*}
+\E(g(x_n,y_m)) = \int_{-\infty}^{\infty}\int_{-\infty}^{\infty}g(x, y)p_{x_n, y_n}(x, y)dxdy
+\end{equation*}
+
+Two random variables are \textbf{uncorrelated} if
+\begin{equation*}
+\E(x_ny_m) = \E(x_n)\E(y_m)
+\end{equation*}
+
+Two random variables are \textbf{statistically independent} if
+\begin{equation*}
+p_{x_n, y_n}(x,y) = p_{x_n}(x)p_{y_n}(y)
+\end{equation*}
+
+Independent random variables are also uncorrelated, but not all uncorrelated random variables are independent.
+
+\textbf{Exception:} uncorrelated Gaussian random variables are always independent.
+\end{frame}
+
+\begin{frame}{Correlation functions}
+
+\textbf{Autocorrelation}
+
+\begin{equation*}
+\phi_{xx}[n, m] = \E(x_nx_m^*) 
+\end{equation*}
+
+\textbf{Autocovariance}
+
+\begin{equation*}
+\gamma_{xx}[n, m] = \E((x_n-\mu_{x_n})(x_m - \mu_{x_m})^*) 
+\end{equation*}
+
+\textbf{Cross-correlation}
+
+\begin{equation*}
+\phi_{xy}[n, m] = \E(x_ny_m^*) 
+\end{equation*}
+
+\textbf{Cross-covariance}
+
+\begin{equation*}
+\gamma_{xy}[n, m] = \E((x_n-\mu_{x_n})(y_m - \mu_{y_m})^*) 
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Example: Bernoulli random process}
+	
+	\begin{itemize}
+		\item A Bernoulli random process is a sequence of binary random variables $\{x_n \sim \mathcal{B}(\rho)\}$. Canonically, 
+		\begin{columns}
+			\begin{column}{0.5\linewidth}
+				\begin{equation*}
+				x_n = \begin{cases}
+				1,~\text{with probability}~\rho, \\
+				0,~\text{with probability}~1-\rho,
+				\end{cases}
+				\end{equation*}
+			\end{column}
+			\begin{column}{0.5\linewidth}
+				\begin{equation*}
+				p_{x_n}(x) = \begin{cases}
+				\rho, &x = 1 \\
+				1-\rho, &x = 0 \\
+				0, &\text{otherwise}
+				\end{cases}
+				\end{equation*}
+			\end{column}
+		\end{columns}
+		\item A Bernoulli process is \textbf{independent and identically distributed (IID)}. That is, each $x_n$ is picked independently from the same distribution $\mathcal{B}(\rho)$.
+	\end{itemize}
+	From this we can conclude:
+	\begin{align*} 
+	\mu = 1\cdot\rho + 0\cdot(1-\rho) = \rho \\
+	\E(x_n^2) = 1^2\cdot\rho + 0^2\cdot(1-\rho) = \rho \\
+	\sigma^2 = \E(x_n^2) - \mu^2 = \rho(1 - \rho)
+	\end{align*}
+	\vspace{-0.5cm}
+	\begin{equation*}\tag{From IID. assumption}
+	\phi_{xx}[m]=\E(x_{n+m}x_n) = \rho\delta[m]
+	\end{equation*}
+	
+\end{frame}
+
+\begin{frame}{Example: Uniform random process}
+	
+	\begin{itemize}
+		\item A uniform random process is a sequence of uniform random variables $\{x_n \sim \mathcal{U}[a, b]\}$.
+		\begin{equation*}
+		p_{x_n}(x) = \begin{cases}
+		\displaystyle\frac{1}{b-a} & a\leq x\leq b \\
+		0, &\text{otherwise}
+		\end{cases}
+		\end{equation*}
+	\end{itemize}
+	From this we can conclude:
+	\begin{align*} 
+	\mu = \int_{a}^{b} \frac{x}{b-a}dx = \frac{b+a}{2} \\
+	\E(x_n^2) = \int_{a}^{b} \frac{x^2}{b-a}dx = \frac{b^2+ab+a^2}{3} \\
+	\sigma^2 = \E(x_n^2) - \mu^2 = \frac{(b-a)^2}{12}
+	\end{align*}
+	\vspace{-0.5cm}
+	\begin{equation*}\tag{Assuming IID}
+	\phi_{xx}[m]=\E(x_{n+m}x_n) = \E(x_n^2)\delta[m]
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Example: Gaussian random process}
+	
+	\begin{itemize}
+		\item A Gaussian random process is a sequence of Gaussian random variables $\{x_n \sim \mathcal{N}(\mu, \sigma^2)\}$.
+		\begin{equation*}
+		p_{x_n}(x) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\bigg(-\frac{(x-\mu)^2}{2\sigma^2}\bigg)
+		\end{equation*}
+
+	\end{itemize}
+	From this we can conclude:
+	\begin{align*} 
+	\E(x_n^2) = \sigma^2 + \mu^2 \\
+	\end{align*}
+	\vspace{-0.5cm}
+	\begin{equation*}\tag{Assuming IID}
+	\phi_{xx}[m]=\E(x_{n+m}x_n) = \E(x_n^2)\delta[m]
+	\end{equation*}
+	
+\end{frame}
+
+%%%%%%%%%%%%%%%
+\subsection{Stationary random processes}
+\begin{frame}{Stationary random processes}
+\begin{itemize}
+	\item Stationarity refers to \textbf{time invariance} of some, or all, of the statistics of a random process, such as mean, autocorrelation, joint distributions, etc
+	\item A random process is \textbf{strict-sense stationary (SSS)}, if its finite-order distributions do not change over time. For the first-order distributions, this means $p_{x_m}(x_m) = p_{x_n}(x_n),~\forall n, m$.
+\end{itemize}
+ 
+\centering
+\resizebox{0.7\linewidth}{!}{\input{figs/ensemble_stationary.tex}}
+\end{frame}
+
+\begin{frame}{Stationary random processes}
+
+All statistics of a SSS random process are time invariant. 
+
+As a result, the mean, average power, and variance are constant with $n$:
+\begin{align*}
+\mu &= \E(x_n) \\
+\sigma^2 &= \E(|x_n|^2) - \mu^2
+\end{align*}
+
+And the autocorrelation only depend on the time difference $m$:
+\begin{align*}
+\phi_{xx}[m] &= \phi_{xx}[n+m, n] = \E(x_{n+m}x_n^*) \tag{autocorrelation}
+\end{align*}
+
+\textbf{Question:} What is an example of SSS random process?
+
+\end{frame}
+
+\begin{frame}{Wide-sense stationary (WSS) random processes}
+
+\begin{itemize}
+	\item Strict sense stationarity is a strong condition that is hard to verify in practice.
+	\item A weaker (and more useful) condition is \textbf{wide-sense stationarity}
+	\item A random process is \textbf{wide-sense stationary (WSS)} if its mean and autocorrelation function are \textbf{time invariant}. 
+	\begin{align*}
+	\mu &= \E(x_n) \\
+	\phi_{xx}[m] &= \phi_{xx}[n+m, n] = \E(x_{n+m}x_n^*)
+	\end{align*}
+	The mean is constant, and the autocorrelation function only depends on the time difference $m$.
+	\item SSS implies WSS, but WSS does not mean SSS. \textbf{Exception:} WSS Gaussian random processes are also SSS.	
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Autocorrelation function of WSS processes}
+
+The autocorrelation function $\phi_{xx}[m]$ of a WSS process $x[n]$ has the following properties
+
+\begin{enumerate}
+	\item $\phi_{xx}[m]$ is \textbf{real and even}, i.e., $\phi_{xx}[m] = \phi_{xx}[-m]$
+	\item The DTFT of $\phi_{xx}[m]$ must be \textbf{non-negative at all frequencies}
+	\begin{equation}
+	\mathcal{F}\{\phi_{xx}[m]\} \geq 0, \forall~\omega\in[0, 2\pi]
+	\end{equation}
+	$\mathcal{F}\{\cdot\}$ denotes the DTFT.	
+\end{enumerate}
+
+	Properties 1 and 2 are \textbf{necessary and sufficient} for a function to be an autocorrelation function of a WSS process.
+\end{frame}
+
+%
+\begin{frame}
+More properties
+\begin{enumerate}\setcounter{enumi}{2}
+	\item $|\phi_{xx}[m]| \leq \phi_{xx}[0] = \E(|x[n]|^2) = \text{average power of}~x[n]$
+	
+\textit{Proof:}
+\begin{align*}
+\phi_{xx}^2[m] &= [\E(x[m+n]x[n])]^2 \\
+&\leq \E(|x[m+n]|^2)\E(|x[n]|^2) \tag{by Schwarz inequality} \\
+&=\phi_{xx}^2[m] \tag{by stationarity}
+\end{align*}
+	\item If $\phi_{xx}^2[T] = \phi_{xx}^2[0]$ for some $T\neq 0$, then $\phi_{xx}^2[m]$ is periodic with period $T$.
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Which functions can be $\phi_{xx}[m]$ of a WSS process?}
+\begin{enumerate}
+	\begin{columns}
+		\begin{column}{0.33\linewidth}
+			\item 
+			\begin{center}
+				\resizebox{\linewidth}{!}{\input{figs/right_sided_exp_curve.tex}}
+			\end{center}	
+		\end{column}
+		\begin{column}{0.33\linewidth}
+			\item 
+			\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/two_sided_exp_curve.tex}}
+			\end{center}
+		\end{column}
+		\begin{column}{0.33\linewidth}
+			\item 
+			\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/sinc.tex}}
+			\end{center}
+		\end{column}
+	
+	\end{columns}
+	\begin{columns}
+	\begin{column}{0.33\linewidth}
+		\item 
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/not_autocorrelation_example.tex}}
+		\end{center}		
+	\end{column}
+	\begin{column}{0.33\linewidth}
+		\item 
+		\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/saw.tex}}
+		\end{center}
+	\end{column}
+		\begin{column}{0.33\linewidth}
+		\item 
+		\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/constant.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{enumerate}
+\end{frame}
+
+\subsection{Ergodic random processes}
+%
+\begin{frame}{Time averages}
+
+\begin{itemize}
+	\item So far we have focused on probability averages $\E(\cdot)$
+	\item We can also define time averages $\langle\cdot\rangle$
+\end{itemize}
+
+\begin{equation*}
+\langle x_n \rangle = \lim_{L\to\infty}\frac{1}{2L + 1}\sum_{n=-L}^L x_n
+\end{equation*}
+
+\begin{equation*}
+\langle x_{n+m}x_n^* \rangle = \lim_{L\to\infty}\frac{1}{2L + 1}\sum_{n=-L}^L x_{n+m}x_n^*
+\end{equation*}
+
+\centering
+\resizebox{0.8\linewidth}{!}{\input{figs/random_sequence.tex}}
+
+\end{frame}
+
+\begin{frame}{Ergodic random processes}
+
+A random process is \textbf{ergodic} if its time averages are equal to its probability averages:
+
+\begin{equation*}
+\langle x_n \rangle = \lim_{L\to\infty}\frac{1}{2L + 1}\sum_{n=-L}^L x_n = \E(x_n) = \mu
+\end{equation*}
+
+\begin{equation*}
+\langle x_{n+m}x_n^* \rangle = \lim_{L\to\infty}\frac{1}{2L + 1}\sum_{n=-L}^L x_{n+m}x_n^* = \E(x_{n+m}x_n^*) = \phi_{xx}[m]
+\end{equation*}
+
+\begin{itemize}
+	\item In practice, we don't have an ensemble of sample functions that we can use to estimate the mean and autocorrelation function.
+	\item We generally have only one sample function.
+	\item With the \textbf{ergodic assumption}, we can estimate probability averages from a single sample function
+\end{itemize}
+
+\end{frame}
+
+%
+\subsection{LTI systems with random input}
+\begin{frame}{LTI system with a random input}
+\begin{center}
+\resizebox{\linewidth}{!}{\input{figs/DT_response_to_random.tex}}
+\end{center}
+
+As usual, we can apply the convolution sum
+
+\begin{equation*}
+y[n] = \sum_{n=-\infty}^{\infty} x[m-n]h[m] 
+\end{equation*}
+
+\begin{itemize}
+	\item $x[n]$ is just a sample function of the random process 
+	\item We generally care about the effect of the system on the statistics (e.g., mean and autocorrelation function) of the random process, rather than the system output to any particular sample function
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{LTI system with a random input}
+
+\begin{block}{Mean or expected value}
+	\begin{align*}
+	\E(y[n]) &= \E\bigg(\sum_{n=-\infty}^{\infty} x[m-n]h[m]\bigg) \\
+	&= \sum_{n=-\infty}^{\infty} \E(x[m-n])h[m] \tag{Expectation is a linear operator and $h[n]$ is not random} \\
+	&= \mu_x\sum_{n=-\infty}^{\infty} h[m] \tag{Assuming $x[n]$ is WSS} \\
+	&= \mu_xH(e^{j0})
+	\end{align*}
+\end{block}
+
+The mean is scaled by the gain of the LTI system at zero frequency.
+\end{frame}
+
+\begin{frame}{LTI system with a random input}
+
+\begin{block}{Autocorrelation function}
+	\begin{align*}
+	\phi_{yy}[m] &= \E(y[n+m]y^*[n]) \tag{by definition}  \\
+	&= \E\bigg\lbrace\bigg(\sum_{r=-\infty}^{\infty} x[n+m-r]h[r]\bigg)\cdot\bigg(\sum_{k=-\infty}^{\infty} x^*[n-r]h^*[k]\bigg)\bigg\rbrace  \\
+	&= \sum_{r=-\infty}^{\infty} h[r] \sum_{k=-\infty}^{\infty} h^*[k]\E(x[n+m-r]x^*[n-k]) \\
+	&= \sum_{l=-\infty}^{\infty} \bigg(\sum_{k=-\infty}^{\infty} h[l+k]h^*[k]\bigg)\phi_{xx}[m-l] \tag{change variables $l = r-k$}
+	\end{align*}
+\end{block}
+\end{frame}
+
+\begin{frame}
+Let's define the \textbf{autocorrelation function of deterministic signals}
+
+\begin{equation*}
+c_{hh}[l] \equiv \displaystyle\sum_{k=-\infty}^{\infty} h[l+k]h^*[k]
+\end{equation*} 
+
+Note that the autocorrelation function of deterministic signals and convolution are closely related:
+\begin{equation*}
+c_{hh}[l] = h[l]\ast h^*[-l]
+\end{equation*} 
+
+Now we can rewrite the autocorrelation function of the output of a LTI system to a random process more compactly:
+\begin{align*}
+\phi_{yy}[m] &= \sum_{l=-\infty}^{\infty} c_{hh}[l]\phi_{xx}[m-l] \\
+&= c_{hh}[m]\ast \phi_{xx}[m]
+\end{align*} 
+
+The autocorrelation function of the input random process is \textit{filtered} by the deterministic autocorrelation function of the impulse response.
+
+\end{frame}
+
+\begin{frame}{In the frequency domain}
+
+From the previous derivation, we can write in the time domain:
+\begin{align*}
+\phi_{yy}[m] &= c_{hh}[m]\ast \phi_{xx}[m] \\
+&= h[l]\ast h^*[-l]\ast \phi_{xx}[m]
+\end{align*}
+
+In the frequency domain:
+\begin{align*}
+\mathcal{F}\{\phi_{yy}[m]\} &= H(e^{j\omega})\cdot  H^*(e^{j\omega})\cdot \mathcal{F}\{\phi_{xx}[m]\} \\
+&= |H(e^{j\omega})|^2\cdot\mathcal{F}\{\phi_{xx}[m]\}
+\end{align*}
+
+The DTFT of the autocorrelation function of a random process is called \textbf{power spectrum density (PSD)}. The PSD has units of W/Hz or dBm/Hz.
+~\\
+~\\
+\textbf{Notation:} $\Phi_{xx}(e^{j\omega}) \equiv \mathcal{F}\{\phi_{xx}[m]\}$
+
+\end{frame}
+
+\begin{frame}{Properties of the power spectrum density}
+
+\begin{enumerate} 
+	\item The PSD is \textbf{real-valued}
+	\begin{equation*}
+		\Phi_{xx}(e^{j\omega}) = \Phi^*_{xx}(e^{j\omega}),
+	\end{equation*}
+	since the autocorrelation function has\textbf{ even symmetry}: $\phi_{xx}[m] = \phi_{xx}[-m]$.
+
+	\item The PSD is \textbf{even symmetry} 
+	\begin{equation*}
+		\Phi_{xx}(e^{j\omega}) = \Phi_{xx}(e^{-j\omega}),
+	\end{equation*}
+	since the autocorrelation function is always real. 
+
+	\item The PSD is \textbf{non-negativity} 
+	\begin{equation*}
+		\Phi_{xx}(e^{j\omega}) \geq 0,
+	\end{equation*}
+	This is the same condition required by an autocorrelation function of a WSS random process.
+	
+	\item The area under $\Phi_{xx}(e^{j\omega})$ is the average power
+	\begin{equation}
+	\int_{-\pi}^{\pi} \Phi_{xx}(e^{j\omega}) = \phi_{xx}[0] = E(|x[n]|^2)
+	\end{equation}
+	
+\end{enumerate} 
+
+\end{frame}
+
+
+\begin{frame}{White noise}
+
+White noise is a particularly important class of random process that have constant power spectrum density over all frequencies.
+
+\begin{equation*}
+\phi_{xx}[m] = \sigma_x^2\delta[m] \Longleftrightarrow \Phi_{xx}(e^{j\omega}) = \sigma_x^2, |\omega|\leq\pi.
+\end{equation*}
+
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/white_noise.tex}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{White noise}
+
+If the input noise is white, 
+\begin{equation*} \tag{output autocorrelation function}
+\phi_{yy}[m] = c_{hh}[m]\ast \phi_{xx}[m] = \sigma_x^2c_{hh}[m]
+\end{equation*}
+
+\begin{align*} 
+\Phi_{yy}(e^{j\omega}) &= |H(e^{j\omega})|^2\Phi_{xx}(e^{j\omega}) \\
+&= \sigma_x^2|H(e^{j\omega})|^2 \tag{output PSD}
+\end{align*}
+
+\begin{itemize}
+	\item Note that the output noise PSD is not white. Hence, we say that the filter $H(e^{j\omega})$ \textbf{colored} the noise or \textbf{shaped} the noise.
+	\item It is typically easier to analyze systems with white noise. As a result, it is common to employ a \textbf{noise whitening filters} to make the noise white. 
+\end{itemize}
+
+
+\end{frame}
+
+%
+\begin{frame}{White noise into moving average filter}
+\textbf{Moving average filter}: $H(z) = \frac{1}{4}(1 + z^{-1} + z^{-2} + z^{-3})$
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/moving_average4.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{White noise into moving average filter}
+
+Frequency response of the filter
+\begin{align*}
+H(e^{j\omega}) &= \frac{1}{4}(1 + e^{-j\omega} + z^{-j2\omega} + z^{-j3\omega}) \\
+&= \frac{\sin(2\omega)}{4\sin(\omega/2)}e^{-j2\omega}
+\end{align*} 
+
+Output signal power spectrum when the input is white noise:
+
+\begin{columns}
+	\begin{column}{0.5\linewidth}
+		\begin{align*}
+			\Phi_{yy}(e^{j\omega}) &= \sigma_x^2|H(e^{j\omega})|^2 \\
+			&= \sigma^2_x\bigg(\frac{\sin(2\omega)}{4\sin(\omega/2)}\bigg)^2
+		\end{align*} 
+	\end{column}
+	\begin{column}{0.5\linewidth}
+		\begin{center}
+			\resizebox{0.9\linewidth}{!}{\input{figs/psd_moving_average4_to_white_noise.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Simulation example}
+	
+	
+\end{frame}
+
+\end{document}

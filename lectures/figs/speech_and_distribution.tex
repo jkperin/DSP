@@ -1,0 +1,72 @@
+\begin{tikzpicture}
+\begin{axis}[%
+name=speech,
+axis lines*=middle,
+xlabel=$t$,
+ylabel=$x(t)$,
+scale only axis,
+axis on top,
+%separate axis lines,
+% every outer x axis line/.append style={white!15!black},
+% every x tick label/.append style={font=\color{white!15!black}},
+xmin=3364,
+xmax=10100,
+ytick=\empty,
+xtick=\empty,
+axis line style={->,>=stealth},
+every axis x label/.style={
+	at={(ticklabel* cs:0.97)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+every axis y label/.style={at=(current axis.above origin),anchor=south},
+%every axis x label/.style={at=(current axis.right of origin),anchor=west},
+ymin=-1,
+ymax=1,
+]
+\addplot [line width = 1.5pt, color=blue2!90] table [x={time}, y={sound}] {figs/speech_data.dat};
+\end{axis}
+
+\onslide<2|handout:1>{
+\begin{axis}[
+at=(speech.east), %anchor=east,
+anchor=origin,
+%at={(1200,380)},
+xmin=-5,
+xmax=5,
+width=3.5in,
+height=2in,
+no markers,
+rotate around={-90:(current axis.origin)}, % Rotate around the origin
+axis lines*=center,
+every axis y label/.style={at=(current axis.above origin),anchor=south},
+every axis x label/.style={at=(current axis.right of origin),anchor=west},
+%height=5cm, width=8cm,
+xtick=\empty,
+ymin=0,
+ymax=0.6,
+ytick=\empty,
+xlabel=$x$,
+ylabel=$p_{x(t)}(x)$,
+enlargelimits=false, clip=false, axis on top,
+grid = major,
+axis line style={->,>=stealth},
+every axis x label/.style={
+	at={(ticklabel* cs:0)},
+	xshift=0.3cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+x dir=reverse,
+]
+\addplot [very thick,black, fill=blue2!70,domain=-5:5, samples=101, clip=true] {laplacian(0,0.9)};
+\node at (axis cs: 3, 0.5) {$\displaystyle p_{x(t)}(x) = \frac{1}{2b}\exp\bigg(-\frac{|x-\mu|}{b}\bigg)$};
+\end{axis}
+}
+\end{tikzpicture}%

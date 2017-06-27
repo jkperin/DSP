@@ -1,0 +1,21 @@
+\def\layersep{1.5cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) at (0, -\dy cm) {};
+    \node[block, text width = 2.7cm, align= center] (DSP) at (2*\layersep, -\dy cm) {Discrete-Time \\ System};
+	\coordinate (yc) at (4*\layersep, -\dy cm) {};
+		
+    \path (xc) edge (DSP);
+    \path (DSP) edge (yc);
+    
+    \node[above = 0.5mm of xc] {$x[n]$};
+    \node[above = 0.5mm of yc] {$y[n] = T\{x[n]\}$};
+    
+
+\end{tikzpicture}

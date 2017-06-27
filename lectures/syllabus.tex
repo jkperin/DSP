@@ -1,0 +1,146 @@
+\documentclass[10pt]{article}
+\usepackage{geometry}
+ \geometry{a4paper}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage[numbered]{bookmark}
+\usepackage{pdfpages}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../figs/}}
+
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{positioning}
+
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{calc}
+
+\usepgfplotslibrary{groupplots}
+
+\pgfplotsset{compat=newest} 
+
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+\setlength{\parindent}{0pt}
+
+\singlespacing
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\begin{document}
+\doublespacing
+\begin{center}
+	\textbf{\large Stanford University}
+	
+	\textbf{\large EE 264: Digital Signal Processing}
+	
+	\textbf{\large Summer, 2017}
+	
+	\vspace{2mm}
+	
+	\textbf{\large Syllabus}
+\end{center}
+\vspace{-5mm}
+\rule{\textwidth}{0.5pt}
+\singlespacing
+
+\subsection*{Teaching staff} 
+
+\subsubsection*{Instructor} 
+Jose Krause Perin \\
+Office hours: Tuesdays 2 -- 4 PM, \href{https://campus-map.stanford.edu/?id=04-040&lat=37.42879024&lng=-122.1740029&zoom=17&srch=spilker}{Spilker building}, room 145, or by appointment \\
+e-mail: jkperin@stanford.edu
+
+\subsubsection*{Teaching assistant} Tahrina Ahmed \\
+Office hours: Wednesdays 3:30 -- 5PM, \href{https://campus-map.stanford.edu/?id=07-340&lat=37.43134094&lng=-122.17436685&zoom=17&srch=clark}{Clark Center} 3rd floor in front of Peet's Coffee, or by appointment\\
+e-mail: trumu@stanford.edu
+
+\subsection*{Class meetings} 
+\begin{itemize}
+	\item Tuesdays and Thursdays, 11:30 AM -- 1:20 PM at \href{https://campus-map.stanford.edu/?srch=Huang+Engineering+Center+18}{Huang Engineering Center 18}.
+	\item There will be a midterm review session on Friday, July 28th. Time and location TBD 
+	\item The review session for the final exam will be on the last day of classes
+\end{itemize}
+
+\subsection*{Tentative schedule and class topics}
+
+\input{tentative_schedule.tex}
+
+\footnotetext[1]{Reading assignments in ``Discrete-time signal processing'', Oppenheim and Schafer, 3rd edition}
+
+\subsection*{Resources}
+
+\subsubsection*{Textbook}
+\begin{itemize}
+	\item ``Discrete-time signal processing'', Oppenheim and Schafer, 3rd edition, 2010
+	\item Available on 4-hour reserve at the \href{https://campus-map.stanford.edu/?id=04-080&lat=37.42787956&lng=-122.17429865&zoom=17&srch=engineeri}{Engineering Library (Terman)}
+	\item Lecture notes will cover all the material, but further reading of the textbook is encouraged
+\end{itemize}
+
+\subsubsection*{Class website}
+
+The class website \href{https://canvas.stanford.edu}{https://canvas.stanford.edu} contains
+
+\begin{itemize}
+	\item Lecture notes, homework assignments and solutions, Matlab code, discussion
+	\item Homework submission will be online on Canvas
+\end{itemize}
+
+\subsection*{Grading}
+Homework: $30\%$ \\
+Midterm: $30\%$ \\
+Final: $40\%$ 
+
+\subsection*{Homework policy}
+
+There will be 7 homework assignments.
+\begin{itemize}
+	\item Most problem sets will be assigned on Thursday and will be due the following Thursday by 11:59 PM.
+	\item Assignments should be submitted online on Canvas. Submit a single .pdf file with your solutions. 
+	\item Homework solutions will typically be available shortly after the homework due date. Homework grades will typically be available within a week of the due date.
+	\item Discussion among students is encouraged, but individual solutions must be submitted
+	\item In general, late homeworks will not be accepted. Under extenuating circumstances, extensions must be approved by the instructor or TA, and arranged prior to the deadline.
+\end{itemize}
+
+\subsection*{Exams policy}
+\subsubsection*{Midterm}
+\begin{itemize}
+	\item In-class midterm on August, 1st. 
+	\item There will be a midterm review session on Friday, July 28. Exact time and location TBD
+	\item Midterm covers lectures 1 to 8 (homeworks 1 to 4)
+	\item Midterm is open book and open notes
+\end{itemize}
+
+\subsubsection*{Final}
+\begin{itemize}
+	\item The final exam will be a 24-hour-take-home exam. Dates TBD
+	\item The final exam should take just a few hours
+	\item The review session for the final will be on the last lecture
+\end{itemize}
+
+\end{document}

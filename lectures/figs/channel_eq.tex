@@ -1,0 +1,26 @@
+\def\layersep{5.5cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) at (0, -\dy cm) {};
+	
+    \node[block, text width = 2cm, align= center, right=2cm of xc] (CH) {Channel};
+    \node[block, text width = 2cm, align= center, right of=CH] (ADC)  {Analog-to-Digital Conveter};
+    \node[block, text width = 2cm, align= center, right of=ADC] (EQ)  {Equalizer};
+	\coordinate[right=2cm of EQ] (yc) {};
+		
+    \path[->, >=stealth, shorten >= 0pt] (xc) edge (CH);
+    \path[->, >=stealth, shorten >= 0pt] (CH) edge (ADC);
+    \path[->, >=stealth, shorten >= 0pt] (ADC) edge (EQ);
+    \path[->, >=stealth, shorten >= 0pt] (EQ) edge (yc);
+    
+    \node[block, draw=none, above = 0.5mm of xc, scale=0.45] (tx_signal) {\resizebox{!}{!}{\input{figs/tx_waveform.tex}}};
+    \node[block, draw=none, scale=0.45] at ($(CH.east)!0.5!(ADC.west) + (0, 1cm)$) (rx_signal) {\resizebox{!}{!}{\input{figs/rx_waveform_bad.tex}}};
+	\node[block, draw=none, scale=0.45] at ($(ADC.east)!0.5!(EQ.west) + (0, 1cm)$) (rx_signal_sampled) {\resizebox{!}{!}{\input{figs/rx_waveform_bad_sampled.tex}}};	\node[block, draw=none, above = 0.5mm of yc]  (detected) {010110};
+
+\end{tikzpicture}

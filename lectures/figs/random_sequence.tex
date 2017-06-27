@@ -1,0 +1,33 @@
+\begin{tikzpicture}
+\begin{axis}[
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	hide y axis,
+	width=0.5\textwidth,
+	height=0.15\textwidth,
+	ymin=-1.3,
+	ymax=1.3,
+	xmin=-11,
+	xmax=11,
+	axis line style={->,>=stealth},
+	xlabel={\small $n$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.2cm,
+		anchor=north,
+	},
+	%xtick=\empty,
+	ytick=\empty,
+	xtick=\empty,
+	%xtick={-3.14, -1, 1, 3.14},
+	%xticklabels={$-\pi$, $-\omega_c$, $\omega_c$, $\pi$},
+	%xmajorgrids,
+	%ymajorgrids,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=-10:10, samples=21] {rand};
+\end{axis}
+\end{tikzpicture}

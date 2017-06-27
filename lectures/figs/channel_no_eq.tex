@@ -1,0 +1,25 @@
+\def\layersep{1.5cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) at (0, -\dy cm) {};
+	
+    \onslide<1|handout:1>{\node[block, text width = 2cm, align= center] (CH) at (2*\layersep, -\dy cm) {Channel};}
+    
+    \onslide<2-|handout:2->{\node[block, text width = 2cm, align= center] (CH) at (2*\layersep, -\dy cm) {Bad Channel};}
+    
+	\coordinate (yc) at (4*\layersep, -\dy cm) {};
+		
+    \path[->, >=stealth, shorten >= 0pt] (xc) edge (CH);
+    \path[->, >=stealth, shorten >= 0pt] (CH) edge (yc);
+    
+    \node[block, draw=none, above = 0.5mm of xc, scale=0.5] (tx_signal) {\resizebox{!}{!}{\input{figs/tx_waveform.tex}}};
+    \onslide<1|handout:1>\node[block, draw=none, above = 0.5mm of yc, scale=0.5] (tx_signal) {\resizebox{!}{!}{\input{figs/rx_waveform.tex}}};
+    \onslide<2-|handout:2->\node[block, draw=none, above = 0.5mm of yc, scale=0.5] (tx_signal) {\resizebox{!}{!}{\input{figs/rx_waveform_bad.tex}}};
+
+\end{tikzpicture}

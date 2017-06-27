@@ -1,0 +1,77 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = true,
+ymin=-1,
+ymax=1,
+xmin=-1,
+xmax=20,
+axis line style={->,>=stealth},
+xlabel={\Large $n$},
+ylabel={\Large $y[n]$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+ytick={-1, 1},
+xtick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, forget plot]
+table[row sep=crcr]{
+	0 0.25 \\
+	1 0.45225 \\
+	2 0.52951 \\
+	3 0.45225 \\
+	4 5.5511e-17 \\
+	5 -0.45225 \\
+	6 -0.73176 \\
+	7 -0.73176 \\
+	8 -0.45225 \\
+	9 -8.3267e-17 \\
+	10 0.45225 \\
+	11 0.73176 \\
+	12 0.73176 \\
+	13 0.45225 \\
+	14 2.498e-16 \\
+	15 -0.45225 \\
+	16 -0.73176 \\
+	17 -0.73176 \\
+	18 -0.45225 \\
+	19 -3.6082e-16 \\
+	20 0.45225 \\
+};
+\addplot [black!20, line width=1.5pt, forget plot]
+table[row sep=crcr]{
+	0 0.25 \\
+	1 0.45225 \\
+	2 0.52951 \\
+	3 0.45225 \\
+	4 5.5511e-17 \\
+	5 -0.45225 \\
+	6 -0.73176 \\
+	7 -0.73176 \\
+	8 -0.45225 \\
+	9 -8.3267e-17 \\
+	10 0.45225 \\
+	11 0.73176 \\
+	12 0.73176 \\
+	13 0.45225 \\
+	14 2.498e-16 \\
+	15 -0.45225 \\
+	16 -0.73176 \\
+	17 -0.73176 \\
+	18 -0.45225 \\
+	19 -3.6082e-16 \\
+	20 0.45225 \\
+};
+
+\end{axis}
+\end{tikzpicture}

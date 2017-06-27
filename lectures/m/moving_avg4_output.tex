@@ -1,0 +1,47 @@
+\begin{tikzpicture}
+\begin{axis}[
+width=4.52in,
+height=3.56in,
+scale only axis,
+separate axis lines,
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0.00,
+xmax=20.00,
+ymin=-0.05,
+ymax=0.30,
+xlabel={},
+ylabel={},
+xmajorgrids,
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\definecolor{matlabColor1}{rgb}{0.000000,0.000000,1.000000}
+\addplot [color=matlabColor1, only marks, line width=1.5pt, mark=*, mark size=2pt, forget plot]
+table[row sep=crcr]{
+	0 0.25 \\
+	1 0.25 \\
+	2 0 \\
+	3 -4.5924e-17 \\
+	4 0 \\
+	5 2.1029e-17 \\
+	6 0 \\
+	7 -5.1645e-17 \\
+	8 0 \\
+	9 2.675e-17 \\
+	10 0 \\
+	11 -5.0146e-16 \\
+	12 -4.996e-16 \\
+	13 -8.5571e-16 \\
+	14 -8.6042e-16 \\
+	15 -9.2351e-16 \\
+	16 -8.8818e-16 \\
+	17 -8.4999e-16 \\
+	18 -8.6042e-16 \\
+	19 -9.2923e-16 \\
+	20 -8.8818e-16 \\
+};
+
+\end{axis}
+\end{tikzpicture}

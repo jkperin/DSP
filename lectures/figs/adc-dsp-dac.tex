@@ -8,15 +8,15 @@
     \tikzstyle{annot} = []
 
 	\node[node] (xc) at (0, -\dy cm) {};
-    \node[block] (ADC) at (1*\layersep, -\dy cm) {A-to-D};
-    \node[block, text width = 2cm, align= center] (DSP) at (3*\layersep, -\dy cm) {Digital Signal Processor};
-    \node[block] (DAC) at (5*\layersep, -\dy cm) {D-to-A};
+    \node[block] (ADC) at (1*\layersep, -\dy cm) {ADC};
+    \node[block, text width = 2.5cm, align= center] (DSP) at (3*\layersep, -\dy cm) {Digital Signal Processor};
+    \node[block] (DAC) at (5*\layersep, -\dy cm) {DAC};
 	\coordinate (yc) at (6*\layersep, -\dy cm) {};
 	
 	\coordinate (mid1) at ($(ADC.east)!0.5!(DSP.west)$) {};
 	\coordinate (mid2) at ($(DSP.east)!0.5!(DAC.west)$) {};
 		
-    \path[-] (xc) edge (ADC);
+    \path (xc) edge (ADC);
     \path (ADC) edge (DSP);
     \path (DSP) edge (DAC);
     \path (DAC) edge (yc);

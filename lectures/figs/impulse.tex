@@ -1,0 +1,44 @@
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = true,
+ymin=0,
+ymax=1.2,
+xmin=-1,
+xmax=5,
+axis line style={->,>=stealth},
+xlabel={\Large $n$},
+ylabel={\Large $\delta[n]$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+%xtick=\empty,
+ytick={1},
+xtick=\empty,
+%xtick={-3.14, -1, 1, 3.14},
+%xticklabels={$-\pi$, $-\omega_c$, $\omega_c$, $\pi$},
+%xmajorgrids,
+%ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
+  table[row sep=crcr]{%
+	-1 	0 \\
+	0 	1 \\
+	1	0 \\
+	2	0 \\
+	3	0 \\
+	4	0 \\
+	5	0 \\
+};
+\end{axis}
+\end{tikzpicture}
