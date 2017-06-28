@@ -221,3 +221,5 @@ TSWLatexianTemp*
 
 other/
 outgoing/
+*.pdf
+*.asv

@@ -1,0 +1,28 @@
+\def\layersep{3cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum width=3cm, minimum height=2cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) {};
+    \node[block, text width = 2.5cm, align= center, right of=xc] (DSP) {$h[n]\leftrightarrow H(e^{j\omega})$};
+	\coordinate[right of=DSP] (yc) {};
+		
+    \path[->, >=stealth, shorten >= 0pt] (xc) edge (DSP);
+    \path[->, >=stealth, shorten >= 0pt] (DSP) edge (yc);
+    
+    \node[below = 0.5mm of xc, text width=2.5cm, align=center] {Random signal \\ $x[n]$};	
+    \node[below = 0.5mm of yc] {$y[n]$};
+    
+   	\node[node, below=2.5cm of xc] (phix) {};
+   	\node[block, text width = 3cm, align= center, right of=phix] (DSP2) {$h[m]\ast h^*[-m] \leftrightarrow |H(e^{j\omega})|^2$};
+   	\coordinate[right of=DSP2] (phiy) {};
+   	
+   	\path[->, >=stealth, shorten >= 0pt] (phix) edge (DSP2);
+   	\path[->, >=stealth, shorten >= 0pt] (DSP2) edge (phiy);
+   	
+   	\node[below = 0.5mm of phix, text width=1.5cm, align=center] { $\phi_{xx}[m]$};	
+   	\node[below = 0.5mm of phiy] {$\phi_{yy}[m]$};
+\end{tikzpicture}
