@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -371,7 +371,7 @@ Independent random variables are also uncorrelated, but not all uncorrelated ran
 \gamma_{xy}[n, m] = \E((x_n-\mu_{x_n})(y_m - \mu_{y_m})^*) 
 \end{equation*}
 
-\textbf{Note:} By knowing the mean and the autocorrelation function, we can determine all others.
+\textbf{Note:} By knowing the mean and the autocorrelation function, we can determine average power, variance, and autocovariance.
 
 \end{frame}
 
@@ -521,7 +521,7 @@ More properties
 \begin{align*}
 \phi_{xx}^2[m] &= [\E(x[m+n]x[n])]^2 \\
 &\leq \E(|x[m+n]|^2)\E(|x[n]|^2) \tag{by Schwarz inequality} \\
-&=\phi_{xx}^2[m] \tag{by stationarity}
+&=\phi_{xx}^2[0] \tag{by stationarity}
 \end{align*}
 	\item If $\phi_{xx}^2[T] = \phi_{xx}^2[0]$ for some $T\neq 0$, then $\phi_{xx}^2[m]$ is periodic with period $T$.
 \end{enumerate}
@@ -745,7 +745,7 @@ In the frequency domain:
 	
 	\item The area under $\Phi_{xx}(e^{j\omega})$ is the \textbf{average power}
 	\begin{equation*}
-	\int_{-\pi}^{\pi} \Phi_{xx}(e^{j\omega})d\omega = \phi_{xx}[0] = E(|x[n]|^2)
+	\frac{1}{2\pi}\int_{-\pi}^{\pi} \Phi_{xx}(e^{j\omega})d\omega = \phi_{xx}[0] = E(|x[n]|^2)
 	\end{equation*}
 	
 \end{enumerate} 
@@ -769,11 +769,11 @@ In the frequency domain:
 
 \begin{itemize}
 	\item White noise is a particularly important class of random process
-	\item The samples in time domain are \textbf{uncorrelated}, and consequently the \textbf{PSD is constant over all frequencies}.
+	\item A \textbf{zero-mean} random process whose \textbf{PSD is constant over all frequencies} is commonly referred to as \textbf{white noise}. Constant PSD over all frequencies implies that the samples are \textbf{uncorrelated} in the time domain
 \end{itemize}
 
 \begin{equation*}
-\phi_{xx}[m] = \sigma_x^2\delta[m] \Longleftrightarrow \Phi_{xx}(e^{j\omega}) = \sigma_x^2, |\omega|\leq\pi.
+\Phi_{xx}(e^{j\omega}) = \sigma_x^2, |\omega|\leq\pi \Longleftrightarrow \phi_{xx}[m] = \sigma_x^2\delta[m]  
 \end{equation*}
 
 \begin{center}
@@ -1003,11 +1003,11 @@ Calculate output:\\
 \begin{frame}{Central limit theorem}
 The \textbf{central limit theorem} states that the probability density function of the sum of a large number of independent random variables approaches a Gaussian distribution.
 \begin{equation*}
-Z = X_1 + X_2 + \ldots + X_N \implies p_Z(z) \to\mathcal{N}(\mu, \sigma^2)
+Z = X_1 + X_2 + \ldots + X_N \implies p_Z(z) \xrightarrow{N\to\infty} \mathcal{N}(\mu, \sigma^2)
 \end{equation*}
 
 \begin{itemize}
-	\item In digital filters, we're essentially performing a weighted sum of samples of the input. As a result, the output of a digital filter for a random input is approximately Gaussian distribution.
+	\item In digital filters, we're essentially performing a weighted sum of samples of the input. As a result, the output of a digital filter for a random input is approximately Gaussian distributed.
 	\item In the example of the 4-point moving average system, we were only adding 4 random variables and the resulting output pdf was close to Gaussian. 
 	\item This effect is more visible in filters with larger memory, and in particular in filters with \textbf{infinite impulse response (IIR)} 
 \end{itemize}
