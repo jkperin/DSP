@@ -1,0 +1,76 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.8\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=1,
+	xmin=-3.2,
+	xmax=3.2,
+	axis line style={->,>=stealth},
+	xlabel={\small $\Omega$},
+	ylabel={\small $X(j\omega)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	ytick=\empty,
+	xtick={-1.5, 1.5},
+	xticklabels={\small $-1.5\pi$, \small $1.5\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every x tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[dirac, mark=triangle*, fill=black, mark options={scale=0.75, fill=black}, line width=1pt] coordinates {(-1.5, 0.5) (1.5, 0.5)};
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	axis on top=true,
+	clip=true,
+	scale only axis,
+	width=0.8\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=1,
+	xmin=-3.2,
+	xmax=3.2,
+	axis line style={->,>=stealth},
+	xlabel={\small $\omega=\Omega T$},
+	ylabel={\small $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={-2, -1, 0.5, 1, 1.5, 2},
+	xticklabels={\scriptsize $-2\pi$, \scriptsize $-\pi$, \scriptsize $0.5\pi$, \scriptsize $\pi$, \scriptsize $1.5\pi$, \scriptsize $2\pi$},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=black, mark options={scale=0.75, fill=white}, line width=1pt] coordinates {(-1.5, 0.5) (1.5, 0.5)};
+	\only<2-|handout:1>{
+	\addplot[ycomb, blue2, mark=*, fill=black, mark options={scale=0.75, fill=white}, line width=1pt] coordinates {(0.5, 0.5) (3.5, 0.5)};}
+	\only<3-|handout:1>{
+	\addplot[ycomb, red2, mark=*, fill=black, mark options={scale=0.75, fill=white}, line width=1pt] coordinates {(-0.5, 0.5) (-3.5, 0.5)};}
+	
+\end{axis}
+\end{tikzpicture}

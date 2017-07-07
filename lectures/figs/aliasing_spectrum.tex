@@ -1,0 +1,114 @@
+\def\fs{3.5}
+\def\fmax{1.75}
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.8\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=3,
+	xmin=-6,
+	xmax=6,
+	axis line style={->,>=stealth},
+	xlabel={\small $\Omega$},
+	ylabel={\small $X_c(j\Omega)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	ytick=2,
+	xtick=\empty,
+	yticklabel={\small 1},
+	xtick={-2.5, 2.5},
+	xticklabels={\small $-\Omega_N$, \small $\Omega_N$},
+	every outer y axis line/.append style={white!15!black},
+	every x tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, line width=1pt] coordinates {(0, 2) (2.5, 0) (0, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(0, 2) (-2.5, 0) (0, 0)};
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	axis on top=true,
+	clip=true,
+	scale only axis,
+	width=0.8\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=3,
+	xmin=-6,
+	xmax=6,
+	axis line style={->,>=stealth},
+	xlabel={\small $\omega=\Omega T$},
+	ylabel={\small $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.5cm,
+	},
+	xtick={-\fs, -\fmax, \fmax, \fs},
+	xticklabels={\small $-2\pi$, \small $-\pi$, \small $\pi$, \small $2\pi$},
+	ytick=2,
+	yticklabels={\small $1/T$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, line width=0pt] coordinates {(\fs, 2) (\fs+2.5, 0) (\fs, 0)};
+	\addplot[solid, line width=0pt, fill=blue!50] coordinates {(\fs, 2) (\fs-2.5, 0) (\fs, 0)};
+	\addplot[name path=pos, solid, line width=1pt] coordinates {(\fs-2.5, 0) (\fs, 2)};
+	
+	\addplot[solid, line width=0pt] coordinates {(0, 2) (2.5, 0) (0, 0)};
+	\addplot[solid, line width=0pt, fill=blue!50] coordinates {(0, 2) (-2.5, 0) (0, 0)};
+	\addplot[name path=zer1, solid, line width=1pt] coordinates {(0, 2) (2.5, 0)};
+	\addplot[name path=zer2, solid, line width=1pt] coordinates {(0, 2) (-2.5, 0)};
+	
+	\addplot[solid, line width=0pt] coordinates {(-\fs, 2) (-\fs+2.5, 0) (-\fs, 0)};
+	\addplot[solid, line width=0pt, fill=blue!50] coordinates {(-\fs, 2) (-\fs-2.5, 0) (-\fs, 0)};
+	\addplot[name path=neg, solid, line width=1pt] coordinates {(-\fs+2.5, 0) (-\fs, 2) };
+	
+	%\fill[red!70, intersection segments={of=pos and zer1}];
+	%\fill[red!70, intersection segments={of=neg and zer2}];	
+	
+	%\addplot[solid, line width=1pt] coordinates {(\fs, 2) (\fs+1, 1.2) (\fs+2.5, 1.2)};
+	\addplot[fill=red!50, red!50, line width=0pt] coordinates {(-\fs-2.5, 1.2) (-\fs-2.5, 0) (-\fs-1, 0) (-\fs-1, 1.2) (-\fs-2.5, 1.2)};
+	\addplot[fill=red!50, red!50, line width=0pt] coordinates {(-2.5, 1.2) (-2.5, 0) (-1, 0) (-1, 1.2) (-2.5, 1.2)};
+	\addplot[fill=red!50, red!50, line width=0pt] coordinates {(\fs-2.5, 1.2) (\fs-2.5, 0) (\fs-1, 0) (\fs-1, 1.2) (\fs-2.5, 1.2)};
+	\addplot[fill=red!50, red!50, line width=0pt] coordinates {(\fs+2.5, 1.2) (\fs+2.5, 0) (\fs+1, 0) (\fs+1, 1.2) (\fs+2.5, 1.2)};
+	\addplot[solid, line width=1.5pt] coordinates {(-\fs-2.5, 1.2) (-\fs-1, 1.2) (-\fs, 2) (-\fs+1, 1.2) (-\fs+2.5, 1.2) (0, 2) (1, 1.2) (2.5, 1.2) (\fs, 2) (\fs+1, 1.2) (\fs+2.5, 1.2)};
+
+	\addplot[black!50, dashed, line width=1pt] coordinates {(-\fs-2.5, 0) (-\fs-1, 1.2)};
+	\addplot[black!50, dashed, line width=1pt] coordinates {(-\fs-2.5, 1.2) (-\fs-1, 0)};
+	
+	\addplot[black!50, dashed, line width=1pt] coordinates {(-2.5, 0) (-1, 1.2)};
+	\addplot[black!50, dashed, line width=1pt] coordinates {(-2.5, 1.2) (-1, 0)};
+	
+	\addplot[black!50, dashed, line width=1pt] coordinates {(2.5, 0) (1, 1.2)};
+	\addplot[black!50, dashed, line width=1pt] coordinates {(2.5, 1.2) (1, 0)};
+	
+	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs-2.5, 0) (\fs-1, 1.2)};
+	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs-2.5, 1.2) (\fs-1, 0)};
+
+	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs+2.5, 0) (\fs+1, 1.2)};
+	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs+2.5, 1.2) (\fs+1, 0)};
+	
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,165 @@
+% \fs and \fmax must be defined before calling this picture.
+\def\fs{5}
+\def\fmax{2.5}
+\def\T{1.2566}
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+axis lines*=middle,
+enlargelimits = false,
+clip=true,
+scale only axis,
+width=0.8\textwidth,
+height=0.4\textwidth,
+ymin=0,
+ymax=7,
+xmin=-7.5,
+xmax=7.5,
+axis line style={->,>=stealth, shorten >= -5mm},
+xlabel={\small $\omega=\Omega T$},
+ylabel={\small $X_s(j\Omega)$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	%xshift=0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+	xshift=0.7cm,
+},
+xtick=\empty,
+ytick=\empty,
+xtick={-\fs, -2.5, 0, 2.5, \fs},
+xticklabels={\small $-2\pi$, \small $-\pi$, \small 0, \small $\pi$, \small $2\pi$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[solid, line width=1pt] coordinates {(0, 2) (2.5, 0) (0, 0)};
+\addplot[solid, line width=1pt, fill=blue!50] coordinates {(0, 2) (-2.5, 0) (0, 0)};
+\addplot[solid, line width=1pt] coordinates {(\fs, 2) (\fs+2.5, 0) (\fs, 0)};
+\addplot[solid, line width=1pt, fill=blue!50] coordinates {(\fs, 2) (\fs-2.5, 0) (\fs, 0)};
+\addplot[solid, line width=1pt] coordinates {(-\fs, 2) (-\fs+2.5, 0) (-\fs, 0)};
+\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-\fs, 2) (-\fs-2.5, 0) (-\fs, 0)};
+\addplot[solid, line width=1pt] coordinates {(-2*\fs, 2) (-2*\fs+2.5, 0) (-2*\fs, 0)};
+\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-2*\fs, 2) (-2*\fs-2.5, 0) (-2*\fs, 0)};]
+\addplot[solid, line width=1pt] coordinates {(2*\fs, 2) (2*\fs+2.5, 0) (2*\fs, 0)};
+\addplot[solid, line width=1pt, fill=blue!50] coordinates {(2*\fs, 2) (2*\fs-2.5, 0) (2*\fs, 0)};
+
+\only<2-|handout:1>{
+\addplot[black, line width=1pt] coordinates {(-10, 0) (-2.5, 0) (-2.5, 6) (2.5, 6) (2.5, 0) (10, 0)} node[pos=0.6, black, pin={[pin edge={black, thick}]30:{Ideal LPF}}, inner sep=0pt] {};
+}
+\only<3-|handout:1>{
+\addplot[blue2, line width=1pt, domain=-7.5:7.5, samples=101] {6*abs(sinc(x/(2*pi)*\T))} node[pos=0.65, blue2, pin={[pin edge={blue2, thick}]40:{ZOH}}, inner sep=0pt] {};
+}
+
+\only<4-|handout:1>{
+\addplot[green2, line width=1pt, domain=-7.5:7.5, samples=101] {6*abs(sinc(x/(2*pi)*\T))^2} node[pos=0.7, green2, pin={[pin edge={green2, thick}]40:{Linear interp.}}, inner sep=0pt] {};
+}
+\only<5-|handout:1>{
+\addplot [red, smooth, solid, line width=1pt, forget plot]
+table[row sep=crcr]{
+	-7.5398 0.038513 \\
+	-7.3875 0.029979 \\
+	-7.2352 0.019575 \\
+	-7.0829 0.0081505 \\
+	-6.9305 0.003292 \\
+	-6.7782 0.013712 \\
+	-6.6259 0.022156 \\
+	-6.4736 0.027888 \\
+	-6.3213 0.030493 \\
+	-6.1689 0.02995 \\
+	-6.0166 0.026656 \\
+	-5.8643 0.021376 \\
+	-5.712 0.015146 \\
+	-5.5597 0.0090988 \\
+	-5.4073 0.0042478 \\
+	-5.255 0.0012386 \\
+	-5.1027 9.4504e-05 \\
+	-4.9504 1.2248e-05 \\
+	-4.7981 0.00093609 \\
+	-4.6457 0.0056508 \\
+	-4.4934 0.018238 \\
+	-4.3411 0.043757 \\
+	-4.1888 0.087997 \\
+	-4.0365 0.15712 \\
+	-3.8842 0.25719 \\
+	-3.7318 0.39371 \\
+	-3.5795 0.57106 \\
+	-3.4272 0.79206 \\
+	-3.2749 1.0575 \\
+	-3.1226 1.366 \\
+	-2.9702 1.7136 \\
+	-2.8179 2.0942 \\
+	-2.6656 2.4995 \\
+	-2.5133 2.9196 \\
+	-2.361 3.3436 \\
+	-2.2086 3.76 \\
+	-2.0563 4.1577 \\
+	-1.904 4.5268 \\
+	-1.7517 4.8589 \\
+	-1.5994 5.148 \\
+	-1.447 5.3904 \\
+	-1.2947 5.5856 \\
+	-1.1424 5.7353 \\
+	-0.99008 5.8436 \\
+	-0.83776 5.9166 \\
+	-0.68544 5.9614 \\
+	-0.53312 5.9855 \\
+	-0.3808 5.9962 \\
+	-0.22848 5.9995 \\
+	-0.07616 6 \\
+	0.07616 6 \\
+	0.22848 5.9995 \\
+	0.3808 5.9962 \\
+	0.53312 5.9855 \\
+	0.68544 5.9614 \\
+	0.83776 5.9166 \\
+	0.99008 5.8436 \\
+	1.1424 5.7353 \\
+	1.2947 5.5856 \\
+	1.447 5.3904 \\
+	1.5994 5.148 \\
+	1.7517 4.8589 \\
+	1.904 4.5268 \\
+	2.0563 4.1577 \\
+	2.2086 3.76 \\
+	2.361 3.3436 \\
+	2.5133 2.9196 \\
+	2.6656 2.4995 \\
+	2.8179 2.0942 \\
+	2.9702 1.7136 \\
+	3.1226 1.366 \\
+	3.2749 1.0575 \\
+	3.4272 0.79206 \\
+	3.5795 0.57106 \\
+	3.7318 0.39371 \\
+	3.8842 0.25719 \\
+	4.0365 0.15712 \\
+	4.1888 0.087997 \\
+	4.3411 0.043757 \\
+	4.4934 0.018238 \\
+	4.6457 0.0056508 \\
+	4.7981 0.00093609 \\
+	4.9504 1.2248e-05 \\
+	5.1027 9.4504e-05 \\
+	5.255 0.0012386 \\
+	5.4073 0.0042478 \\
+	5.5597 0.0090988 \\
+	5.712 0.015146 \\
+	5.8643 0.021376 \\
+	6.0166 0.026656 \\
+	6.1689 0.02995 \\
+	6.3213 0.030493 \\
+	6.4736 0.027888 \\
+	6.6259 0.022156 \\
+	6.7782 0.013712 \\
+	6.9305 0.003292 \\
+	7.0829 0.0081505 \\
+	7.2352 0.019575 \\
+	7.3875 0.029979 \\
+	7.5398 0.038513 \\
+} node[pos=0.25, red, pin={[pin edge={red, thick}]120:{Cubic spline}}, inner sep=0pt] {};
+}
+\end{axis}
+\end{tikzpicture}

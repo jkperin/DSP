@@ -1,0 +1,34 @@
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = upper, clip=false,
+width=\textwidth,
+height=0.5\textwidth,
+ymin=0,
+ymax=1.2,
+xmin=-3.14,
+xmax=3.14,
+axis line style={->,>=stealth},
+xlabel={$\omega$},
+ylabel={$H(e^{j\omega})$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+ytick=1,
+yticklabels={$1$},
+xtick={-3.14, -1.57,  1.57, 3.14},
+xticklabels={$-\pi$, $-\pi/2$, $\pi/2$, $\pi$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[black, line width=1.5pt] coordinates {(-3.14, 0) (-1.57, 0) (0, 1) (1.57, 0) (3.14, 0)};
+\end{axis}
+\end{tikzpicture}

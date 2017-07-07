@@ -1,0 +1,69 @@
+\begin{tikzpicture} 
+\begin{axis}[
+name=ideal_lpf_td,
+anchor=origin,
+axis lines*=middle,
+enlargelimits = false,
+ymin=-0.2,
+ymax=1.2,
+xmin=-2.5,
+xmax=2.5,
+axis line style={->,>=stealth},
+xlabel={$t$},
+ylabel={$h_{ZOH}(t)$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+ytick=1,
+xtick={-1,1},
+xticklabels={$-T/2$, $T/2$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[line width=1pt] coordinates {(-10, 0) (-1, 0) (-1, 1) (1, 1) (1, 0) (10, 0)};
+\end{axis}
+
+\begin{axis}[
+name=ideal_lpf_fd,
+at=(ideal_lpf_td.right of south east), anchor=left of south west,
+axis lines*=middle,
+enlargelimits = false,
+xmax=2.5,
+xmin=-2.5,
+ymin=-0.2,
+ymax=1.2,
+axis line style={->,>=stealth},
+xlabel={$\Omega$},
+ylabel={$|H_{ZOH}(j\Omega)|$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.3cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+xtick=\empty,
+ytick={1},
+yticklabels={$T$},
+xtick={-2, -1, 1, 2},
+xticklabels={$-\frac{2\pi}{T}$, $-\frac{\pi}{T}$, $\frac{\pi}{T}$, $\frac{2\pi}{T}$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[black!50, line width=1pt] coordinates {(-10, 0) (-1, 0) (-1, 1) (1, 1) (1, 0) (10, 0)} node[pos=0.55, black!50, pin={[pin edge={black!50, thick}]-70:{Ideal LPF}}, inner sep=0pt] {};
+\addplot[smooth, line width=1pt, domain=-3:3, samples=101] {abs(sinc(x/2))};
+\end{axis}
+
+\end{tikzpicture}

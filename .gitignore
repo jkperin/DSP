@@ -223,3 +223,5 @@ other/
 outgoing/
 *.pdf
 *.asv
+lectures/m/*.tex
+homework/m/*.tex

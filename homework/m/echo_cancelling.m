@@ -22,45 +22,49 @@ N = Techo*fs;
 
 % Echo generation system 1
 a1 = 1;
-b1 = zeros(1, N);
+b1 = zeros(1, N+1); % b1 has N+1 coefficients
 b1(1) = 1;
-b1(N) = alpha;
+b1(N+1) = alpha;
 
 y1 = filter(b1, a1, x);
 figure
 plot(t, y1);                 % Plot signal
-xlabel('Time (s)') 
-ylabel('Amplitude')
+xlabel('Time (s)', 'FontSize', 12) 
+ylabel('Amplitude', 'FontSize', 12)
+saveas(gca, '../figs/hw01q2_echoed1', 'epsc')
 sound(y1, fs);               % Play the sound
 
 % Echo generation system 2
-a2 = zeros(1, N);
-a2(1) = 1;
-a2(N) = alpha;
+a2 = zeros(1, N+1);         % a1 has N+1 coefficients
+a2(1) = 1;                  
+a2(N+1) = -alpha;
 b2 = 1;
 
 y2 = filter(b2, a2, x);
 figure
 plot(t, y2);                 % Plot signal
-xlabel('Time (s)') 
-ylabel('Amplitude')
+xlabel('Time (s)', 'FontSize', 12) 
+ylabel('Amplitude', 'FontSize', 12)
+saveas(gca, '../figs/hw01q2_echoed2', 'epsc')
 sound(y2, fs);               % Play the sound
 
 %% Echo cancellation
 % System 1
-xrec1 = filter(a1, b1, y1);
+xrec1 = filter(a1, b1, y1); % We just need to switch the coefficients (a1, b1)
 figure
 plot(t, xrec1);                 % Plot signal
-xlabel('Time (s)') 
-ylabel('Amplitude')
+xlabel('Time (s)', 'FontSize', 12) 
+ylabel('Amplitude', 'FontSize', 12)
+saveas(gca, '../figs/hw01q2_echoed_rec1', 'epsc')
 sound(xrec1, fs);               % Play the sound
 
 % System 2
 xrec2 = filter(a2, b2, y2);
 figure
 plot(t, xrec2);                 % Plot signal
-xlabel('Time (s)') 
-ylabel('Amplitude')
+xlabel('Time (s)', 'FontSize', 12) 
+ylabel('Amplitude', 'FontSize', 12)
+saveas(gca, '../figs/hw01q2_echoed_rec2', 'epsc')
 sound(xrec1, fs);               % Play the sound
 
 

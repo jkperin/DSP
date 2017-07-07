@@ -1,0 +1,22 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3cm, font=\sffamily]
+	\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{adder}=[draw=black, circle,minimum size=20pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+	\tikzstyle{annot} = []
+	
+	\node[node] (xc) {};
+	\node[adder, right=1.5cm of xc] (add) {\Large $\times$};
+	\node[node, above=1cm of add] (st) {};
+	\node[block, right of=add, text width=2cm, align=center] (b1) {$H_r(j\Omega)$};
+	\coordinate[right of=b1] (yc) {};
+	
+	\path (xc) edge (add);
+	\path (add) edge (b1);
+	\path (b1) edge (yc);
+	\path (st) edge (add);
+	
+	\node[text width = 4cm, align=center] at ($(st.center) + (15mm, 3mm)$) {$s(t) = \displaystyle\sum_{n=-\infty}^\infty\delta(t-nT)$};
+	\node[above = 0mm of xc, text width = 2cm, align=center] {$x_c(t)$};
+	\node[above = 0mm of yc, text width = 3cm, align=center] {$x_r(t)$}; 
+	\node[text width = 3cm, align=center] at ($(add.east)!0.5!(b1.west) + (0,4mm)$) {$x_s(t)$}; 
+\end{tikzpicture}

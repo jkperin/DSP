@@ -1,0 +1,915 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\definecolor{matlabcomment}{RGB}{34,139,34}
+
+\pgfmathdeclarefunction{gauss}{2}{%
+	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+\newcommand\PlotSampledSpectrum[4]{%
+	\def\fs{#2}%
+	\def\fmax{#3}%
+	\def\ros{#4}%
+	\input{#1}%
+}
+
+\pgfmathdeclarefunction{invgauss}{2}{%
+	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
+}
+
+\tikzset{
+	declare function={
+		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
+		(and(\x==0, 1) * 1);
+	}
+}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\input{figs/color_pallete.tex}
+
+\title[EE 264]{Sampling, Reconstruction, and DT Filtering}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 6, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\begin{frame}{Announcements}
+
+\begin{itemize}
+	\item Homework \#1 due date extended to Sunday, July 9
+	\item Homework \#2 will be released today and it is due next Thursday
+	\item I'll hold an extra office hours session on Friday at 2-3pm in Spilker room 219.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Last lecture}
+\begin{itemize}
+	%\item We use random processes to model signals that cannot be easily described by simple equations
+	\item A random process is an indexed collection of random variables
+	\item A random process is strict-sense stationary (SSS) if all its finite-order statistics are time invariant. That's hard to verify in practice.
+	\item A random process is wide-sense stationary (WSS) if its mean is constant and if its autocorrelation function only depends on the time difference. 
+	\item A random process is ergodic if its time averages are equal to its probability averages
+	\item The Fourier transform of the autocorrelation function is called the power spectrum density (PSD). The PSD has units of W/Hz or dBm/Hz.
+	\item When a random signal is filtered by an LTI system defined by $h[n]\leftrightarrow H(e^{j\omega})$, its autocorrelation function is filtered by an LTI system defined by $h[n]\ast h^*[-n]$, and its PSD is shaped by $|H(e^{j\omega})|^2$
+	\item Random processes that have PSD constant over all frequencies are called white noise
+	\item By the central limit theorem, the output of an LTI system to a random input is approximately Gaussian distributed
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Effect of LTI system on the autocorrelation function}
+\begin{center}
+	\resizebox{0.8\linewidth}{!}{\input{figs/LTI_system_random_input.tex}}
+\end{center}
+
+The input autocorrelation function is \textit{filtered} by the LTI system defined by $h[n]\ast h^*[-n] \leftrightarrow |H(e^{j\omega})|^2$ 
+
+\end{frame}
+
+%
+\section{Outline}
+\begin{frame}{Today's lecture} 
+
+\begin{enumerate}
+	\item Sampling (continuous-to-discrete time conversion)
+	\item Reconstruction (discrete-to-continuous time conversion)
+	\item Discrete-time filtering of continuous-time signals
+\end{enumerate}
+
+\end{frame}
+
+%
+\section{Sampling}
+\begin{frame}<handout:0>{Digital processing of analog signals}
+\begin{block}{Typical system}
+	\vspace{-0.7cm}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\end{center}
+\end{block}
+\vspace{-0.5cm}
+\begin{block}{Analog-to-digital converter (ADC)}
+	\begin{itemize}
+		\item Performs filtering, sampling, and quantization
+		\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
+	\end{itemize}
+\end{block}
+\vspace{-0.3cm}
+\begin{block}{Digital signal processor}
+	\begin{itemize} \itemsep 0pt
+		\item Performs some operation e.g., filtering, FFT, etc
+		\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
+	\end{itemize}
+\end{block}
+\vspace{-0.3cm}
+\begin{block}{Digital-to-analog converter (DAC)}
+	\begin{itemize}
+		\item Performs quantization and reconstruction (filtering)
+		\item Sampling rate could be similar to ADC
+	\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Digital processing of analog signals}
+	\begin{block}{Typical system}
+		\vspace{-0.7cm}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+		\end{center}
+	\end{block}
+	\vspace{-0.5cm}
+	\begin{block}{\textbf{Analog-to-digital converter (ADC)}}
+		\begin{itemize}
+			\item Performs filtering, sampling, and quantization
+			\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital signal processor}
+		\begin{itemize} \itemsep 0pt
+			\item Performs some operation e.g., filtering, FFT, etc
+			\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital-to-analog converter (DAC)}
+		\begin{itemize}
+			\item Performs quantization and reconstruction (filtering)
+			\item Sampling rate could be similar to ADC
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Analog-to-digital conversion}
+
+\begin{block}{In practice}
+Example of successive-approximation analog-to-digital converter (SA-ADC)
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{figs/ADC_EE102B.png}\\
+		{\tiny \color{gray} Taken from the lecture notes of EE 102B by Prof. Joseph Kahn}
+	\end{figure}
+\end{block}
+
+{\small More about ADCs in EE 315: Analog-Digital Interface Circuits.}
+
+\end{frame}
+
+%
+\begin{frame}{Analog-to-digital conversion}
+
+\begin{block}{In this class}
+We'll model the ADC as an ideal continuous-to-discrete (C-to-D) time converter. 
+\begin{center}
+	\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3cm, font=\sffamily]
+	\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+	\tikzstyle{annot} = []
+	
+	\node[node] (xc) {};
+	\node[block, right of=xc, align=center, text width=2cm] (DSP) {C-to-D Converter};
+	\coordinate[right of=DSP] (yc) {};
+	
+	\path (xc) edge (DSP);
+	\path (DSP) edge (yc);
+	
+	\node[above = 0mm of xc, text width = 2cm, align=center] {$x_c(t)$};
+	\node[below = 0mm of xc, text width = 2cm, align=center] {$X_c(j\Omega)$};
+	\node[above = 0mm of yc, text width = 3cm, align=center] {$x[n] = x_c(nT)$}; 
+	\node[below = 0mm of yc, text width = 2cm, align=center] {$X(e^{j\omega}), X(e^{j\Omega T})$};
+	\end{tikzpicture}
+\end{center}
+
+\end{block}
+
+\textbf{Notation:} \\
+$X_c(j\Omega)$ denotes the Fourier transform of the continuous-time signal $x_c(t)$, where $\Omega$ is the continuous-time frequency.
+
+$X(e^{j\omega})$ denotes the discrete-time Fourier transform of a discrete-time signal $x[n]$, where $\omega$ is the normalized frequency.  
+\end{frame}
+
+%
+\begin{frame}{Continuous-to-discrete time conversion}
+
+The C-to-D converter simply samples the continuous-time signal every $T$ seconds, where $T$ is the \textbf{sampling period}. 
+\begin{center}
+	\resizebox{0.5\linewidth}{!}{\input{figs/ct_signal_sampled.tex}}
+\end{center}
+
+\pause
+\textbf{Question:} How are $x_c(t)$ and $x[n]$ related in the frequency domain? In other words, how to obtain the discrete-time Fourier transform $X(e^{j\omega})$ from the continuous-time Fourier transform $X_c(j\Omega)$?
+\end{frame}
+
+%
+\begin{frame}{Continuous-to-discrete time conversion}
+\textbf{Impulse sampling interpretation:}\\
+We can think of the C-to-D converter as multiplication by an \textbf{impulse train}, followed by an impulse-to-sequence converter. 
+
+This representation is purely for mathematical convenience.
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/c-to-d_impulse_train.tex}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Impulse sampling example}
+\vspace{-0.4cm}
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/sampling_example_time_domain.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Continuous-to-discrete time conversion}
+\textbf{Question:} How to obtain the discrete-time Fourier transform $X(e^{j\omega})$ from the continuous-time Fourier transform $X_c(j\Omega)$?
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/c-to-d_impulse_train.tex}}
+\end{center}
+
+We'll calculate the continuous-time (CT) Fourier transform of $x_s(t)$ in two different ways. First, we'll calculate $X_s(j\Omega) = \frac{1}{2\pi}X_c(j\Omega)\ast S(j\Omega)$. Then, we'll calculate $X_s(j\Omega) = \mathcal{F}\{x_s(t)\}$. We'll use these two equations of $X_s(j\Omega)$ to obtain an equation for $X(e^{j\omega})$, the DTFT of $x[n]$.
+
+\end{frame}
+
+%
+\begin{frame}
+
+Starting with $X_s(j\Omega) = \frac{1}{2\pi}X_c(j\Omega)\ast S(j\Omega)$, recall that the Fourier transform of the impulse train is given by
+\begin{equation*}
+s(t) = \sum_{n=-\infty}^\infty \delta(t-nT) \Longleftrightarrow S(j\Omega) = \sum_{k=-\infty}^\infty \frac{2\pi}{T}\delta\Big(\Omega-k\frac{2\pi}{T}\Big)
+\end{equation*}
+
+Now we can calculate $X_s(j\Omega)$:
+\begin{align} \nonumber
+X_s(j\Omega) &= \frac{1}{2\pi}X_c(j\Omega) \ast S(j\Omega) \\ \nonumber
+X_s(j\Omega) &= \frac{1}{2\pi}X_c(j\Omega) \ast \bigg(\sum_{k=-\infty}^\infty\frac{2\pi}{T}\delta\Big(\Omega-k\frac{2\pi}{T}\Big)\bigg) \\ 
+&\tikz[baseline]{
+	\node[fill=blue!20,anchor=base] (t1) {$X_s(j\Omega) = \displaystyle\sum_{k=-\infty}^\infty\frac{1}{T}X_c\Big(j\Big(\Omega-k\frac{2\pi}{T}\Big)\Big)$};} \label{eq:Xs1}
+\end{align}
+
+Note that $X_s(j\Omega)$ is equal to $X_c(j\Omega)$ scaled by $1/T$ and repeated every $2\pi/T$, which we define as the \textbf{sampling frequency} $\Omega_s \equiv  2\pi/T$
+\end{frame}
+
+%
+\begin{frame}
+Now let's calculate $X_s(j\Omega) = \mathcal{F}\{x_s(t)\}$, where $x_s(t) = x_c(t)\cdot s(t)$:
+\begin{align} \nonumber
+X_s(j\Omega) &= \mathcal{F}\{x_c(t)\cdot s(t)\} = \mathcal{F}\bigg\lbrace \sum_{n=-\infty}^{\infty} x_c(nT)\delta(t-nT) \bigg\rbrace \\ \nonumber
+&= \mathcal{F}\bigg\lbrace \sum_{n=-\infty}^{\infty} x[n]\delta(t-nT) \bigg\rbrace \\ \nonumber
+&= \int_{-\infty}^{\infty}\sum_{n=-\infty}^{\infty} x[n]\delta(t-nT)e^{-j\Omega t}dt \tag{CT Fourier transform} \\ \nonumber
+&= \sum_{n=-\infty}^{\infty} x[n]\int_{-\infty}^{\infty}\delta(t-nT)e^{-j\Omega t}dt \\ \nonumber
+&= \sum_{n=-\infty}^{\infty} x[n]e^{-jn\Omega T} \tag{recall: $X(e^{j\omega}) \equiv \sum_{n=-\infty}^{\infty} x[n]e^{-jn\omega}$} \\
+&\tikz[baseline]{
+	\node[fill=blue!20,anchor=base] (t1) {$X_s(j\Omega) = X(e^{j\omega})\Big|_{\omega=\Omega T}$};} \label{eq:Xs2}
+\end{align}
+
+$X_s(j\Omega)$ is equal to $X(e^{j\omega})$ evaluated at $\omega = \Omega T$, or equivalently $X(e^{j\omega})$  is equal to $X_s(j\Omega)$ evaluated at $\Omega = \omega/T$.
+\end{frame}
+
+%
+\begin{frame}
+Substituting \eqref{eq:Xs1} in \eqref{eq:Xs2}:
+\begin{equation*}
+X(e^{j\Omega T}) = \frac{1}{T}\sum_{k=-\infty}^{\infty} X_c\Big(j\Big(\Omega - k\frac{2\pi}{T}\Big)\Big),
+\end{equation*}
+where we used the relation $\omega = \Omega T$.
+
+\begin{itemize}
+	\item $T$ is the \textbf{sampling period}, and $\Omega_s = \frac{2\pi}{T}$ is the \textbf{sampling frequency}
+	\item This equation shows that in discrete time ($\omega = \Omega T$) replicas of the original spectrum appear with period $2\pi$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Graphically}
+\vspace{-0.4cm}
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/sampling_example_freq_domain.tex}}
+\end{center}
+\vspace{-0.4cm}
+\onslide<4|handout:1>{Replicas of the original spectrum appear with period $2\pi$}
+\end{frame}
+
+\begin{frame}{Oversampling}
+\begin{itemize}
+	\item A signal is \textbf{band limited} if $X_c(j\Omega) = 0$ for $|\Omega| > \Omega_N$. In this case, the signal has maximum frequency $\Omega_N$ and \textbf{bandwidth} $2\Omega_N$
+	\item Sampling at $\Omega_s > 2\Omega_N$ is called \textbf{oversampling}
+	\item We can define an \textbf{oversampling ratio} $r_{os}\equiv \frac{\Omega_s}{2\Omega_N}$
+	\item Note that if $\Omega_s > 2\Omega_N$ ($r_{os} > 1$), there'll be a gap between the spectrum replicas
+\end{itemize}
+
+\begin{center}
+	\resizebox{0.8\linewidth}{!}{\PlotSampledSpectrum{figs/oversampling_example.tex}{10.0}{5.0}{$\Omega_s > 2\Omega_N$}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Nyquist sampling}
+\begin{itemize}
+	\item Sampling at $\Omega_s = 2\Omega_N$ ($r_{os} = 1$) is called \textbf{Nyquist sampling}
+	\item Note that if $\Omega_s$ is any smaller than $2\Omega_N$, there will be overlapping of the spectrum replicas
+	
+\begin{center}
+		\resizebox{0.9\linewidth}{!}{\PlotSampledSpectrum{figs/oversampling_example.tex}{5}{2.5}{$\Omega_s = 2\Omega_N$}}
+\end{center}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Undersampling}
+\begin{itemize}
+	\item Undersampling occurs when $\Omega_s < 2\Omega_N$ ($r_{os} < 1$)
+	\item In this case, the spectrum replicas overlap
+	\item The overlapping causes \textbf{aliasing distortion}
+\end{itemize}
+
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/aliasing_spectrum.tex}}
+\end{center}
+The regions in red are the regions where the spectrum replicas overlap
+\end{frame}
+
+\begin{frame}{Aliasing: time domain}
+\only<1|handout:0>{A sinusoidal signal with frequency $\Omega_N = 1.5\pi$}
+\only<2|handout:0>{Samples taken at frequency $\Omega_s = 2\pi$. Therefore, $r_{os} = \frac{\Omega_s}{2\Omega_N} = \frac{2}{3} < 1$}
+\only<3|handout:1>{Samples taken at frequency $\Omega_s = 2\pi$ form an {\color{red} \textbf{alias signal}} of frequency $0.5\pi$, but {\color{gray} \textbf{original signal}} had frequency $1.5\pi$}
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/aliased_sinusoid.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Aliasing: frequency domain}
+Same example, but now in the frequency domain
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/aliased_sinusoid_freq.tex}}
+\end{center}
+
+\onslide<3-|handout:1>{
+Blue components correspond to spectrum replica centered at $2\pi$, while red components correspond to spectrum replica centered at $-2\pi$.
+
+The final spectrum corresponds to $\cos(0.5\pi n)$
+}
+
+\end{frame}
+
+%
+\begin{frame}{Aliasing examples}
+
+Cameras and our own visual system are sampling devices with a certain sampling frequency. Therefore, we can \textit{see} aliasing.
+
+\begin{block}{Examples}
+	\begin{itemize}
+		\item This \href{https://www.youtube.com/watch?v=R-IVw8OKjvQ}{video}. 		
+		The blades of the helicopter are spinning at the same frequency of the camera shutter
+		\item Wheels of the car that appear to spin backwards
+		\item Stroboscopic effect (search videos of this)
+	\end{itemize}
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Sampling random signals}
+
+The same theory applies to random signals. Specifically, we we'll apply the same results to the autocorrelation function and PSD of random signals
+
+Autocorrelation function of a continuous-time WSS process and its PSD:
+\begin{equation*}
+\phi_{x_cx_c}(\tau) = \E(x_c(t+\tau)x_c^*(t)) \Longleftrightarrow \Phi_{x_cx_c}(j\Omega)
+\end{equation*}
+
+If we sample the random signal with sampling period $T = 2\pi/\Omega_s$, we obtain $x[n] = x_c(nT)$. Calculating the autocorrelation function of $x[n]$:
+\begin{align*}
+\phi_{xx}[m] &= \E(x[n+m]x^*[n]) = \E(x_c((n+m)T)x_c^*(nT)) \\
+&= \phi_{x_cx_c}(mT) \tag{the autocorrelation is sampled}
+\end{align*}
+
+And for the PSD:
+\begin{align*}
+\Phi_{xx}(e^{j\Omega T}) &= \mathcal{F}(\phi_{xx}[m]) = \sum_{m=-\infty}^{\infty}\phi_{xx}[m]e^{-j\Omega T} \\
+&= \frac{1}{T}\sum_{k=-\infty}^{\infty}\Phi_{x_cx_c}(j(\Omega-k\Omega_s)) \tag{the PSD is replicated with period $\Omega_s$}
+\end{align*}
+
+\end{frame}
+
+
+\section{Reconstruction}
+\begin{frame}{Digital processing of analog signals}
+\begin{block}{Typical system}
+	\vspace{-0.7cm}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\end{center}
+\end{block}
+\vspace{-0.5cm}
+\begin{block}{Analog-to-digital converter (ADC)}
+	\begin{itemize}
+		\item Performs filtering, sampling, and quantization
+		\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
+	\end{itemize}
+\end{block}
+\vspace{-0.3cm}
+\begin{block}{Digital signal processor}
+	\begin{itemize} \itemsep 0pt
+		\item Performs some operation e.g., filtering, FFT, etc
+		\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
+	\end{itemize}
+\end{block}
+\vspace{-0.3cm}
+\begin{block}{\textbf{Digital-to-analog converter (DAC)}}
+	\begin{itemize}
+		\item Performs quantization and reconstruction (filtering)
+		\item Sampling rate could be similar to ADC
+	\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Digital-to-analog conversion}
+
+\begin{block}{In practice}
+	Example of digital-to-analog converter (DAC)
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{figs/DAC_EE102B.png}\\
+		{\tiny \color{gray} Taken from the lecture notes of EE 102B by Prof. Joseph Kahn}
+	\end{figure}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Digital-to-analog conversion}
+
+\begin{block}{In this class}
+We'll model the ADC as an ideal discrete-to-continuous (D-to-C) time converter. 
+\begin{center}
+	\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3cm, font=\sffamily]
+	\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+	\tikzstyle{annot} = []
+	
+	\node[node] (xc) {};
+	\node[block, right of=xc, align=center, text width=2cm] (DSP) {D-to-C Converter};
+	\coordinate[right of=DSP] (yc) {};
+	
+	\path (xc) edge (DSP);
+	\path (DSP) edge (yc);
+	
+	\node[above = 0mm of xc, text width = 2cm, align=center] {$x[n]$};
+	\node[below = 0mm of xc, text width = 2cm, align=center] {$X(e^{j\omega}), X(e^{j\Omega T})$};
+	\node[above = 0mm of yc, text width = 3cm, align=center] {$x_c(t)$}; 
+	\node[below = 0mm of yc, text width = 2cm, align=center] {$X(j\Omega)$};
+	\end{tikzpicture}
+\end{center}
+\end{block}
+In essence, a D-to-C converter performs \textbf{interpolation}.
+\end{frame}
+
+\begin{frame}{Discrete-to-continuous time conversion}
+For mathematical convenience we can model the D-to-C as
+\begin{center}
+	\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=4cm, font=\sffamily]
+		\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+		\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\tikzstyle{annot} = []
+		
+		\node[node] (xc) {};
+		\node[block, right=1.5cm of xc, text width=3cm, align=center] (b1) {\small Discrete-time sequence to impulse train};
+		\node[block, right=0.5cm of b1, text width=2.5cm, align=center] (b2) {\small Lowpass filter $h_r(t) \leftrightarrow H_r(j\Omega)$};
+		\coordinate[right=1.5cm of b2.east] (yc) {};
+		
+		\path (xc) edge (b1);
+		\path (b1) edge (b2);
+		\path (b2) edge (yc);
+				
+		\node[above = 0mm of xc, text width = 2cm, align=center] {$x[n]$};
+		\node[above = 0mm of yc, text width = 3cm, align=center] {$x_r(t)$}; 
+		\draw[dashed] ($(b1.west) - (0.25cm, 1.5cm)$) rectangle ($(b2.east) + (0.25cm, 1.2cm)$) {};
+		\node at ($(b1.west)!0.5!(b2.east) - (0, 1.2cm)$) {D-to-C converter};
+	\end{tikzpicture}
+\end{center}
+
+\begin{equation*}
+x_r(t) = \sum_{n=-\infty}^{\infty} x[n]h_r(t-nT) \tag{D-to-C converter}
+\end{equation*}
+
+\begin{block}{Important questions}
+	\begin{enumerate}
+		\item How close to the original signal is $x_r(t)$?
+		\item What lowpass filter $H_r(j\Omega)$ will lead to the best performance?
+	\end{enumerate}
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Reconstruction: time domain}
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/reconstruction_example_time.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Reconstruction: frequency domain}
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/reconstruction_example_freq.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Shannon-Nyquist sampling theorem}
+
+\begin{block}{Shannon-Nyquist sampling theorem}
+	A band-limited signal with highest frequency $\Omega_N$ can be \textbf{perfectly reconstructed} from samples taken with sampling frequency $\Omega_s = \frac{2\pi}{T} > 2\Omega_N$.
+	\begin{equation*}
+	X_r(j\Omega) = H_r(j\Omega)X(e^{j\Omega T}) = X_c(j\Omega)
+	\end{equation*}
+\end{block}
+
+\begin{itemize}
+	\item Sampling above the Nyquist frequency ($2\Omega_N$) avoids aliasing 
+	\item In practice, it is common to use an \textbf{anti-aliasing filter} to minimize aliasing when the analog signal is not band-limited.
+	\item Perfect reconstruction is achieved if $H_r(j\Omega)$ is the ideal lowpass filter. In other words, the ideal lowpass filter (or sinc function in time domain) is the perfect \textit{interpolator} for band-limited signals.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Ideal lowpass filter}
+
+\begin{columns}[t]
+	\begin{column}{0.5\linewidth}
+		\textbf{Time domain}
+		\vspace{0.2cm}
+		\begin{equation*}
+			h_{lpf}(t) = \frac{\sin\frac{\pi}{T}t}{\frac{\pi}{T}t} = \mathrm{sinc}\Big(\frac{t}{T}\Big)
+		\end{equation*}
+	\end{column}
+	
+	\begin{column}{0.5\linewidth}
+		\textbf{Frequency domain}
+		\begin{equation*}
+			H_{lpf}(j\Omega) = \begin{cases}
+			T, & |\Omega|\leq\frac{\pi}{T} \\
+			0, & |\Omega| > \frac{\pi}{T}
+			\end{cases}
+		\end{equation*}	
+	\end{column}
+\end{columns}
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/ideal_lowpass_filter_ct.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Example of reconstruction with an ideal lowpass filter}
+	\vspace{-0.5cm}
+	\begin{equation*}
+	x_r(t) = \sum_{n=-\infty}^{\infty} x[n]h_r(t-nT) = \sum_{n=-\infty}^{\infty} x[n]\mathrm{sinc}(t-nT)
+	\end{equation*}
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/reconstruction_ideal_lpf.tex}}
+	\end{center}
+	\only<1|handout:1>{Original continuous-time signal}
+	\only<2|handout:2>{Samples from original continuous-time signal}
+	\only<3-6|handout:3>{At the $n$th sample, we have the sinc function $x[n]\mathrm{sinc}(t-nT)$}
+	\only<7|handout:4>{Adding all the sincs together results in the {\color{red}\textbf{reconstructed signal}}, which is exactly equal to the original signal.}
+	
+\end{frame}
+
+\begin{frame}{Practical reconstruction}
+	\begin{block}{Problem}
+		The ideal lowpass filter is not feasible, as it is non-causal and requires infinitely many samples. 
+	\end{block}
+
+	\begin{block}{Common reconstruction filters}
+		\begin{enumerate}
+			\item Zero-order hold (square pulse)
+			\item Linear interpolation (triangular pulse)
+			\item Cubic spline interpolation
+		\end{enumerate}
+	\end{block}	
+\end{frame}
+
+\begin{frame}{Practical reconstruction: zero-order holder (ZOH)}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Impulse response}
+			\begin{equation*}
+				h_{ZOH}(t) = \begin{cases}
+				1, & -T/2 \leq t \leq T/2 \\
+				0, & \text{otherwise}
+				\end{cases} 
+			\end{equation*}
+		\end{column}
+			\begin{column}{0.5\textwidth}
+				\textbf{Frequency response}
+				\begin{align*}
+					H_{ZOH}(j\Omega) &= T\frac{\sin(\Omega T/2)}{\Omega T/2} \\
+					&= T\mathrm{sinc}\Big(\frac{\Omega}{2\pi} T\Big)
+				\end{align*}
+		\end{column}
+	\end{columns}
+	\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/zoh_time_freq.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Practical reconstruction: zero-order holder (ZOH)}
+	Example of reconstruction (or interpolation) using the ZOH
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/interp_example_with_zoh.tex}}
+	\end{center}	
+	\onslide<3|handout:2>{This would be the result for a \textbf{causal ZOH filter}. That is, $h_{ZOH}(t) = 1, 0 \leq t \leq T$, and zero otherwise. This is what can be implemented in analog.}
+\end{frame}
+
+\begin{frame}{Practical reconstruction: linear interpolator}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Impulse response}
+			\begin{align*}
+			h_{lin}(t) &= \frac{1}{T}h_{ZOH}(t)\ast h_{ZOH}(t) \\
+			&= \begin{cases}
+			1-|t|/T, & |t| < T/2 \\
+			0, & \text{otherwise}
+			\end{cases} 
+			\end{align*}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Frequency response}
+			\begin{align*}
+			H_{lin}(j\Omega) &= \frac{1}{T}H^2_{ZOH}(j\Omega) \\
+			&= T\mathrm{sinc}^2\Big(\frac{\Omega}{2\pi} T\Big)
+			\end{align*}
+		\end{column}
+	\end{columns}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/linear_interp_time_freq.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Practical reconstruction: linear interpolation}
+	Example of reconstruction using linear interpolation
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/interp_example_with_linear.tex}}
+	\end{center}
+	\onslide<3|handout:1>{Adding the scaled triangular pulses produces the linear interpolation (red curve)}	
+\end{frame}
+
+\begin{frame}{Practical reconstruction: cubic-spline interpolation}
+\textbf{Impulse response}
+\begin{align*}
+	h_{spline}(t) = \begin{cases}
+	(a+2)|t/T|^3 - (a+3)|t/T|^2 + 1, & 0 \leq |t| \leq T \\
+	a|t/T|^3 - 5a|t/T|^2 + 8a|t/T|-4a, & T < |t| \leq 2T \\
+	0, & \text{otherwise}
+	\end{cases} 
+\end{align*}
+\textbf{Frequency response}
+\begin{align*}
+	H_{spline}(j\Omega) &= \frac{12T}{(\Omega T)^2}\Big(\mathrm{sinc}^2(fT)-\mathrm{sinc}(2fT)\Big) \\
+	&+ \frac{8Ta}{(\Omega T)^2}\Big(3\mathrm{sinc}^2(2fT) - 2\mathrm{sinc}(2fT) - \mathrm{sinc}(4fT)\Big)
+\end{align*}
+where $f = \Omega/(2\pi)$.
+\end{frame}
+
+\begin{frame}{Practical reconstruction: cubic-spline interpolation}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Impulse response}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Frequency response}
+		\end{column}
+	\end{columns}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/spline_interp_time_freq.tex}}
+	\end{center}
+This assumes $a = 0.1$ in the previous slide.
+\end{frame}
+
+\begin{frame}{Practical reconstruction: cubic-spline interpolation}
+	Example of reconstruction using cubic-spline interpolation
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/interp_example_with_spline.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Comparison of interpolation filters}
+	The interpolation filter must suppress the spectrum replicas without distorting the spectrum centered at the origin 
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/interpolation_comparison.tex}}
+	\end{center}	
+\end{frame}
+
+\begin{frame}{Comparison of interpolation filters}
+	Oversampling makes the job of the interpolation filter much easier. 
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/interpolation_comparison_with_oversampling.tex}}
+	\end{center}
+	\onslide<5|handout:1>{With oversampling, the interpolation filters look approximately flat around $[-\omega_N, \omega_N]$, and they suppress the spectrum replicas more strongly.}	
+\end{frame}
+
+\section{Discrete-Time Filtering of Continuous-Time Signals}
+\begin{frame}{Discrete-time filtering of continuous-time signals}
+	\begin{block}{In practice}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+		\end{center}
+	\end{block}
+
+	\begin{block}{DSP theory}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+		\end{center}
+	These simplifications make analysis much easier and are still useful for a broad class of problems.
+	\end{block}
+\end{frame}
+
+\begin{frame}{Discrete-time filtering of continuous-time signals}
+	\vspace{-0.5cm}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\end{center}
+	\pause
+	For the C-to-D converter (sampling):
+	\begin{equation*}
+		X(e^{j\Omega T}) = \frac{1}{T}\sum_{k=-\infty}^{\infty}X_c(j(\Omega - k\Omega_s))
+	\end{equation*}
+	\pause
+	For the discrete-time LTI system:
+	\begin{equation*}
+	Y(e^{j\Omega T}) = H(e^{j\Omega T})X(e^{j\Omega T}) \tag{using $\omega = \Omega T$}
+	\end{equation*}
+	\pause
+	For the D-to-C converter (reconstruction or interpolation):
+	\begin{equation*}
+	Y_r(j\Omega) = H_r(j\Omega)Y(e^{j\Omega T})
+	\end{equation*}
+	\pause
+	Putting it all together:
+	\begin{equation*}
+		Y_r(j\Omega) = H_r(j\Omega)H(e^{j\Omega T})\frac{1}{T}\sum_{k=-\infty}^{\infty}X_c(j(\Omega - k\Omega_s))
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Discrete-time filtering of continuous-time signals}	
+	\begin{equation*}
+		Y_r(j\Omega) = H_r(j\Omega)H(e^{j\Omega T})\frac{1}{T}\sum_{k=-\infty}^{\infty}X_c(j(\Omega - k\Omega_s)) \label{eq:ct-dt-dsp}
+	\end{equation*}
+	
+	We can simplify this equation by making two assumptions:
+	\begin{enumerate}
+		\item \textbf{No aliasing}. That is, assuming that the signal $X_c(j(\Omega - k\Omega_s))$ is bandlimited such that
+		\begin{equation*}
+			X_c(j\Omega) = 0~\text{for}~|\Omega| \geq \Omega_N
+		\end{equation*}
+		and that the sampling frequency is such that $\Omega_s > 2\Omega_N$.
+		\item \textbf{Ideal reconstruction}. That is, $H_r(j\Omega)$ is the ideal lowpass filter:
+	\end{enumerate}
+	
+	With these assumptions:
+	\begin{equation*}
+	Y_r(j\Omega) = H(e^{j\Omega T})X_c(j\Omega),~\text{for}~|\Omega| < \Omega_N
+	\end{equation*}
+
+\end{frame}
+
+\begin{frame}{Discrete-time filtering of continuous-time signals}
+The simplified equation $Y_r(j\Omega) = H(e^{j\Omega T})X_c(j\Omega),~\text{for}~|\Omega| < \Omega_N$ implies that the following two systems are equivalent
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+\end{center}
+\vspace{-0.25cm}
+\begin{center}
+\resizebox{0.95\linewidth}{!}{
+		\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=4.5cm, font=\sffamily]
+		\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+		\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\tikzstyle{annot} = []
+		
+		\node[node] (xc) {};
+		\node[block, right of=xc, text width = 2.5cm, align= center] (DSP) {$h_c(t) \leftrightarrow H_c(j\Omega)$};
+		\coordinate[right of=DSP] (yc) {};
+		
+		\path (xc) edge (DSP);
+		\path (DSP) edge (yc);
+		
+		\node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
+		\node[below = 0mm of xc, text width = 1cm, align=center] {$X_c(j\Omega)$};
+		\node[above = 0mm of yc, text width = 1cm, align=center] {$y_c(t)$}; 
+		\node[below = 0mm of yc, text width = 1cm, align=center] {$Y_c(j\Omega)$};
+	\end{tikzpicture}
+}
+\end{center}
+\begin{equation*}
+	H_c(j\Omega) = H(e^{j\Omega T}), |\Omega| \leq \Omega_s/2
+\end{equation*}
+
+\textbf{Conclusion:} in theory, we can perform any LTI continuous-time filtering in discrete-time (in DSP).
+\end{frame}
+
+\begin{frame}{Graphically}
+\vspace{-0.4cm}
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/dt_processing_of_ct_signals.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}<beamer:1|handout:1>
+\fontsize{8pt}{7.2}\selectfont
+\begin{itemize}
+	\item We start with a bandlimited analog signal $x_c(t) \leftrightarrow X_c(j\Omega)$ (top plot)
+	\item After sampling with frequency $\Omega_s = \frac{2\pi}{T}$, we obtain the discrete-time signal (second plot from the top). As usual we have the spectrum replicas in discrete-time. Note that for plotting we used the continuous-time frequency $\Omega$. As a result, the spectrum replicas are centered around multiples of $\Omega_s$. If we had used the discrete-time frequency $\omega = \Omega T$, the signal replicas would appear around multiples of $2\pi$.
+	\item The Third plot corresponds to some operation that we'll perform in discrete time. It could be any sort of LTI system, but for this illustration we'll use an ideal lowpass filter whose cutoff frequency is smaller than $\Omega_N$. As a result, some part of the signal will be cut off.
+	\item Filtering by $H(e^{j\Omega T})$ yields the output discrete-time signal $Y(e^{j\Omega T})$. 
+	\item After signal reconstruction with the ideal reconstruction filter (lowpass filter with cutoff frequency $\Omega_s/2$), we obtain the analog signal (no spectrum replicas) shown in the bottom plot.
+	\item Note that the output analog signal is the same that we'd have obtained if we had filtered the original analog signal with an ideal (analog) lowpass filter of cutoff frequency smaller than $\Omega_N$. 
+	\item Therefore, this example illustrates that we achieved continuous-time filtering by performing discrete-time filtering by $H(e^{j\Omega T})$.  In fact, any continuous-time filtering can be performed in discrete-time, provided that there is no aliasing and that the reconstruction filter is the ideal lowpass filter. Although the latter condition is unfeasible, we can use practical interpolation filters to achieve very similar results.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Summary}
+\begin{itemize}
+	\item Sampling a continuous-time signal results in replicas of the spectrum at multiples of the sampling frequency $\Omega_s$ (or $2\pi$ of the normalized frequency $\omega$)
+	\item A band-limited signal has highest frequency $\Omega_N$ ($X_c(j\Omega) = 0, |\Omega| > \Omega_N$)
+	\item If a band-limited signal is oversampled ($\Omega_s > 2\Omega_N$) there'll be gaps between the spectrum replicas
+	\item If the signal is undersampled ($\Omega_s < 2\Omega_N$) the spectrum replicas will overlap resulting in aliasing distortion
+	\item We can perfectly reconstruct a signal from its samples, provided that there is no aliasing and that we use the ideal lowpass filter as reconstruction filter
+	\item In practice, we use different reconstruction filters, since the ideal lowpass filter is unfeasible.
+	\item Oversampling relaxes the reconstruction filter specifications
+	\item In theory, we can perform any LTI continuous-time filtering in discrete-time (in DSP), provided that there is no aliasing and that we use the ideal reconstruction filter
+\end{itemize}
+
+\end{frame}
+
+\end{document}

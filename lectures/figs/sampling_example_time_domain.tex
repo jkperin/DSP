@@ -1,0 +1,148 @@
+\begin{tikzpicture}
+\onslide<1-|handout:1>{
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.1\textwidth,
+	ymin=-2.5,
+	ymax=2.5,
+	xmin=-10,
+	xmax=10,
+	axis line style={->,>=stealth},
+	xlabel={\small $t$},
+	ylabel={\small $x_c(t)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.5cm,
+	},
+	xtick=\empty,
+	ytick=\empty,
+	%yticklabel={\small 0.25},
+	%xtick={0, 3},
+	%xticklabels={$0$, 3},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[smooth, line width=1pt, domain=-10:10, samples=51] {cos(deg(x/2)) - sin(deg(x)) + cos(deg(x/2)-45) - sin(deg(x/4)-154)};
+\end{axis}
+}
+\onslide<2-|handout:1>{
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.1\textwidth,
+	ymin=0,
+	ymax=1.5,
+	xmin=-10,
+	xmax=10,
+	axis line style={->,>=stealth},
+	xlabel={\small $t$},
+	ylabel={\small $s(t)$},
+	yticklabel style = {yshift=0.1cm},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.4cm,
+	},
+	ytick=\empty,
+	xtick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[dirac, mark=triangle*, fill=black, mark options={scale=0.75, fill=black}, line width=1pt, domain=-10:10, samples=21] {1};
+\end{axis}
+}
+\onslide<3-|handout:1>{
+\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.1\textwidth,
+	ymin=-2.5,
+	ymax=2.5,
+	xmin=-10,
+	xmax=10,
+	axis line style={->,>=stealth},
+	xlabel={\small $t$},
+	ylabel={\small $x_s(t) = x_c(t)\cdot s(t)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=1.5cm,
+	},
+	xtick=\empty,
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[dirac, mark=triangle*, fill=black, mark options={scale=0.75, fill=black}, line width=1pt, domain=-10:10, samples=21] {cos(deg(x/2)) - sin(deg(x)) + cos(deg(x/2)-45) - sin(deg(x/4)-154)};
+	\addplot[smooth, black!10, line width=1pt, domain=-10:10, samples=51] {cos(deg(x/2)) - sin(deg(x)) + cos(deg(x/2)-45) - sin(deg(x/4)-154)};
+\end{axis}
+}
+
+\onslide<4|handout:1>{
+	\begin{axis}[
+	name=plot4,
+	at=(plot3.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.1\textwidth,
+	ymin=-2.5,
+	ymax=2.5,
+	xmin=-10,
+	xmax=10,
+	axis line style={->,>=stealth},
+	xlabel={\small $n$},
+	ylabel={\small $x[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.4cm,
+	},
+	xtick=\empty,
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=black, mark options={scale=0.75, fill=white}, line width=1pt, domain=-10:10, samples=21] {cos(deg(x/2)) - sin(deg(x)) + cos(deg(x/2)-45) - sin(deg(x/4)-154)};
+	\addplot[smooth, black!10, line width=1pt, domain=-10:10, samples=51] {cos(deg(x/2)) - sin(deg(x)) + cos(deg(x/2)-45) - sin(deg(x/4)-154)};
+	\end{axis}
+}
+\end{tikzpicture}

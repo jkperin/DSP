@@ -12,6 +12,13 @@ in} \setlength{\oddsidemargin}{0 in}
 
 \DeclareMathOperator{\E}{\mathbb{E}} % expectation
 
+\makeatletter
+\newcommand\xleftrightarrow[2][]{%
+	\ext@arrow 9999{\longleftrightarrowfill@}{#1}{#2}}
+\newcommand\longleftrightarrowfill@{%
+	\arrowfill@\leftarrow\relbar\rightarrow}
+\makeatother
+
 \begin{document}
 \thispagestyle{empty}
 \begin{centering}
@@ -124,7 +131,13 @@ The input $x[n]$ is a stationary random signal with zero mean and power spectrum
     spectrum of the output of the second filter, and either sketch it or plot it for $-\pi
     <\omega <\pi$.
 \item{(b)} Use any convenient means to determine an
-    equation for the autocorrelation function $\phi_{yy}[m]$ of $y[n]$.
+    equation for the autocorrelation function $\phi_{yy}[m]$ of $y[n]$.\\
+    \textit{Hint:} Rewrite the equation that you obtained in part (a) so that you can use the following DTFT relation:
+    \begin{equation*}
+    e^{-a|n|} \xleftrightarrow{\text{DTFT}} \frac{1- e^{-2a}}{1+e^{-2a} -2e^{-a}\cos\omega}
+    \end{equation*}
+    
+    
 \item{(c)} Use any convenient means to determine the total average power $\E\{y^2[n]\}$ of the output
     of the second filter.
 \end{description}

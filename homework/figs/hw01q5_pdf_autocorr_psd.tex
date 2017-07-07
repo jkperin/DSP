@@ -1,0 +1,101 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.5\textwidth,
+	height=0.15\textwidth,
+	ymin=0,
+	ymax=1,
+	xmin=-5,
+	xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $x$},
+	ylabel={\small $p_x(x)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+	},
+	ytick={0.5},
+	xtick={-1, 1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=0:3, samples=4] coordinates {(-1, 0.5) (1, 0.5)};
+\end{axis}
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.5\textwidth,
+	height=0.14\textwidth,
+	ymin=0,
+	ymax=2,
+	xmin=-5,
+	xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $m$},
+	ylabel={\small $\phi_{xx}[m] = \delta[m]$},
+	yticklabel style = {yshift=0cm},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+	},
+	ytick={1},
+	xtick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=-5:5, samples=11] {x==0};
+\end{axis}
+\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.5\textwidth,
+	height=0.14\textwidth,
+	ymin=0,
+	ymax=2,
+	xmin=-5,
+	xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={$\omega$},
+	yticklabel style = {yshift=0.2cm},
+	ylabel={$\Phi_{xx}(e^{j\omega}) = 1$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0cm,
+	},
+	ytick={1},
+	xtick={-3.14, 3.14},
+	xticklabels={$-\pi$, $\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[line width=1pt, domain=-3.14:3.14, samples=2] {1};
+\end{axis}
+\end{tikzpicture}
