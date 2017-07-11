@@ -1,0 +1,20 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) {};
+	
+    \node[block, right of=xc, text width = 1cm, align= center] (DSP) {$~~M$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.north)-(5pt, 0)$) -- ($(DSP.south)-(5pt, 0)$) {};
+	\coordinate[right of=DSP] (yc) {};
+		
+    \path (xc) edge (DSP);
+    \path (DSP) edge (yc);
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[below = 0mm of xc, text width = 1cm, align=center] {$X(e^{j\omega})$};
+    \node[above = 0mm of yc, text width = 3cm, align=center] {$x_d[n] = x[Mn]$}; 
+    \node[below = 0mm of yc, text width = 1cm, align=center] {$X_d(e^{j\omega})$};
+    \node[align=center] at ($(DSP.south) - (0, 0.3cm)$) {Downsampling};
+\end{tikzpicture}

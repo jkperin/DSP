@@ -1,17 +1,13 @@
-\def\layersep{2cm}
-\def\outsep{0.7cm}
-\def\dy{1.25}
-
-\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily]
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
     \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
     \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
     \tikzstyle{annot} = []
 
-	\node[node] (xc) at (0, -\dy cm) {};
-    \node[block] (ADC) at (1*\layersep, -\dy cm) {C-to-D};
-    \node[block, text width = 2cm, align= center] (DSP) at (3*\layersep, -\dy cm) {LTI \\ System};
-    \node[block] (DAC) at (5*\layersep, -\dy cm) {D-to-C};
-	\coordinate (yc) at (6*\layersep, -\dy cm) {};
+	\node[node] (xc) {};
+    \node[block, right=1cm of xc] (ADC) {C-to-D};
+    \node[block, right of=ADC, text width = 2cm, align= center] (DSP) {LTI \\ System};
+    \node[block, right of=DSP] (DAC) {D-to-C};
+	\coordinate[right=1cm of DAC] (yc) {};
 	
 	\coordinate (mid1) at ($(ADC.east)!0.5!(DSP.west)$) {};
 	\coordinate (mid2) at ($(DSP.east)!0.5!(DAC.west)$) {};
@@ -30,4 +26,12 @@
     \node[above = 0mm of yc, text width = 1cm, align=center] {$y_r(t)$}; 
     \node[below = 0mm of yc, text width = 1cm, align=center] {$Y_r(j\Omega)$};
     \node at ($(DSP.south)-(0, 0.25cm)$) {$h[n] \leftrightarrow H(e^{j\omega})$};
+    \node at ($(ADC.south)-(0, 0.25cm)$) {Sampling};
+    \node at ($(DAC.south)-(0, 0.25cm)$) {Reconstruction};
+    \ifdefined\Heff
+    	\draw[dashed] ($(ADC.south west)-(0.3, 0.7cm)$) rectangle ($(DAC.north east)+(0.4, 0.4cm)$);
+    	\node at ($(DSP.south)-(0,1cm)$) {$H_{c}(j\Omega)$};
+    \else
+    	\relax
+    \fi
 \end{tikzpicture}

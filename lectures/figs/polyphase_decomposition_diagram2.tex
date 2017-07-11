@@ -1,0 +1,59 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=1.5cm, font=\sffamily]
+	\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+	\tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=1cm, inner sep=0pt]
+	
+	\node[node] (xc) {};
+	\node[block, right=2.5cm of xc, text width = 2cm, align= center] (E0) {$E_0(z^M)$};
+	\node[block, below of=E0, text width = 2cm, align= center] (E1) {$E_1(z^M)$};
+	\node[draw=none, below=0.25cm of E1, text width = 2cm, align= center] (E2) {$\vdots$};
+	\node[block, below=0.25cm of E2, text width = 2cm, align= center] (E3) {$E_{M-1}(z^M)$};
+	
+	
+	\node[block, right=1cm of E0, text width =1cm, minimum size=1cm, align= center] (M0) {$~M$};
+	\draw[-latex, shorten >= 7pt, shorten <= 7pt, line width=0.75pt] ($(M0.north)-(5pt, 0)$) -- ($(M0.south)-(5pt, 0)$) {};
+	
+	\node[block, right=1cm of E1, text width = 1cm, minimum size=1cm, align= center] (M1) {$~M$};
+	\draw[-latex, shorten >= 7pt, shorten <= 7pt, line width=0.75pt] ($(M1.north)-(5pt, 0)$) -- ($(M1.south)-(5pt, 0)$) {};
+	
+	\node[draw=none, below=0.25cm of M1, text width = 2cm, align= center] (M2) {$\vdots$};
+	
+	\node[block, right=1cm of E3, text width = 1cm, minimum size=1cm, align= center] (M3) {$~M$};
+	\draw[-latex, shorten >= 7pt, shorten <= 7pt, line width=0.75pt] ($(M3.north)-(5pt, 0)$) -- ($(M3.south)-(5pt, 0)$) {};
+	
+	\node[adder, right=1.5cm of M1, text width = 1cm, align= center] (S) {\Large $+$};	
+	
+	\coordinate (mid) at ($(xc)!0.5!(E0.west)$) {};
+	\coordinate[below=0.75cm of mid] (z1) {};
+	\coordinate (mid1) at ($(E1.west) - (1.25cm, 0)$) {};
+	\coordinate (mid3) at ($(E3.west) - (1.25cm, 0)$) {};
+	\coordinate[below=0.5cm of mid1] (z2) {};
+	\coordinate[above=0.5cm of mid3] (z3) {};
+	
+	\path (xc) edge (E0);
+	\path (mid) edge (z1);
+	\path[-] (z1) edge (mid1);
+	\path (mid1) edge (z2);
+	\path (z3) edge (mid3);
+	\path (mid1) edge (E1);
+	\path (mid3) edge (E3);
+	
+	\path (E0) edge (M0);
+	\path (E1) edge (M1);
+	\path (E3) edge (M3);
+	
+	\path (M0.east) edge (S);
+	\path (M1.east) edge (S);
+	\path (M3.east) edge (S);
+	
+	\node[left = 1mm of z1] {$z^{-1}$};
+	\node[left = 1mm of z2] {$z^{-1}$};
+	\node[left = 1mm of z3] {$z^{-1}$};
+	
+	\node[left = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+	
+	\coordinate (yc) at ($(S.east)+(1cm, 0)$) {};
+	\path (S) edge (yc);
+	
+	\node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+\end{tikzpicture}

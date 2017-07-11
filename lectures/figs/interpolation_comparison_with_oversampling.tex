@@ -6,8 +6,7 @@
 \begin{axis}[
 name=plot1,
 axis lines*=middle,
-enlargelimits = false,
-clip=true,
+enlargelimits = false, clip=true,
 scale only axis,
 width=0.8\textwidth,
 height=0.4\textwidth,
@@ -47,10 +46,10 @@ legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \addplot[solid, line width=1pt, fill=blue!50] coordinates {(2*\fs, 2) (2*\fs-2.5, 0) (2*\fs, 0)};
 
 \only<2-|handout:1>{
-\addplot[black, line width=1pt] coordinates {(-13, 0) (-5, 0) (-5, 6) (5, 6) (5, 0) (13, 0)} node[pos=0.6, black, pin={[pin edge={black, thick}]30:{Ideal LPF}}, inner sep=0pt] {};
+\addplot[black, line width=1pt] coordinates {(-13, 0) (-5, 0) (-5, 6) (5, 6) (5, 0) (13, 0)} node[pos=0.65, black, pin={[pin edge={black, thick}]20:{Ideal LPF}}, inner sep=0pt] {};
 }
 \only<3-|handout:1>{
-\addplot[blue2, line width=1pt, domain=-13:13, samples=101] {6*abs(sinc(x/(2*pi)*\T))} node[pos=0.65, blue2, pin={[pin edge={blue2, thick}]40:{ZOH}}, inner sep=0pt] {};
+\addplot[blue2, line width=1pt, domain=-13:13, samples=101] {6*abs(sinc(x/(2*pi)*\T))} node[pos=0.67, blue2, pin={[pin edge={blue2, thick}]40:{ZOH}}, inner sep=0pt] {};
 }
 
 \only<4-|handout:1>{

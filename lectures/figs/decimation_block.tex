@@ -1,0 +1,24 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+	\node[block, right=1cm of xc, text width = 3cm, align= center] (AA) {Lowpass filter \\ Gain = 1 \\ Cutoff = $\pi/M$};
+    \node[block, right of=AA, text width = 1cm, align= center] (DSP) {$~~M$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.north)-(5pt, 0)$) -- ($(DSP.south)-(5pt, 0)$) {};
+	\coordinate (yc) at ($(DSP.east)+(1.5cm, 0)$) {};
+		
+	\coordinate (mid) at ($(AA.east)!0.5!(DSP.west)$) {};		
+		
+    \path (xc) edge (AA);
+    \path (AA) edge (DSP);
+    \path (DSP) edge (yc);
+    
+    \node[above = 0mm of mid, text width = 1cm, align=center] {$\tilde{x}[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[text width = 3cm, align=center] at ($(yc.north) + (0.25cm, 0.35cm)$) {$x_d[n] = \tilde{x}[Mn]$}; 
+    \node[align=center] at ($(DSP.south) - (0, 0.3cm)$) {Downsampling};
+    \node[align=center] at ($(AA.south) - (0, 0.3cm)$) {Anti-aliasing filter};
+    \draw[dashed] ($(AA.south west)-(0.3cm, 0.7cm)$) rectangle ($(DSP.north east)+(0.4cm, 0.4cm)$) {};
+    \node[align=center] at ($(xc)!0.5!(yc) - (0, 1.75cm)$) {Decimator};
+\end{tikzpicture}

@@ -1,7 +1,7 @@
 %% Example of reconstruction with an ideal lowpass filter
 clear, clc, close all
 
-addpath('D:\Jose\Dropbox\research\codes\f')
+% addpath('D:\Jose\Dropbox\research\codes\f')
 
 
 x = linspace(-10,10, 101);
@@ -20,5 +20,5 @@ for n = 1:length(ys)
 end
 
 plot(x, sum(f, 1), 'r', 'DisplayName', 'interp')
-m = matlab2tikz(gca);
-m.write('recontruction_ideal_lpf.tex')
+% m = matlab2tikz(gca);
+% m.write('recontruction_ideal_lpf.tex')

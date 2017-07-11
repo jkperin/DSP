@@ -1,0 +1,42 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.5cm, font=\sffamily]
+	\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+	
+	\node[node] (xc) {};
+	\node[block, right=1cm of xc, text width = 1cm, align= center] (L) {$~~L$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+	\node[block, right of=L, text width = 1cm, align= center] (F) {$H(z^L)$};
+	\coordinate (yc) at ($(F.east)+(1.5cm, 0)$) {};
+	
+	\coordinate (mid) at ($(L.east)!0.5!(F.west)$) {};		
+	
+	\path (xc) edge (L);
+	\path (L) edge (F);
+	\path (F) edge (yc);
+	
+	\node[above = 0mm of mid, text width = 1cm, align=center] {$x_2[n]$};
+	\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+	\node[above = 0mm of yc, text width = 1cm, align=center] {$y_2[n]$};
+	\node[align=center] at ($(L.south) - (0, 0.3cm)$) {Upsampling};
+	\node[align=center] at ($(F.south) - (0, 0.3cm)$) {Filter};
+	
+	
+	\node[node, above=2.25cm of xc] (xc2) {};
+	\node[block, right=1cm of xc2, text width = 1cm, align= center] (F2) {$H(z)$};
+	\node[block, right of=F2, text width = 1cm, align= center] (L2) {$~~L$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L2.south)-(5pt, 0)$) -- ($(L2.north)-(5pt, 0)$) {};
+	
+	\coordinate (yc2) at ($(L2.east)+(1.5cm, 0)$) {};
+	
+	\coordinate (mid2) at ($(F2.east)!0.5!(L2.west)$) {};		
+	
+	\path (xc2) edge (F2);
+	\path (F2) edge (L2);
+	\path (L2) edge (yc2);
+	
+	\node[above = 0mm of mid2, text width = 1cm, align=center] {$x_1[n]$};
+	\node[above = 0mm of xc2, text width = 1cm, align=center] {$x[n]$};
+	\node[above = 0mm of yc2, text width = 1cm, align=center] {$y_1[n]$};
+	\node[align=center] at ($(L2.south) - (0, 0.3cm)$) {Upsmapling};
+	\node[align=center] at ($(F2.south) - (0, 0.3cm)$) {Filter};
+\end{tikzpicture}

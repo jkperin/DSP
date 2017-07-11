@@ -63,7 +63,7 @@
 	every axis y label/.style={
 		at={(ticklabel* cs:0.8)},
 		anchor=south,
-		xshift=0.5cm,
+		xshift=0.6cm,
 	},
 	xtick={-\fs, -\fmax, \fmax, \fs},
 	xticklabels={\small $-2\pi$, \small $-\pi$, \small $\pi$, \small $2\pi$},
@@ -109,6 +109,6 @@
 
 	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs+2.5, 0) (\fs+1, 1.2)};
 	\addplot[black!50, dashed, line width=1pt] coordinates {(\fs+2.5, 1.2) (\fs+1, 0)};
-	
+	\node[fill=black!20] at (axis cs: 4, 2.75) {$\Omega_s < 2\Omega_N$};
 \end{axis}
 \end{tikzpicture}

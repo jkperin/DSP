@@ -1,0 +1,48 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) {};
+	
+	%% Interpolator
+ 	\node[block, right=1cm of xc, text width = 1cm, align= center] (L) {$~~L$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+	\node[block, right of=DSP, text width = 3cm, align= center] (LPF) {Lowpass filter \\ Gain = $L$ \\ Cutoff = $\pi/L$};
+
+    \draw[dashed] ($(L.south west)-(0.3cm, 0.4cm)$) rectangle ($(LPF.north east)+(0.4cm, 0.4cm)$) {};
+	\node[align=center] at ($(xc)!0.5!(mid2) - (0, 1.5cm)$) {Interpolator};
+
+		
+	%% Decimator	
+	\node[block, right=2cm of LPF, text width = 3cm, align= center] (AA) {Lowpass filter \\ Gain = 1 \\ Cutoff = $\pi/M$};
+    \node[block, right of=AA, text width = 1cm, align= center] (M) {$~~M$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(M.north)-(5pt, 0)$) -- ($(M.south)-(5pt, 0)$) {};
+	\coordinate (yc) at ($(M.east)+(1cm, 0)$) {};
+	
+	 \draw[dashed] ($(AA.south west)-(0.3cm, 0.4cm)$) rectangle ($(M.north east)+(0.4cm, 0.4cm)$) {};
+	\node[align=center] at ($(mid2)!0.5!(yc) - (0, 1.5cm)$) {Decimator};
+		
+	\coordinate (mid1) at ($(L.east)!0.5!(LPF.west)$) {};	
+	\coordinate (mid2) at ($(LPF.east)!0.5!(AA.west)$) {};	
+	\coordinate (mid3) at ($(AA.east)!0.5!(M.west)$) {};	
+		
+    \path (xc) edge (L);
+    \path (L) edge (LPF);
+    \path (LPF) edge (AA);
+    \path (AA) edge (M);
+    \path (M) edge (yc);
+    
+    \node[above = 0mm of mid1, text width = 1cm, align=center] {$x_u[n]$};
+    \node[above = 0mm of mid2, text width = 1cm, align=center] {$x_i[n]$};
+    \node[above = 0mm of mid3, text width = 1cm, align=center] {$\tilde{x}[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+    
+    \node[below=2cm of xc] (T) {$T$};
+    \node[left=0.75cm of T, align=center, text width=1cm] {Sampling Period};
+    \node[below=2cm of mid1] (T2) {$\frac{T}{L}$};
+    \node[below=2cm of mid2] (T3) {$\frac{T}{L}$};
+    \node[below=2cm of mid3] (T3) {$\frac{T}{L}$};
+    \node[below=2cm of yc] (T4) {$\frac{TM}{L}$};
+\end{tikzpicture}

@@ -1,0 +1,26 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+ \node[block, right=1cm of xc, text width = 1cm, align= center] (M1) {$~~L_1$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(M1.south)-(7pt, 0)$) -- ($(M1.north)-(7pt, 0)$) {};
+	\node[block, right of=M1, text width = 1cm, align= center] (H1) {$H_1(z)$};
+	\node[block, right=1cm of H1, text width = 1cm, align= center] (M2) {$~~L_2$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(M2.south)-(7pt, 0)$) -- ($(M2.north)-(7pt, 0)$) {};
+   	\node[block, right of=M2, text width = 1cm, align= center] (H2) {$H_2(z)$};
+	\coordinate (yc) at ($(H2.east)+(1cm, 0)$) {};
+		
+    \path (xc) edge (M1);
+    \path (M1) edge (H1);
+    \path (H1) edge (M2);
+    \path (M2) edge (H2);
+    \path (H2) edge (yc);
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+    \draw[dashed] ($(M1.south west)-(0.3cm, 0.4cm)$) rectangle ($(H1.north east)+(0.3cm, 0.4cm)$) {};
+    \node[align=center] at ($(M1.west)!0.5!(H1.east) - (0, 1.5cm)$) {Interpolator 1};
+    \draw[dashed] ($(M2.south west)-(0.3cm, 0.4cm)$) rectangle ($(H2.north east)+(0.3cm, 0.4cm)$) {};
+    \node[align=center] at ($(M2.west)!0.5!(H2.east) - (0, 1.5cm)$) {Interpolator 2};
+\end{tikzpicture}

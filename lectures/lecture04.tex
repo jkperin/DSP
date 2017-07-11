@@ -1,0 +1,882 @@
+\documentclass[10pt, handout]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\definecolor{matlabcomment}{RGB}{34,139,34}
+
+\pgfmathdeclarefunction{gauss}{2}{%
+	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\pgfmathdeclarefunction{pretty_func}{1}{%
+	\pgfmathparse{cos(deg(#1/2)) - sin(deg(#1)) + cos(deg(#1/2)-45) - sin(deg(#1/4)-154)}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+\newcommand\PlotSampledSpectrum[4]{%
+	\def\fs{#2}%
+	\def\fmax{#3}%
+	\def\ros{#4}%
+	\input{#1}%
+}
+
+\pgfmathdeclarefunction{invgauss}{2}{%
+	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
+}
+
+\tikzset{
+	declare function={
+		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
+		(and(\x==0, 1) * 1);
+	}
+}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\input{figs/color_pallete.tex}
+
+\title[EE 264]{Changing the Sampling Rate in DSP}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 11, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\begin{frame}<beamer:0|handout:0>{Announcements}
+
+\end{frame}
+
+
+\section{Last Lecture}
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item Sampling
+	\item Reconstruction
+	\item Discrete-time processing of continuous-time signals
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Practice and theory}
+\begin{block}{In practice}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\end{center}
+\end{block}
+
+\pause
+\begin{block}{DSP theory}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\end{center}
+	These simplifications make analysis much easier and are still useful for a broad class of problems.
+\end{block}
+\end{frame}
+
+
+%
+\begin{frame}{Sampling: frequency domain interpretation}
+Sampling in time domain results in spectrum replicas at multiples of $\Omega_s$ (or $\omega_s =2\pi$)
+
+\textbf{Oversampling:} $\Omega_s > 2\Omega_N$
+	\begin{center}
+		\resizebox{\linewidth}{!}{\PlotSampledSpectrum{figs/oversampling_example.tex}{10.0}{5.0}{$\Omega_s > 2\Omega_N$}}
+	\end{center}
+\end{frame}
+
+%
+\begin{frame}{Sampling: frequency domain}
+\textbf{Nyquist sampling:} $\Omega_s = 2\Omega_N$
+\begin{center}
+		\resizebox{\linewidth}{!}{\PlotSampledSpectrum{figs/oversampling_example.tex}{5}{2.5}{$\Omega_s = 2\Omega_N$}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Sampling: frequency domain}
+
+\textbf{Undersampling:} $\Omega_s < 2\Omega_N$. Spectrum overlapping causes \textbf{aliasing distortion}
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/aliasing_spectrum.tex}}
+\end{center}
+The regions in red are the regions where the spectrum replicas overlap
+\end{frame}
+
+\begin{frame}{Reconstruction}
+\begin{block}{Reconstruction/interpolation equation}
+	\begin{equation*}
+	x_r(t) = \sum_{n = -\infty}^{\infty} x[n]h_r(t-nT),
+	\end{equation*}
+	where $h_r(t)$ is the reconstruction filter.
+
+	The sampling period $T$ used in reconstruction doesn't have to be same used in sampling.
+	\end{block}
+
+\pause
+\begin{block}{Shannon-Nyquist sampling theorem}
+	A band-limited signal with highest frequency $\Omega_N$ can be \textbf{perfectly reconstructed} from samples taken with sampling frequency $\Omega_s = \frac{2\pi}{T} > 2\Omega_N$.
+	\begin{equation*}
+	X_r(j\Omega) = H_r(j\Omega)X(e^{j\Omega T}) = X_c(j\Omega)
+	\end{equation*}
+	Perfect reconstruction is achieved when $H_r(j\Omega)$ is the ideal lowpass filter.
+\end{block}
+
+\begin{itemize}
+	\item In practice, it is common to use an \textbf{anti-aliasing filter} before sampling in order to minimize aliasing.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}<handout:4>{Reconstruction with an ideal lowpass filter}
+\vspace{-0.5cm}
+\begin{equation*}
+x_r(t) = \sum_{n=-\infty}^{\infty} x[n]h_r(t-nT) = \sum_{n=-\infty}^{\infty} x[n]\mathrm{sinc}(t-nT)
+\end{equation*}
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/reconstruction_ideal_lpf.tex}}
+\end{center}
+\only<1|handout:1>{Original continuous-time signal}
+\only<2|handout:2>{Samples from original continuous-time signal}
+\only<3-6|handout:3>{At the $n$th sample, we have the sinc function $x[n]\mathrm{sinc}(t-nT)$}
+\only<7|handout:4>{Adding all the {\color{blue2} \textbf{sincs}} together results in the {\color{red}\textbf{reconstructed signal}}, which is exactly equal to the original signal.}
+\end{frame}
+
+\begin{frame}<beamer:5|handout:1-2>{Reconstruction: frequency domain interpretation}
+\begin{center}
+\resizebox{0.9\linewidth}{!}{\input{figs/reconstruction_example_freq.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}<beamer:5|handout:1>{Comparison of interpolation filters}
+The interpolation filter must suppress the spectrum replicas without distorting the spectrum centered at the origin 
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/interpolation_comparison.tex}}
+\end{center}	
+\end{frame}
+
+\begin{frame}<beamer:5|handout:1>{Comparison of interpolation filters}
+Oversampling makes the job of the interpolation filter much easier. 
+\begin{center}
+\resizebox{\linewidth}{!}{\input{figs/interpolation_comparison_with_oversampling.tex}}
+\end{center}
+With oversampling, the interpolation filters look approximately flat around $[-\omega_N, \omega_N]$, and they suppress the spectrum replicas more strongly.
+\end{frame}
+
+%
+\begin{frame}{Discrete-time processing of continuous-time signals}
+	\vspace{-0.5cm}
+	\begin{center}
+		\def\Heff{1}
+		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\end{center}
+	\pause
+	\begin{equation*}
+	H_{c}(j\Omega) = H(e^{j\omega})|_{\omega = \Omega T}, |\omega| \leq \pi
+	\end{equation*}
+	
+	The equation above only holds if two conditions are met:
+	\begin{enumerate}
+		\item No aliasing
+		\item The reconstruction filter is the ideal lowpass filter
+	\end{enumerate}
+	\pause
+	\textbf{Conclusion:} in theory, any continuous-time LTI system can be realized in discrete-time (in DSP).\\
+	\textbf{Important:} the equivalent continuous-time response $H_{c}(j\Omega)$ depends on the sampling period $T$.
+\end{frame}
+
+%
+\begin{frame}{Example}
+Suppose that the discrete-time LTI system is given by the difference equation
+\begin{equation*}
+y[n] = x[n] + ay[n-1] \Longleftrightarrow H(z) = \frac{Y(z)}{X(z)} = \frac{1}{1 - az^{-1}}
+\end{equation*}
+
+If $|a| < 1$, this system is stable and we can calculate the DTFT $z = e^{j\omega}$:
+\begin{equation*}
+H(e^{j\omega}) = \frac{1}{1 - ae^{-j\omega}}
+\end{equation*}
+
+\begin{columns}[t]
+	\def\a{0.75}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude:}
+		\begin{center}
+			\resizebox{0.8\linewidth}{!}{
+			\begin{tikzpicture} 
+			\begin{axis}[
+				axis lines*=middle,
+				enlargelimits = true,
+				ymin=0,
+				ymax=16,
+				width=\textwidth,
+				height=0.8\textwidth,
+				xmin=-3.14,
+				xmax=3.14,
+				axis line style={->,>=stealth, shorten >= -5pt, shorten <= -5pt},
+				xlabel={$\omega$},
+				ylabel={$|H(e^{j\omega})| = \frac{1}{1 + a^2 - 2a\cos\omega}$},
+				yticklabel style = {yshift=0.2cm},
+				xticklabel style = {yshift=-0.1cm},
+				every axis x label/.style={
+					at={(ticklabel* cs:1)},
+					xshift=0.1cm,
+					anchor=north,
+				},
+				every axis y label/.style={
+					at={(ticklabel* cs:1)},
+					anchor=south,
+					yshift=0.1cm,
+				},
+				ytick=\empty,
+				xtick={-3.14, 3.14},
+				xticklabels={$-\pi$, $\pi$},
+				every outer y axis line/.append style={white!15!black},
+				every y tick label/.append style={font=\color{white!15!black}},
+				legend style={draw=white!15!black,fill=white,legend cell align=left}]
+				
+				\addplot[smooth, solid, line width=1pt, domain=-pi:pi, samples=51] {1/(1 + \a^2 - 2*\a*cos(deg(x)))};
+			\end{axis}
+			\end{tikzpicture}
+	}	
+\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Phase:}
+		\begin{center}
+		\resizebox{0.8\linewidth}{!}{
+			\begin{tikzpicture} 
+				\begin{axis}[
+				axis lines*=middle,
+				enlargelimits = true,
+				ymin=-90,
+				ymax=90,
+				xmin=-3.14,
+				xmax=3.14,
+				width=\textwidth,
+				height=0.9\textwidth,
+				axis line style={->,>=stealth, shorten >= -5pt, shorten <= -5pt},
+				xlabel={$\omega$},
+				ylabel={$\angle H(e^{j\omega}) = \arctan \Big(\frac{1-a\cos\omega}{a\sin\omega}\Big)$},
+				yticklabel style = {yshift=0.2cm},
+				xticklabel style = {yshift=-0.1cm},
+				every axis x label/.style={
+					at={(ticklabel* cs:1)},
+					xshift=0.1cm,
+					anchor=north,
+				},
+				every axis y label/.style={
+					at={(ticklabel* cs:1)},
+					anchor=south,
+					yshift=0.1cm,
+				},
+				ytick={-90, 90},
+				xtick={-3.14, 3.14},
+				xticklabels={$-\pi$, $\pi$},
+				every outer y axis line/.append style={white!15!black},
+				every y tick label/.append style={font=\color{white!15!black}},
+				legend style={draw=white!15!black,fill=white,legend cell align=left}]
+				
+				\addplot[smooth, solid, line width=1pt, domain=0.01:pi, samples=51] {atan((1-\a*cos(deg(x)))/(\a*sin(deg(x))))};
+				\addplot[smooth, solid, line width=1pt, domain=-pi+0.1:-0.01, samples=51] {atan((1-\a*cos(deg(x)))/(\a*sin(deg(x))))};
+			\end{axis}
+			\end{tikzpicture}
+		}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%
+\section{Outline}
+\begin{frame}{Today's lecture} 
+
+\begin{itemize}
+	\item Downsampling and decimation
+	\item Upsampling and interpolation
+	\item Noninteger rate change
+	\item Multi-rate processing
+\end{itemize}
+\end{frame}
+
+%
+\section{Downsampling and Decimation}
+\begin{frame}{Downsampling}
+
+Downsampling by an integer factor $M$ is equivalent to sampling the discrete-time signal $x[n]$ with sampling period $M$. 
+
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/downsampling_block.tex}}
+\end{center}
+
+To understand what happens in the frequency domain, we can think that we're sampling the original continuous-time signal $x_c(t)$ with sampling period $T_d = MT$:
+\begin{equation*}
+x_d[n] = x[Mn] = x_c(nMT)
+\end{equation*}
+
+\end{frame}
+	
+%	
+\begin{frame}{Downsampling: frequency domain interpretation}
+\fontsize{9pt}{7.2}\selectfont
+%\vspace{-1cm}
+Sampling $x_c(t)$ with sampling period $T_d = MT$ results in
+\begin{align*}
+	X_d(e^{j\omega}) &= \frac{1}{T_d}\sum_{k = -\infty}^{\infty} X_c\Big[j\Big(\frac{\omega}{T_d} - \frac{2\pi k}{T_d}\Big)\Big] \tag{spectrum replicas appear with period $\Omega_s = 2\pi/T_d$} \\
+	&= \frac{1}{MT}\sum_{k = -\infty}^{\infty} X_c\Big[j\Big(\frac{\omega}{MT} - \frac{2\pi k}{MT}\Big)\Big] \tag{$T_d = MT$} \\
+	&= \frac{1}{MT}\sum_{m = 0}^{M-1}\sum_{l = -\infty}^{\infty} X_c\Big(j\Big(\frac{\omega}{MT} - \frac{2\pi l}{T} - \frac{2\pi m}{MT}\Big)\Big) \tag{change of variables: $k = m + lM$} \\
+	&= \frac{1}{M}\sum_{m = 0}^{M-1}\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\displaystyle\frac{1}{T}\sum_{l = -\infty}^{\infty} X_c\Big(j\Big(\frac{\omega - 2\pi m}{MT} - \frac{2\pi l}{T}\Big)\Big)$};} \tag{rearranging} \\
+	&= \frac{1}{M}\sum_{m = 0}^{M-1} X(e^{j\omega^{\prime}})\Big|_{\omega^{\prime} = \frac{\omega-2\pi m}{M}} \tag{$\tikz[baseline]{\node[fill=blue!20,anchor=base] {$^{~}$};}$ is equivalent to $X(e^{j\omega^{\prime}})$ for $\omega^{\prime} = \frac{\omega-2\pi m}{M}$}
+\end{align*}
+
+\textbf{Conclusion:} $X(e^{j\omega})$ is stretched by a factor of $M$ ($\omega/M$), and there will be replicas of the spectrum with period $2\pi/M$.
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Example of downsampling with $M = 2$ i.e., $T_d = 2T$.
+
+\textbf{Impulse sampling interpretation:}
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/downsampling_freq_domain_ct.tex}}
+\end{center}
+\onslide<3|handout:1>{After downsampling spectrum replicas appear with period $2\pi/T_d$}
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Same example of downsampling with $M = 2$ i.e., $T_d = 2T$.
+
+\textbf{Discrete-time interpretation:}
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/downsampling_freq_domain.tex}}
+\end{center}
+\onslide<3|handout:1>{To obtain the spectrum we discrete time, we just need to use the change of variables $\omega = \Omega T$ and $\omega = \Omega T_d$}
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Downsampling may lead to spectrum overlapping (\textbf{aliasing distortion}).
+
+Example of downsampling with $M = 3$ i.e., $T_d = 3T$.
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/downsampling_freq_domain_aliasing.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Decimation}
+Similarly to sampling, it is common to employ an \textbf{anti-aliasing filter} before downsampling in order to minimize aliasing. 
+
+Pre-filtering followed by downsampling is called \textbf{decimation}.
+
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/decimation_block.tex}}
+\end{center}
+\vspace{-0.5cm}
+\begin{align}
+x[n] \Longleftrightarrow & X(e^{j\Omega T}) = \frac{1}{T}\sum_{k = -\infty}^\infty X_c\Big(j\Big(\Omega - \frac{2\pi k}{T}\Big)\Big) \tag{from sampling} \\
+\tilde{x}[n] \Longleftrightarrow & \tilde{X}(e^{j\Omega T}) = H(e^{j\Omega T})X(e^{j\Omega T}) \tag{LTI output} \\
+x_d[n] = \tilde{x}[nM] \Longleftrightarrow & \frac{1}{M}\sum_{m = 0}^{M-1} \tilde{X}(e^{j(\Omega T - 2\pi T)/M}) \tag{downsampling by $M$}
+\end{align}
+
+\end{frame}
+
+%
+\begin{frame}{Decimation: frequency domain interpretation}
+Decimation with $M = 3$ i.e., $T_d = 3T$.
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/decimation_freq_domain.tex}}
+\end{center}
+\onslide<4|handout:1>{Now the spectrum replicas do not overlap after downsampling by 3.}
+\end{frame}
+
+%
+\section{Upsampling and Interpolation}
+\begin{frame}{Interpolation}
+Interpolation is used to increase the sampling rate by an integer factor $L$.
+
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/upsampling_block.tex}}
+\end{center}
+\vspace{-0.2cm}
+\begin{equation*}
+x_e[n] = \begin{cases}
+x[n/L], & 0, \pm L, \pm 2L, \ldots \\
+0, & \text{otherwise}
+\end{cases}\tag{after upsampling}
+\end{equation*}
+
+\pause
+In the frequency domain:
+\begin{align*}
+X_e(e^{j\omega}) &= \sum_{n = -\infty}^{\infty} x_e[n]e^{-j\omega n} \tag{definition of DTFT} \\
+&= \sum_{n = 0, \pm L, \ldots} x[n/L]e^{-j\omega n} \tag{from $x_e[n]$ equation above} \\
+&= \sum_{k = -\infty}^{\infty} x[k]e^{-j\omega kL} \tag{change of variable: $k = n/L$} \\
+&= X(e^{j\omega L}) \tag{from DTFT equation with $\omega L$}
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Interpolation: frequency domain interpretation}
+Example of interpolation with $L = 2$
+\begin{center}
+	\resizebox{0.75\linewidth}{!}{\input{figs/upsampling_freq_domain.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Practical interpolation filters}
+\begin{itemize}
+	\item Similarly to what we saw in reconstruction (D-to-C), the ideal lowpass filter is not practical. Hence, we must use practical interpolation filters such as ZOH, linear interpolator, or cubic spline.
+	\item \textbf{One important difference:} The interpolation filter used in reconstruction to convert from discrete-time to continuous-time was an analog filter (a continuous-time filter). The interpolation filter used for upsampling is realized in discrete-time (in DSP). Therefore, we have more flexibility.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Example of interpolation}
+\begin{itemize}
+	\item The original signal has maximum frequency $\Omega_N = 1$ rad/s. 
+	\item From the Nyquist-Shannon theorem, we need $\Omega_s > 2\Omega_N$ in order to be able to achieve perfect reconstruction. Or equivalently, $T < \pi$ s. 
+	\item Sampling period is $T = \pi$
+\end{itemize}
+
+\begin{center}
+	\resizebox{0.75\linewidth}{!}{\input{figs/interpolation_example.tex}}
+\end{center}
+\onslide<4|handout:1> {Truncated sinc filter had 11 coefficients, while ZOH had 2 and linear interpolator had 3.}
+\end{frame}
+
+%
+\begin{frame}{Example of interpolation}
+Same example as before, but now sampling period is $T = 0.4\pi$.
+
+\begin{center}
+	\resizebox{0.8\linewidth}{!}{\input{figs/interpolation_example_oversampled.tex}}
+\end{center}
+\onslide<4|handout:1> {Truncated sinc filter had 11 coefficients, while ZOH had 2 and linear interpolator had 3.}
+\end{frame}
+
+%
+\begin{frame}<beamer:1|handout:1>
+\fontsize{9pt}{7.2}\selectfont
+\begin{itemize}
+	\item In the first example the continuous-time signal was sampled at the Nyquist rate, whereas in the second example the continuous-time signal was oversampled by 2.5.
+	\item In both cases, we upsample by a factor of 2 and use practical reconstruction filters: ZOH, a linear interpolator, and a truncated sinc with 11 samples.
+	\item The ZOH filter only has two coefficients, the linear interpolator has three coefficents, and the truncated sinc has 11 coefficients.
+	\item Although we use the same filters in both examples, the interpolated sequences are much closer to the original continuous-time signal in the second example. This illustrates how oversampling can help the interpolation filters.
+	\item In these examples, the linear interpolator offers that best performance vs complexity trade-off, as it achieves performance close to the truncated sinc, but only uses 3 samples.
+	\item Even with high oversampling, we see that the truncated sinc filter didn't achieve perfect reconstruction. This is a consequence of the \textbf{Gibbs phenomenon}, discussed in lecture 1. Recall that a truncated sinc will produce a DTFT that is different from the ideal lowpass filter. Specifically, the DTFT of the truncated sequence will have oscillations, which will affect the signal and will not suppress the spectrum replicas centered at multiples of $2\pi$. Using an even larger sequence (sinc with more samples) would not help much, since the ripples would only become more rapid, but their amplitude would not decrease.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{In Matlab}
+
+Sampled signal with period $T$\\
+\texttt{>> T = 0.5*pi} \\
+\texttt{>> t = -20:T:20} \\
+\texttt{>> x = cos(t/2) - sin(t) + cos(t/2-pi/4) - sin(t/4-deg2rad(154)); {\color{matlabcomment} \% Sampled signal}} \\ 
+
+Upsample\\
+\texttt{>> xu = upsample(x, L)  {\color{matlabcomment} \% Upsample}} \\ 
+
+Interpolation filters \\
+\texttt{>> hZOH = [1 1]  {\color{matlabcomment} \% ZOH}} \\ 
+\texttt{>> hlin = [1/2 1 1/2] {\color{matlabcomment} \% Linear interpolator}} \\ 
+\texttt{>> hsinc = sinc(-(5:5)/2) {\color{matlabcomment} \% truncated sinc with 11 samples}} \\
+
+Interpolate \\
+\texttt{>> yzoh = filter(hZOH, 1, xu)} \\
+\texttt{>> ylin = filter(hlin, 1, xu)} \\
+\texttt{>> ysinc = filter(hsinc, 1, xu)} \\
+\texttt{{\color{matlabcomment} \% since these filters are FIR we could also have used the conv command}}
+~\\
+
+Before plotting we need to remove the group delay introduced by the filters (more on this next week)
+\end{frame}
+
+% 
+\section{Non-Integer Rate Change}
+\begin{frame}{Interpolation/Decimation by a non-integer factor}
+\begin{itemize}
+	\item We have seen how to increase the sampling period by an integer factor $M$ and how to decrease the sampling period by an integer factor $L$
+	\item By cascading interpolation and decimation we can change the sampling period by a non-integer factor $M/L$.
+\end{itemize}
+
+\begin{block}{Cascading interpolation and decimation}
+\vspace{-0.5cm}
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/non-integer_rate_change_diagram.tex}}
+\end{center}
+\end{block}
+\vspace{-0.5cm}
+\onslide<2|handout:1>{
+\begin{block}{Equivalent diagram}
+\begin{center}
+	\resizebox{0.8\linewidth}{!}{\input{figs/non-integer_rate_change_equivalent_diagram.tex}}
+\end{center}
+\end{block}
+}
+\end{frame}
+
+
+\begin{frame}{Example}
+	\only<1-3|handout:1>{
+	\begin{itemize}
+		\item Let's combine the examples we saw earlier with $L = 2$ and $M = 3$. Recall that with $M = 3$, there would be aliasing if we didn't use the anti-aliasing filter. 
+		\item The filter cutoff is $\min(\pi/2, \pi/3) = \pi/3$.
+	\end{itemize}
+	}
+	\only<4-|handout:2>{
+		continuing...
+	}
+	\begin{center}
+		\resizebox{0.8\linewidth}{!}{\input{figs/non-integer_rate_change_freq_domain.tex}}
+	\end{center}
+	\only<5-|handout:2>{
+		The resulting signal has sampling period $MT/L = 3T/2$. Note that aliasing was prevented by selecting the cutoff frequency $\min(\pi/2, \pi/3) = \pi/3$.
+	}
+\end{frame}
+
+% 
+\section{Multi-rate processing}
+\begin{frame}{Multirate processing}
+	In practice, it is common to have parts of the system operating at one sampling rate and other parts operating at a different sampling rate.
+	\begin{itemize}
+		\item Interchanging filtering and downsampling
+		\item Interchanging filtering and upsampling
+		\item Multi-stage decimation
+		\item Multi-stage interpolation
+		\item Polyphase decomposition
+	\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Interchanging filtering and downsampling}
+	These two systems are equivalent i.e., $y_1[n] = y_2[n]$
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/interchange_filter_downsampling.tex}}
+	\end{center}	
+
+	To move the filter before downsampling by $M$, we must stretch its frequency response by a factor of $M$: $H(z^M) \xrightarrow{z = e^{j\omega}} H(e^{j\omega M})$.
+\end{frame}
+
+\begin{frame}
+	\textit{Proof:}
+	
+	Staring with the second system: $X_2(e^{j\omega}) = H(e^{j\omega M})X(e^{j\omega})$. Now we can apply the equation for downsampling to obtain $Y_2(e^{j\omega})$
+	\begin{align*}
+	Y_2(e^{j\omega}) &= \frac{1}{M}\sum_{m= 0}^{M-1} X_2(e^{j(\omega/M - 2\pi m/M)}) \\
+	&=\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)})H(e^{j(\omega - 2\pi m)}) \\
+	&=H(e^{j\omega})\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)}) \tag{periodicity of the DTFT $\implies H(e^{j(\omega - 2\pi m)}) = H(e^{j\omega})$} \\
+	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$\displaystyle\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)})$};} \\
+	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$X_1(e^{j\omega})$};} = Y_1(e^{j\omega})
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+\textbf{Comments on stability:}
+
+Note that if $H(z)$ is a rational $z$-transform with poles $\{p_1, p_2, \ldots, p_N\}$ and zeros $\{z_1, z_2, \ldots, z_R\}$:
+\begin{equation*}
+H(z) = \frac{b_0}{a_0}z^{N-R}\frac{(z-z_1)(z-z_2)\ldots(z-z_R)}{(z-p_1)(z-p_2)\ldots(z-p_N)}
+\end{equation*}
+Then $H(z^M)$ will be
+\begin{equation*}
+H(z^M) = \frac{b_0}{a_0}z^{M(N-R)}\frac{(z^M-z_1)(z^M-z_2)\ldots(z^M-z_R)}{(z^M-p_1)(z^M-p_2)\ldots(z^M-p_N)},
+\end{equation*}
+with poles $\{\sqrt[M]{p_1}, \sqrt[M]{p_N}, \ldots, \sqrt[M]{p_N}\}$, and zeros $\{\sqrt[M]{z_1}, \sqrt[M]{z_N}, \ldots, \sqrt[M]{z_R}\}$.
+ 
+If $H(z)$ is stable and \textbf{causal}, the poles of $H(z^M)$ will lie \underline{inside the unit circle}, and therefore $H(z^M)$ will also be stable.
+
+Similarly, if $H(z)$ is \textbf{anti-causal} and stable, the poles of $H(z^M)$ will lie \underline{outside the unit circle}, and therefore $H(z^M)$ will also be stable.
+
+\end{frame}
+
+
+\begin{frame}{Interchanging filtering and interpolation}
+	These two systems are equivalent i.e., $y_1[n] = y_2[n]$
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/interchange_filter_interpolation.tex}}
+	\end{center}	
+	\textit{Proof:}
+	
+	Top diagram:
+	\begin{align*}
+	Y_1(e^{j\omega}) = X_2(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
+	\end{align*}
+	
+	Bottom diagram:
+	\begin{align*}
+	Y_2(e^{j\omega}) = X_2(e^{j\omega})H(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Multi-stage decimation}
+	Suppose we want to decimate by a factor $M = 20$. The cutoff frequency of the lowpass filter would be $\pi/20$. 
+	\begin{equation*}
+	\text{Sharp  filter} \implies \text{long impulse response} \implies \begin{array}{c}
+	\text{higher complexity} \\
+	\text{higher cost} \\
+	\text{higher power consumption} 
+	\end{array}
+	\end{equation*}
+	
+	\pause
+	It's more efficient to use several decimation stages
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/multistage_decimation_block.tex}}
+	\end{center}	
+	\pause
+	
+	Interchanging filter and downsampling results in the equivalent system:
+	
+	\begin{center}
+	\resizebox{0.6\linewidth}{!}{
+		\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+			\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+			\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+			
+			\node[node] (xc) {};
+			\node[block, right=1cm of xc, text width = 2.5cm, align= center] (AA) {$H_1(z)H_2(z^{M_1})$};
+			\node[block, right of=AA, text width = 2cm, align= center] (DSP) {$~~(M_1M_2)$};
+			\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.north)-(17pt, 0)$) -- ($(DSP.south)-(17pt, 0)$) {};
+			\coordinate (yc) at ($(DSP.east)+(1cm, 0)$) {};
+						
+			\path (xc) edge (AA);
+			\path (AA) edge (DSP);
+			\path (DSP) edge (yc);
+			
+			\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+			\node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+		\end{tikzpicture}
+	}
+	\end{center}
+	
+	\begin{itemize}
+		\item The equivalent downsampling factor is $M = M_1M_2$.
+		\item Design $H_1(z)$ and $H_2(z)$ so that $H_1(z)H_2(z^{M_1})$ has the desired frequency response. 
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Multi-stage interpolation}
+	The same rationale applies to interpolation
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/multistage_interpolation_block.tex}}
+	\end{center}	
+	Interchanging filter and downsampling results in the equivalent system:
+	
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{
+			\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+			\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+			\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+			
+			\node[node] (xc) {};
+			\node[block, right=1cm of xc, text width = 2cm, align= center] (DSP) {$~~(L_1L_2)$};
+			\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.south)-(17pt, 0)$) -- ($(DSP.north)-(17pt, 0)$) {};
+			\node[block, right of=DSP, text width = 2.5cm, align= center] (AA) {$H_1(z^{L_2})H_2(z)$};
+
+			\coordinate (yc) at ($(AA.east)+(1cm, 0)$) {};
+			
+			\path (xc) edge (DSP);
+			\path (DSP) edge (AA);
+			\path (AA) edge (yc);
+			
+			\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+			\node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+			\end{tikzpicture}
+		}
+	\end{center}
+	
+	\begin{itemize}
+		\item The equivalent upsampling factor is $L = L_1L_2$.
+		\item Design $H_1(z)$ and $H_2(z)$ so that $H_1(z^{L_2})H_2(z)$ has the desired frequency response. 
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	What if the filter is placed before downsampling?
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/filter_downsampling.tex}}
+	\end{center}
+	\begin{itemize}
+		\item To interchange filter and downsampling in this case, we'd need to express $H(z)$ as some $G(z^M)$. Generally not easy.
+		\item \textbf{Practical problem:} this implementation wastes computation. All samples of the output of $H(z)$ are calculated, but only 1 out of $M$ is used after downsampling. 
+		\item If $H(z)$ is FIR of length $N$, there are $N$ multiplications per sample. Downsampling by $M$ discards $M-1$ samples every $M$ samples.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	We can decompose any given sequence $h[n]$ into $M$ subsequences such that
+	\begin{equation*}
+	h_k[n] = \begin{cases}
+	h[n+k], & n~\text{integer multiple of } M \\
+	0, & \text{otherwise}
+	\end{cases}, k = 0, 1, \ldots, M-1
+	\end{equation*}
+	
+	It follows that
+	\begin{equation*}
+	h[n] = \sum_{k = 0}^{M-1} h_k[n-k] \Longleftrightarrow H(z) = \sum_{k = 0}^{M-1} H_k(z)z^{-k}
+	\end{equation*}
+\end{frame}	
+	
+\begin{frame}{Polyphase decomposition}	
+	Example of decomposition with $M = 2$
+	
+	\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/polyphase_decomposition_time_domain.tex}}
+\end{center}	
+\end{frame}
+
+
+\begin{frame}{Polyphase decomposition}
+	We can downsample $h_k[n]$ in order to discard the zero samples
+	\begin{equation*}
+	e_k[n] = h_k[Mn] \Longleftrightarrow E_k(z^M) = H_k(z) \tag{upsamling by M}
+	\end{equation*}
+
+	The subsequences $e_k[n]$ are called the \textbf{polyphase components} of $h[n]$
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/polyphase_decomposition_e_time_domain.tex}}
+	\end{center}	
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	How to recover $h[n]$ from $e_0[n], \ldots, e_{M-1}[n]$?
+	
+	\begin{enumerate}
+		\item Upsample $e_k[n]$ by $M$, and we're back with $h_k[n]$
+		\item Delay by $k$ and add
+	\end{enumerate}
+
+	In terms of the $z$-transform:
+	\begin{equation*}
+	H(z) = \sum_{k=0}^{M-1} E_k(z^M)z^{-k}
+	\end{equation*}
+	
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/polyphase_decomposition_diagram.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Polyphase decimation}
+	Back to the original problem: how to interchange filter and downsampling?
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/filter_downsampling.tex}}
+	\end{center}
+	Using the polyphase decomposition of $H(z)$
+	\begin{center}
+		\def\DOWN{1}
+		\resizebox{0.9\linewidth}{!}{\input{figs/polyphase_decomposition_diagram.tex}}
+	\end{center}
+\end{frame}
+
+%
+\begin{frame}{Polyphase decimation}
+	First interchange sum and downsampling:
+ 	\begin{center}
+	 	\resizebox{0.9\linewidth}{!}{\input{figs/polyphase_decomposition_diagram2.tex}}
+ 	\end{center}
+\end{frame}
+
+%
+\begin{frame}{Polyphase decimation}
+	Now it is easy to interchange $E_k(\tikz[baseline]{\node[fill=blue!20,anchor=base] {$z^M$};})$ with downsampling resulting in the filters $E_k(\tikz[baseline]{\node[fill=blue!20,anchor=base] {$z$};})$
+	\begin{center}
+		\resizebox{0.9\linewidth}{!}{\input{figs/polyphase_decomposition_diagram3.tex}}
+	\end{center}
+\textbf{Computation:} Each polyphase filter $E_k(z)$ requires $N/M$ multiplications, which are realized at the lower rate (higher sampling period) $TM$.
+
+Similarly for polyphase interpolation (Textbook section 4.7.5)
+
+\end{frame}
+
+%
+\begin{frame}{Summary}
+\begin{itemize}
+	\item Downsampling by an integer factor $M$ stretches the discrete-time spectrum by a factor $M$ and causes replicas of the spectrum to appear at $2\pi/M$. The amplitude of the spectrum is attenuated by $M$
+	\item It's often easier to think of downsampling as sampling the original continuous-time signal with a sampling period $T_d = MT$
+	\item Anti-aliasing filtering followed by downsampling is called decimation
+	\item Upsampling by an integer factor $L$ compresses the discrete-time spectrum by a factor $L$. The interpolation filter is assumed to have gain $L$, so the spectrum amplitude is scaled by $L$
+	\item We can achieve non-integer sampling rate changes by cascading interpolation and decimation stages
+	\item For large downsampling/uspsampling factors, it's generally more efficient to realized multistage decimation/interpolation
+	\item Polyphase decomposition allows efficient implementation of filtering followed by downsampling and upsampling followed by filtering.
+\end{itemize}
+\end{frame}
+
+\end{document}

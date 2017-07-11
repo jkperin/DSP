@@ -1,0 +1,108 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.2\textwidth,
+	ymin=-1.3,
+	ymax=1.3,
+	xmin=0,
+	xmax=11,
+	axis line style={->,>=stealth},
+	xlabel={\small $n$},
+	ylabel={\small $h[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.6cm,
+	},
+	ytick=\empty,
+	xtick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\pgfmathsetseed{99}
+	\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=0:10, samples=6] {0.5*pretty_func(x)};
+	\pgfmathsetseed{99}
+	\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=1:9, samples=5] {0.5*pretty_func(x)};
+	
+\end{axis}
+
+\pgfmathsetseed{99}
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.2\textwidth,
+	ymin=-1.3,
+	ymax=1.3,
+	xmin=0,
+	xmax=11,
+	axis line style={->,>=stealth},
+	xlabel={\small $n$},
+	ylabel={\small {\color{blue2} $h_1[n]$}},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.6cm,
+	},
+	ytick=\empty,
+	xtick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=0:10, samples=11] {0.5*pretty_func(x)*(mod(x, 2) == 0)};
+\end{axis}
+
+\pgfmathsetseed{99}
+\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = false,
+	clip=false,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.2\textwidth,
+	ymin=-1.3,
+	ymax=1.3,
+	xmin=0,
+	xmax=11,
+	axis line style={->,>=stealth},
+	xlabel={\small $n$},
+	ylabel={\small {\color{red2} $h_2[n]$}},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.6cm,
+	},
+	ytick=\empty,
+	xtick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt, domain=0:10, samples=11] {0.5*pretty_func(x+1)*(mod(x+1, 2) == 1)};
+\end{axis}
+\end{tikzpicture}

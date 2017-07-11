@@ -1,0 +1,36 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) {};
+	
+	%% Interpolator
+ 	\node[block, right=1cm of xc, text width = 1cm, align= center] (L) {$~~L$};
+	\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+	\node[block, right of=L, text width = 3cm, minimum height=2cm, align= center] (LPF) {Lowpass filter \\ Gain = $L$ \\ Cutoff = $\min(\pi/L, \pi/M)$};
+		
+	%% Decimator	
+    \node[block, right of=LPF, text width = 1cm, align= center] (M) {$~~M$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(M.north)-(5pt, 0)$) -- ($(M.south)-(5pt, 0)$) {};
+	\coordinate (yc) at ($(M.east)+(1cm, 0)$) {};
+		
+	\coordinate (mid1) at ($(L.east)!0.5!(LPF.west)$) {};	
+	\coordinate (mid3) at ($(LPF.east)!0.5!(M.west)$) {};	
+		
+    \path (xc) edge (L);
+    \path (L) edge (LPF);
+    \path (LPF) edge (M);
+    \path (M) edge (yc);
+    
+    \node[above = 0mm of mid1, text width = 1cm, align=center] {$x_u[n]$};
+    \node[above = 0mm of mid3, text width = 1cm, align=center] {$\tilde{x_u}[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+    
+    \node[below=1cm of xc] (T) {$T$};
+    \node[left=0.75cm of T, align=center, text width=1cm] {Sampling Period};
+    \node[below=1cm of mid1] (T2) {$\frac{T}{L}$};
+    \node[below=1cm of mid3] (T3) {$\frac{T}{L}$};
+    \node[below=1cm of yc] (T4) {$\frac{TM}{L}$};
+\end{tikzpicture}
