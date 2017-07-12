@@ -1,0 +1,270 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\definecolor{matlabcomment}{RGB}{34,139,34}
+
+\pgfmathdeclarefunction{gauss}{2}{%
+	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\pgfmathdeclarefunction{pretty_func}{1}{%
+	\pgfmathparse{cos(deg(#1/2)) - sin(deg(#1)) + cos(deg(#1/2)-45) - sin(deg(#1/4)-154)}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+\newcommand\PlotSampledSpectrum[4]{%
+	\def\fs{#2}%
+	\def\fmax{#3}%
+	\def\ros{#4}%
+	\input{#1}%
+}
+
+\pgfmathdeclarefunction{invgauss}{2}{%
+	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
+}
+
+\tikzset{
+	declare function={
+		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
+		(and(\x==0, 1) * 1);
+	}
+}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\input{figs/color_pallete.tex}
+
+\title[EE 264]{Quantization}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 13, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+%\begin{frame}{Outline}
+%  \tableofcontents
+%\end{frame}
+
+\begin{frame}{Announcements}
+	\begin{itemize}
+		\item Homework \#2 due today
+		\item Homework \#3 will be released today and it is due next Thursday
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Practice and theory}
+\begin{block}{In practice}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\end{center}
+\end{block}
+
+\begin{block}{DSP theory}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\end{center}
+	\textbf{Problem:} This simplified model does not account for \textbf{quantization} (today's lecture) or \textbf{finite precision arithmetic} (lecture 8)
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Including quantization}
+	\begin{block}{Analog-to-digital converter}
+		A more realistic model
+		\begin{center}
+		\resizebox{0.9\linewidth}{!}{
+			\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.75cm, font=\sffamily]
+				\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+				\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+				
+				\node[node] (xc) {};
+				\node[block, right=1cm of xc] (CTD) {C-to-D};
+				\node[block, right of=CTD, text width = 2cm, align= center] (Q) {Quantizer};
+				\node[block, right of=Q] (coder) {Coder};
+				\coordinate[right=1.5cm of coder] (yc) {};
+				
+				\coordinate (mid1) at ($(CTD.east)!0.5!(Q.west)$) {};
+				\coordinate (mid2) at ($(Q.east)!0.5!(coder.west)$) {};
+				
+				\path (xc) edge (CTD);
+				\path (CTD) edge (Q);
+				\path (Q) edge (coder);
+				\path (coder) edge (yc);
+				
+				\node[above = 0.5mm of mid1] {$x[n]$};
+				\node[above = 0.5mm of mid2] {$x_Q[n]$};
+				\node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
+				\node[above = 0mm of yc, align=center] {$x_B[n]$}; 
+				\node[below = 0mm of yc, text width = 2.5cm, align=center] {Binary \\ representation}; 
+				
+				\node[align=center] at ($(CTD.south)-(0, 0.4cm)$) {Sampling \\ $T$};
+				\node[align=center, text width=4cm] at ($(Q.south)-(0, 1cm)$) {Analog-to-digital converter};
+				
+				\draw[dashed] ($(CTD.south west)-(0.25, 0.75)$) rectangle ($(coder.north east)+(0.25, 0.3)$) {};
+				
+			\end{tikzpicture}
+		}
+		\end{center}
+	\end{block}
+\end{frame}
+
+%
+\begin{frame}{Quantizer}
+\begin{center}
+	\resizebox{0.5\linewidth}{!}{
+		\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=0.25cm, font=\sffamily]
+		\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+		\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+		\tikzstyle{annot} = []
+		
+		\node[node] (xc) {};
+		\node[block, right=1cm of xc, text width = 1cm, align= center] (Q) {Q};
+		\coordinate[right=1cm of Q] (yc) {};
+			
+		\path (xc) edge (Q);
+		\path (Q) edge (yc);
+		
+		\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+		\node[above = 0mm of yc, align=center] {$x_Q[n]$}; 	
+		\end{tikzpicture}
+	}
+\end{center}
+
+\begin{center}
+	\resizebox{0.5\linewidth}{!}{
+		\begin{tikzpicture}
+		\begin{axis}[
+			axis lines*=middle,
+			enlargelimits = false, clip=true,
+			ymin=-7, ymax=7,
+			xmin=-7, xmax=7,
+			axis line style={->,>=stealth},
+			xlabel={$x[n]$},
+			ylabel={$x_Q[n]$},
+			yticklabel style = {yshift=0.2cm},
+			xticklabel style = {yshift=-0.1cm},
+			every axis x label/.style={
+				at={(ticklabel* cs:1)},
+				anchor=west,
+			},
+			every axis y label/.style={
+				at={(ticklabel* cs:1)},
+				anchor=south,
+			},
+			ytick={1},
+			xtick=\empty,
+			every outer y axis line/.append style={white!15!black},
+			every y tick label/.append style={font=\color{white!15!black}},
+			legend style={draw=white!15!black,fill=white,legend cell align=left}]			
+			\addplot[line width=1pt] coordinates {(0, 0) (1, 0) (1, 1) (2, 1) (2, 2) (3, 2) (3, 3) (4, 3) (4, 4) (5, 4) (5, 5)};
+			\addplot[black!20, line width=1pt, domain=-7:7, samples=2] {x};
+		\end{axis}
+		\end{tikzpicture}
+	}
+\end{center}
+
+Terminology
+\begin{itemize}
+	\item $\Delta X$ is the \textbf{dynamic range}
+	\item $q$ is the quantization resolution
+\end{itemize}
+
+The dynamic range, quantization resolution, and number of bits are related by 
+\begin{equation*}
+q = \frac{\Delta X}{2^{B}}
+\end{equation*}
+
+\end{frame}
+
+
+
+
+
+%
+\begin{frame}{Outline}
+	\begin{itemize}
+		\item Probabilistic interpretation of quantization
+		\item Quantization noise shaping
+	\end{itemize}
+\end{frame}
+
+
+%
+\begin{frame}{Summary}
+\begin{itemize}
+	\item a
+\end{itemize}
+\end{frame}
+
+\end{document}

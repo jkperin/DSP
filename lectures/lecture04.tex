@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -639,10 +639,10 @@ Before plotting we need to remove the group delay introduced by the filters (mor
 	
 	Staring with the second system: $X_2(e^{j\omega}) = H(e^{j\omega M})X(e^{j\omega})$. Now we can apply the equation for downsampling to obtain $Y_2(e^{j\omega})$
 	\begin{align*}
-	Y_2(e^{j\omega}) &= \frac{1}{M}\sum_{m= 0}^{M-1} X_2(e^{j(\omega/M - 2\pi m/M)}) \\
-	&=\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)})H(e^{j(\omega - 2\pi m)}) \\
-	&=H(e^{j\omega})\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)}) \tag{periodicity of the DTFT $\implies H(e^{j(\omega - 2\pi m)}) = H(e^{j\omega})$} \\
-	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$\displaystyle\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m/M)})$};} \\
+	Y_2(e^{j\omega}) &= \frac{1}{M}\sum_{m= 0}^{M-1} X_2(e^{j(\omega/M - 2\pi m)}) \\
+	&=\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)})H(e^{j(\omega - 2\pi m)}) \\
+	&=H(e^{j\omega})\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)}) \tag{periodicity of the DTFT $\implies H(e^{j(\omega - 2\pi m)}) = H(e^{j\omega})$} \\
+	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$\displaystyle\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)})$};} \\
 	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$X_1(e^{j\omega})$};} = Y_1(e^{j\omega})
 	\end{align*}
 \end{frame}
@@ -676,7 +676,7 @@ Similarly, if $H(z)$ is \textbf{anti-causal} and stable, the poles of $H(z^M)$ w
 	
 	Top diagram:
 	\begin{align*}
-	Y_1(e^{j\omega}) = X_2(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
+	Y_1(e^{j\omega}) = X_1(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
 	\end{align*}
 	
 	Bottom diagram:
