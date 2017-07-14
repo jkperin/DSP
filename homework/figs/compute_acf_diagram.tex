@@ -1,0 +1,77 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=5pt]
+
+	\node[node] (xc) {};
+	
+	\ifdefined\sysstate
+		\node[block, right=1cm of xc, text width = 0.5cm, align= center] (L) {$~~L$};
+	    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+	    \node[block, right of=L, text width = 2cm, align= center] (DSP) {Ideal lowpass \\ $H_1(e^{j\omega})$};
+	    \node[block, right=1.25cm of DSP, text width = 2cm, align= center] (ACF) {Compute ACF};
+		\coordinate[right=1cm of ACF] (yc) {};
+		
+		\coordinate (mid1) at ($(L.east)!0.5!(DSP.west)$) {};
+		\coordinate (mid2) at ($(DSP.east)!0.5!(ACF.west)$) {};
+		
+	    \path (xc) edge (L);
+	    \path (L) edge (DSP);
+	    \path (DSP) edge (ACF);
+	    \path (ACF) edge (yc);
+	    
+	    \node[above = 0mm of mid1] {$x_e[n]$};
+	    \node[above = 0mm of mid2] {$x_i[n]$};
+	    \node[above = 0mm of yc, text width = 1cm, align=center] {$\phi_1[m]$}; 
+ 	\else
+ 		\relax
+	\fi
+	
+	\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+	
+	\ifdefined\sysa
+		\node[block, right=1.25cm of xc, text width = 2cm, align= center] (ACF) {Compute ACF};
+		\node[block, right=1.5cm of ACF, text width = 0.5cm, align= center] (L) {$~~L$};
+		\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+		\node[block, right of=L, text width = 1.5cm, align= center] (DSP) {Ideal lowpass \\ $H_2(e^{j\omega})$};
+		
+		\coordinate[right=1cm of DSP] (yc) {};
+		
+		\coordinate (mid1) at ($(ACF.east)!0.5!(L.west)$) {};
+		\coordinate (mid2) at ($(L.east)!0.5!(DSP.west)$) {};
+		
+		\path (xc) edge (ACF);
+		\path (ACF) edge (L);
+		\path (L) edge (DSP);
+		\path (DSP) edge (yc);
+		
+		\node[above = 0mm of mid1] {$\phi_2[m]$};
+		\node[above = 0mm of mid2] {$\phi_{2e}[m]$};
+		\node[above = 0mm of yc, text width = 1cm, align=center] {$\phi_3[m]$}; 
+	\else
+	\relax
+	\fi
+	
+	\ifdefined\sysb
+		\node[block, right=1cm of xc, text width = 0.5cm, align= center] (L) {$~~L$};
+		\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+		\node[block, right=1.25cm of L, text width = 2cm, align= center] (ACF) {Compute ACF};
+		\node[block, right=1.25cm of ACF, text width = 1.5cm, align= center] (DSP) {Ideal lowpass \\ $H_3(e^{j\omega})$};
+		
+		\coordinate[right=1cm of DSP] (yc) {};
+		
+		\coordinate (mid1) at ($(L.east)!0.5!(ACF.west)$) {};
+		\coordinate (mid2) at ($(ACF.east)!0.5!(DSP.west)$) {};
+		
+		\path (xc) edge (L);
+		\path (L) edge (ACF);
+		\path (ACF) edge (DSP);
+		\path (DSP) edge (yc);
+		
+		\node[above = 0mm of mid1] {$x_e[n]$};
+		\node[above = 0mm of mid2] {$\phi_{4}[m]$};
+		\node[above = 0mm of yc, text width = 1cm, align=center] {$\phi_5[m]$}; 
+	\else
+	\relax
+	\fi
+	    
+\end{tikzpicture}

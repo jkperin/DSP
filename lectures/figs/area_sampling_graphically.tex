@@ -1,0 +1,251 @@
+\begin{tikzpicture}
+\onslide<1-|handout:1>{
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=0.5,
+	xmin=-5, xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $x$},
+	ylabel={\small $p_x(x)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={-3,...,3},
+	xticklabels={$-3\Delta$,$-2\Delta$, $-\Delta$, 0, $\Delta$, $2\Delta$, $3\Delta$},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[smooth, line width=1pt, domain=-5:5, samples=31] {gauss(x)};
+\end{axis}
+}
+
+\onslide<2-|handout:1>{
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=1.5,
+	xmin=-5, xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $x$},
+	ylabel={\small $r(x)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={-0.5, 0.5},
+	ytick=1,
+	yticklabels={$\frac{1}{\Delta}$},
+	yticklabel style={yshift=0.3cm},
+	xticklabels={$-\frac{\Delta}{2}$, $\frac{\Delta}{2}$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, line width=1pt] coordinates {(-5, 0) (-1/2, 0) (-1/2, 1) (1/2, 1) (1/2, 0) (5, 0)};
+\end{axis}
+}
+
+\onslide<3|handout:0>{
+	\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=0.5,
+	xmin=-5, xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $x$},
+	ylabel={\small $p_x(x) \ast r(x)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=1cm,
+	},
+	xtick=\empty,
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [smooth, line width=1pt, forget plot]
+table[row sep=crcr]{
+	-5 3.1178e-06 \\
+-4.8 8.1063e-06 \\
+-4.6 1.9895e-05 \\
+-4.4 4.6364e-05 \\
+-4.2 0.00010396 \\
+-4 0.00022431 \\
+-3.8 0.00046577 \\
+-3.6 0.0009308 \\
+-3.4 0.0017904 \\
+-3.2 0.0033151 \\
+-3 0.0059093 \\
+-2.8 0.010142 \\
+-2.6 0.01676 \\
+-2.4 0.026672 \\
+-2.2 0.040879 \\
+-2 0.060346 \\
+-1.8 0.085813 \\
+-1.6 0.11756 \\
+-1.4 0.15515 \\
+-1.2 0.1973 \\
+-1 0.24176 \\
+-0.8 0.28547 \\
+-0.6 0.32484 \\
+-0.4 0.35623 \\
+-0.2 0.3765 \\
+0 0.38351 \\
+0.2 0.3765 \\
+0.4 0.35623 \\
+0.6 0.32484 \\
+0.8 0.28547 \\
+1 0.24176 \\
+1.2 0.1973 \\
+1.4 0.15515 \\
+1.6 0.11756 \\
+1.8 0.085813 \\
+2 0.060346 \\
+2.2 0.040879 \\
+2.4 0.026672 \\
+2.6 0.01676 \\
+2.8 0.010142 \\
+3 0.0059093 \\
+3.2 0.0033151 \\
+3.4 0.0017904 \\
+3.6 0.0009308 \\
+3.8 0.00046577 \\
+4 0.00022431 \\
+4.2 0.00010396 \\
+4.4 4.6364e-05 \\
+4.6 1.9895e-05 \\
+4.8 8.1063e-06 \\
+5 3.1178e-06 \\
+};
+
+\end{axis}
+}
+
+
+\onslide<4-|handout:1>{
+	\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=0.5,
+	xmin=-5, xmax=5,
+	axis line style={->,>=stealth},
+	xlabel={\small $x$},
+	ylabel={\small $p_{x_Q}(x) = (p_x(x) \ast r(x))\cdot s(x)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=2.3cm,
+	},
+	xtick={-3,...,3},
+	xticklabels={$-3\Delta$,$-2\Delta$, $-\Delta$, 0, $\Delta$, $2\Delta$, $3\Delta$},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot [smooth, black!20, line width=1pt, forget plot]
+	table[row sep=crcr]{
+		-5 3.1178e-06 \\
+		-4.8 8.1063e-06 \\
+		-4.6 1.9895e-05 \\
+		-4.4 4.6364e-05 \\
+		-4.2 0.00010396 \\
+		-4 0.00022431 \\
+		-3.8 0.00046577 \\
+		-3.6 0.0009308 \\
+		-3.4 0.0017904 \\
+		-3.2 0.0033151 \\
+		-3 0.0059093 \\
+		-2.8 0.010142 \\
+		-2.6 0.01676 \\
+		-2.4 0.026672 \\
+		-2.2 0.040879 \\
+		-2 0.060346 \\
+		-1.8 0.085813 \\
+		-1.6 0.11756 \\
+		-1.4 0.15515 \\
+		-1.2 0.1973 \\
+		-1 0.24176 \\
+		-0.8 0.28547 \\
+		-0.6 0.32484 \\
+		-0.4 0.35623 \\
+		-0.2 0.3765 \\
+		0 0.38351 \\
+		0.2 0.3765 \\
+		0.4 0.35623 \\
+		0.6 0.32484 \\
+		0.8 0.28547 \\
+		1 0.24176 \\
+		1.2 0.1973 \\
+		1.4 0.15515 \\
+		1.6 0.11756 \\
+		1.8 0.085813 \\
+		2 0.060346 \\
+		2.2 0.040879 \\
+		2.4 0.026672 \\
+		2.6 0.01676 \\
+		2.8 0.010142 \\
+		3 0.0059093 \\
+		3.2 0.0033151 \\
+		3.4 0.0017904 \\
+		3.6 0.0009308 \\
+		3.8 0.00046577 \\
+		4 0.00022431 \\
+		4.2 0.00010396 \\
+		4.4 4.6364e-05 \\
+		4.6 1.9895e-05 \\
+		4.8 8.1063e-06 \\
+		5 3.1178e-06 \\
+	};
+	
+	\addplot [dirac, line width=1pt, forget plot]
+	table[row sep=crcr]{
+		-2 0.053991 \\
+		-1 0.24197 \\
+		0 0.39894 \\
+		1 0.24197 \\
+		2 0.053991 \\
+	};
+	\end{axis}
+}
+
+\end{tikzpicture}

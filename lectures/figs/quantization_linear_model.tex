@@ -1,0 +1,28 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=1cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+    \node[block, right=1.5cm of xc] (Q) {$Q$};
+	\coordinate[right=1.5cm of Q] (yc) {};
+		
+    \path (xc) edge (Q);
+    \path (Q) edge (yc);
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 3cm, align=center] {$x_Q[n] = Q(x[n])$}; 
+	
+	\node[node, below=1.5cm of xc] (xc2) {};
+	\node[adder] (Q2) at (Q |- xc2) {\Large $+$};
+	\coordinate (yc2) at (yc |- Q2) {};
+	\node[node, below=1cm of Q2] (e) {};	
+
+ 	\path (xc2) edge (Q2);
+	\path (Q2) edge (yc2);
+	\path (e) edge (Q2);
+	
+	\node[above = 0mm of xc2, text width = 1cm, align=center] {$x[n]$};
+	\node[right = 0mm of e, text width = 3cm, align=center] {$e[n] \sim\mathcal{U}\Big[-\frac{\Delta}{2}, \frac{\Delta}{2}\Big]$};
+	\node[above = 0mm of yc2, text width = 3cm, align=center] {$x_Q[n] = x[n] + e[n]$}; 
+\end{tikzpicture}

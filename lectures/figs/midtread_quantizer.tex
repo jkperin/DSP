@@ -1,0 +1,47 @@
+\begin{tikzpicture}
+	\tikzstyle{node}=[circle,draw=black!50,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+	\begin{axis}[
+		axis lines*=middle,
+		enlargelimits = false, clip=false,
+		ymin=-4, ymax=5,
+		xmin=-5, xmax=5,
+		axis line style={->,>=stealth},
+		xlabel={$x$},
+		ylabel={$Q(x)$},
+		yticklabel style = {yshift=0.2cm},
+		xticklabel style = {yshift=-0.1cm},
+		every axis x label/.style={
+			at={(ticklabel* cs:1)},
+			anchor=west,
+		},
+		every axis y label/.style={
+			at={(ticklabel* cs:1)},
+			anchor=south,
+		},
+		ytick={-4, -3,-2, 1, 2, 3},
+		yticklabels={$-4\Delta$, $-3\Delta$, $-2\Delta$, $\Delta$, $2\Delta$, $3\Delta$},
+		xtick={-4.5,...,4.5},
+		xticklabels={$-\frac{9\Delta}{2}$, $-\frac{7\Delta}{2}$, $-\frac{5\Delta}{2}$, $-\frac{3\Delta}{2}$, $-\frac{\Delta}{2}$, $\frac{\Delta}{2}$, $\frac{3\Delta}{2}$, $\frac{5\Delta}{2}$, $\frac{7\Delta}{2}$, $\frac{9\Delta}{2}$},
+		every outer y axis line/.append style={white!15!black},
+		every y tick label/.append style={font=\color{white!15!black}},
+		legend style={draw=white!15!black,fill=white,legend cell align=left}]			
+		\addplot[line width=1pt] coordinates {(0, 0) (1/2, 0) (1/2, 1) (3/2, 1) (3/2, 2) (5/2, 2) (5/2, 3) (5, 3)};
+		\addplot[line width=1pt] coordinates {(0, 0) (-1/2, 0) (-1/2, -1) (-3/2, -1) (-3/2, -2) (-5/2, -2) (-5/2, -3) (-7/2, -3) (-7/2, -4) (-5, -4)};
+		\addplot[dashed, black!20, line width=1pt, domain=-4:4, samples=2] {x};
+		
+		\draw[black!10, fill=black!10] (axis cs: -6, 4) rectangle (axis cs: -1, 2) {};
+		\node[node] (xc) at (axis cs: -5.5, 3) {};
+		\node[block, right=0.75cm of xc, text width = 1cm, align= center] (Q) {$Q$};
+		\coordinate[right=0.75cm of Q] (yc) {};
+		
+		\path[->, >=stealth, shorten >= 0pt, draw=black!50] (xc) edge (Q);
+		\path[->, >=stealth, shorten >= 0pt, draw=black!50] (Q) edge (yc);
+		
+		\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+		\node[above = 0mm of yc, align=center] {$x_Q[n]$}; 
+		
+		\draw[<->, >=stealth, blue2, line width=2pt] (axis cs: -4.5, 0.5) -- (axis cs: 3.5, 0.5) {};
+		\node at (axis cs: 2.5, 1) {\color{blue2} $\Delta X$}; 
+	\end{axis}
+\end{tikzpicture}

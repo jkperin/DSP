@@ -1,0 +1,91 @@
+\begin{tikzpicture}
+\begin{axis}[
+xmin=-1, xmax=1,
+axis lines*=center,
+every axis y label/.style={at=(current axis.above origin),anchor=south},
+every axis x label/.style={at=(current axis.right of origin),anchor=west},
+%height=5cm, width=8cm,
+xtick=\empty,
+ytick=\empty,
+xticklabel=\empty,
+ymin=0,
+ymax=0.6,
+yticklabel style={yshift=0.5cm, xshift=0.8cm},
+ylabel={\Large $p_{e}(e)$},
+xlabel={\Large $e$},
+enlargelimits=false, clip=true, axis on top,
+grid = major,
+axis line style={->,>=stealth, shorten >= -10pt},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	yshift=0.2cm,
+	xshift=0.5cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+	xshift=0.3cm,
+	yshift=0.3cm,
+},
+xtick={-1, 1},
+ytick=0.5,
+yticklabels={\Large $\frac{1}{\Delta}$},
+xticklabels={\Large$-\frac{\Delta}{2}$, \Large $\frac{\Delta}{2}$},
+]
+\addplot[black, ybar interval, fill=black!20, mark=no] 
+table[row sep=crcr]{
+	-1.029 0.4681 \\
+	-0.987 0.46555 \\
+	-0.945 0.46698 \\
+	-0.903 0.46238 \\
+	-0.861 0.46662 \\
+	-0.819 0.46579 \\
+	-0.777 0.46467 \\
+	-0.735 0.46533 \\
+	-0.693 0.4645 \\
+	-0.651 0.47183 \\
+	-0.609 0.473 \\
+	-0.567 0.47052 \\
+	-0.525 0.47769 \\
+	-0.483 0.47964 \\
+	-0.441 0.4845 \\
+	-0.399 0.47945 \\
+	-0.357 0.4756 \\
+	-0.315 0.48581 \\
+	-0.273 0.48245 \\
+	-0.231 0.48512 \\
+	-0.189 0.48455 \\
+	-0.147 0.48971 \\
+	-0.105 0.49229 \\
+	-0.062999 0.48376 \\
+	-0.020999 0.48714 \\
+	0.021001 0.48774 \\
+	0.063 0.48517 \\
+	0.105 0.48286 \\
+	0.147 0.48495 \\
+	0.189 0.49255 \\
+	0.231 0.49062 \\
+	0.273 0.48731 \\
+	0.315 0.47883 \\
+	0.357 0.48307 \\
+	0.399 0.4764 \\
+	0.441 0.47657 \\
+	0.483 0.47974 \\
+	0.525 0.47679 \\
+	0.567 0.47707 \\
+	0.609 0.47186 \\
+	0.651 0.47183 \\
+	0.693 0.46886 \\
+	0.735 0.4711 \\
+	0.777 0.46469 \\
+	0.819 0.47233 \\
+	0.861 0.47057 \\
+	0.903 0.46924 \\
+	0.945 0.46526 \\
+	0.987 0.46519 \\
+	1.029 0.46595 \\
+};
+\addplot[black, domain=-1:1, samples=2] {0.5};
+\end{axis}
+\end{tikzpicture}

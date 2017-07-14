@@ -52,8 +52,8 @@
 
 \definecolor{matlabcomment}{RGB}{34,139,34}
 
-\pgfmathdeclarefunction{gauss}{2}{%
-	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
+\pgfmathdeclarefunction{gauss}{1}{%
+	\pgfmathparse{1/(sqrt(2*pi))*exp(-((#1)^2)/2)}%
 }
 
 \pgfmathdeclarefunction{laplacian}{2}{%
@@ -73,6 +73,14 @@
 		visualization depends on={y/abs(y)-1 \as \sign},
 		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
 	}
+}
+
+\tikzset{
+	invisible/.style={opacity=0},
+	visible on/.style={alt={#1{}{invisible}}},
+	alt/.code args={<#1>#2#3}{%
+		\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+	},
 }
 
 \newcommand\PlotSampledSpectrum[4]{%
@@ -99,6 +107,13 @@
 
 \input{figs/color_pallete.tex}
 
+\newcommand\PlotGaussianCF[4]{%
+	\def\sig{#2}%
+	\def\ws{#3}%
+	\def\cap{#4}
+	\input{#1}%
+}
+
 \title[EE 264]{Quantization}
 \author{Jose Krause Perin}
 \institute{Stanford University}
@@ -110,11 +125,7 @@
   \titlepage
 \end{frame}
 
-% Uncomment these lines for an automatically generated outline.
-%\begin{frame}{Outline}
-%  \tableofcontents
-%\end{frame}
-
+%
 \begin{frame}{Announcements}
 	\begin{itemize}
 		\item Homework \#2 due today
@@ -122,7 +133,19 @@
 	\end{itemize}
 \end{frame}
 
+
 %
+\section{Outline}
+\begin{frame}{Outline}
+\begin{itemize}
+	\item Probabilistic interpretation of quantization
+	\item Linear noise model
+	\item Quantization noise shaping
+\end{itemize}
+\end{frame}
+
+%
+\section{Quantization in DSP}
 \begin{frame}{Practice and theory}
 \begin{block}{In practice}
 	\begin{center}
@@ -134,7 +157,8 @@
 	\begin{center}
 		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
 	\end{center}
-	\textbf{Problem:} This simplified model does not account for \textbf{quantization} (today's lecture) or \textbf{finite precision arithmetic} (lecture 8)
+
+	\textbf{Problem:} This simplified model does not account for \textbf{quantization} (today's lecture) and \textbf{finite precision arithmetic} (lecture 8)
 \end{block}
 \end{frame}
 
@@ -169,9 +193,9 @@
 				\node[below = 0mm of yc, text width = 2.5cm, align=center] {Binary \\ representation}; 
 				
 				\node[align=center] at ($(CTD.south)-(0, 0.4cm)$) {Sampling \\ $T$};
-				\node[align=center, text width=4cm] at ($(Q.south)-(0, 1cm)$) {Analog-to-digital converter};
+				\node[align=center, text width=4cm] at ($(Q.south)-(0, 1.1cm)$) {Analog-to-digital converter};
 				
-				\draw[dashed] ($(CTD.south west)-(0.25, 0.75)$) rectangle ($(coder.north east)+(0.25, 0.3)$) {};
+				\draw[dashed] ($(CTD.south west)-(0.25, 0.8)$) rectangle ($(coder.north east)+(0.25, 0.3)$) {};
 				
 			\end{tikzpicture}
 		}
@@ -181,89 +205,429 @@
 
 %
 \begin{frame}{Quantizer}
-\begin{center}
-	\resizebox{0.5\linewidth}{!}{
-		\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=0.25cm, font=\sffamily]
-		\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
-		\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
-		\tikzstyle{annot} = []
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Mid-tread} uniform quantizer
+			\resizebox{\textwidth}{!}{\input{figs/midtread_quantizer.tex}}
+		\end{column}
+	
+		\begin{column}{0.5\textwidth}
+			\textbf{Mid-rise} uniform quantizer
+			\resizebox{\textwidth}{!}{\input{figs/midrise_quantizer.tex}}
+		\end{column}
+	\end{columns}
+	\begin{center}
 		
-		\node[node] (xc) {};
-		\node[block, right=1cm of xc, text width = 1cm, align= center] (Q) {Q};
-		\coordinate[right=1cm of Q] (yc) {};
+	\end{center}
+	
+	\textbf{Terminology}
+	\begin{itemize}
+		\item The quantizer has $B$ bits of \textbf{resolution}
+		\item $\Delta X$ is the \textbf{dynamic range}
+		\item $\Delta$ is the \textbf{step size}
+	\end{itemize}
+
+	\begin{equation}
+	\Delta = \frac{\Delta X}{2^{B}} \label{eq:Delta}
+	\end{equation}
+\end{frame}
+
+%
+\begin{frame}{Example of quantization}
+\begin{center}
+	\resizebox{0.6\textwidth}{!}{\input{figs/quantization_sine.tex}}
+\end{center}
+
+\onslide<2-|handout:1>{
+Quantization error:
+\begin{align*}
+e[n] = x[n] - Q(x[n]) = x[n] - x_Q[n]
+\end{align*}
+Note that the quantization error is bounded $-\Delta/2 \leq e[n] \leq \Delta/2$.
+}
+
+\onslide<3-|handout:1>{
+The quantization error is deterministic but hard to analyze, so we'll treat it as noise (random process).
+}
+
+\end{frame}
+
+%
+\begin{frame}{Quantization of a sinusoid}
+	\only<1-3|handout:1>{Using a 3-bit quantizer}
+	\only<4-6|handout:2>{Using an 8-bit quantizer}
+	\begin{center}
+		\resizebox{0.75\textwidth}{!}{\input{figs/quantization_sine_full.tex}}
+	\end{center}
+\end{frame}
+
+%
+\section{Probabilistic Interpretation of Quantization}
+\begin{frame}{Probability distribution of the output of a quantizer}
+\textbf{Question:} what's the probability density function (PDF) $p_{x_Q}(x)$ of the quantizer output $x_Q[n] \sim p_{x_Q}(x)$ when the input signal $x[n]$ has PDF $x[n] \sim p_{x}(x)$?
+\begin{center}
+	\resizebox{0.75\textwidth}{!}{\input{figs/quantizer_output_pdf.tex}}
+\end{center}
+
+\onslide<4|handout:1>{
+The PDF of $x_Q[n] \sim p_{x_Q}(x)$ is formed by impulses at the quantization levels. The area of any given impulse is equal to the area under $p_x(x)$ in the quantization interval corresponding to that impulse. In the example of the figure, the area of the impulse at the origin is equal to the highlighted area under $p_x(x)$.
+}
+\end{frame}
+
+%
+\begin{frame}{Area sampling}
+We can view $p_{x_Q}(x)$ as samples of the area of $p_x(x)$ under quantization intervals. This form of sampling is called \textbf{area sampling}.
+
+\begin{equation*}
+p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+\end{equation*}
+where 
+\begin{equation*}
+r(x) = \begin{cases}
+\frac{1}{\Delta}, & -\frac{\Delta}{2} \leq x \leq \frac{\Delta}{2} \\
+0, & \text{otherwise}
+\end{cases} \tag{rectangular window of area 1}
+\end{equation*}
+
+\begin{equation*}
+s(x) = \sum_{n = -\infty}^{\infty} \delta(x - n\Delta) \tag{impulse train}
+\end{equation*}
+The period of the impulse train (\textit{sampling period}) is $\Delta$
+
+\textbf{Interesting:} although quantization is an nonlinear operation on the signal, it is a linear operation on that signal PDF, since area sampling is linear.
+\end{frame}
+
+%
+\begin{frame}{Area sampling: graphically}
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/area_sampling_graphically.tex}}
+\end{center}	
+\end{frame}
+
+%
+\begin{frame}{Random variables and convolution}
+The area sampling interpretation of quantization gives us a simple equation for the PDF of $x_Q[n]$:
+\begin{equation*}
+p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+\end{equation*}
+
+\pause
+\textbf{Another interpretation:} in probability theory, we use convolution to calculate the PDF of the \textbf{sum of two independent random variables}:
+
+\begin{equation*}
+Z = X + Y \Longrightarrow p_Z = p_X \ast p_Y
+\end{equation*}
+
+\pause
+Applying to our problem:
+
+\begin{equation*}
+\tilde{x}_Q[n] = x[n] + q[n] \Longrightarrow p_{\tilde{x}_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}
+\end{equation*}
+where $q[n]$ is a random variable independent of $x[n]$ and with PDF $p_q(x) = r(x)$. Therefore, $q$ is an \textbf{uniform random variable} ($q\sim\mathcal{U}[-\Delta/2, \Delta/2]$).
+\end{frame}
+
+%
+\begin{frame}
+Comparing with the definition of quantization error:
+\begin{align*}
+x_Q[n] &= x[n] - e[n] \tag{from definition of quantization error} \\
+\tilde{x}_Q[n] &= x[n] + q[n] \tag{from probabilistic interpreation of area sampling}
+\end{align*}
+
+The equations for $x_Q[n]$ and $\tilde{x}_Q[n]$ are very similar, but there's an important difference. The PDF $p_{x_Q}(x)$ is formed by \textbf{sampling} $p_{\tilde{x}_Q}(x)$.
+
+\pause
+\begin{center}
+	\resizebox{0.55\textwidth}{!}{\input{figs/sampled_gaussian_pdf.tex}}
+\end{center}
+
+\pause
+If the sampled PDF ($p_{x_Q}(x)$) perfectly describes $p_{\tilde{x}_Q}(x)$, we can say that quantization error is perfectly described by an uniform random process.
+
+\pause 
+\textbf{Question:}  under what conditions can we perfectly reconstruct $p_{\tilde{x}_Q}(x)$ from its samples? \\
+\end{frame}
+
+%
+\begin{frame}{Revisiting the Shannon-Nyquist theorem}
+	Recall that the \textbf{Shannon-Nyquist theorem} guarantees that we can perfectly recover a signal from its samples if two conditions are met:
+	\begin{enumerate}
+		\item \textbf{No aliasing; spectrum replicas do not overlap}
+		\item Use ideal reconstruction filter (ideal lowpass filter)
+	\end{enumerate}
+	\pause
+	\begin{block}{Conditions for no aliasing}
+		\begin{enumerate}
+			\item The \textbf{characteristic function} (Fourier transform) of the area-sampled input PDF must satisfy: 
+			\begin{equation*}
+				\Phi_{p_{x_Q}}(j\theta) = \mathcal{F}\{p_{x_Q}(x)\} = 0, |\theta| > \theta_N
+			\end{equation*}
+			This is analogous to the condition of a signal being \textit{band-limited}.
+			\item\pause The \textit{sampling frequency} $\theta_s$ must be such that $\theta_s > 2\theta_N$.
 			
-		\path (xc) edge (Q);
-		\path (Q) edge (yc);
-		
-		\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
-		\node[above = 0mm of yc, align=center] {$x_Q[n]$}; 	
-		\end{tikzpicture}
-	}
-\end{center}
+			In this context, $\theta_s = 2\pi/\Delta$, and the quantization interval $\Delta$ is equivalent to the \textit{sampling period} (period of the impulse train).
+		\end{enumerate}
+	\end{block}
+\end{frame}
 
-\begin{center}
-	\resizebox{0.5\linewidth}{!}{
-		\begin{tikzpicture}
-		\begin{axis}[
-			axis lines*=middle,
-			enlargelimits = false, clip=true,
-			ymin=-7, ymax=7,
-			xmin=-7, xmax=7,
-			axis line style={->,>=stealth},
-			xlabel={$x[n]$},
-			ylabel={$x_Q[n]$},
-			yticklabel style = {yshift=0.2cm},
-			xticklabel style = {yshift=-0.1cm},
-			every axis x label/.style={
-				at={(ticklabel* cs:1)},
-				anchor=west,
-			},
-			every axis y label/.style={
-				at={(ticklabel* cs:1)},
-				anchor=south,
-			},
-			ytick={1},
-			xtick=\empty,
-			every outer y axis line/.append style={white!15!black},
-			every y tick label/.append style={font=\color{white!15!black}},
-			legend style={draw=white!15!black,fill=white,legend cell align=left}]			
-			\addplot[line width=1pt] coordinates {(0, 0) (1, 0) (1, 1) (2, 1) (2, 2) (3, 2) (3, 3) (4, 3) (4, 4) (5, 4) (5, 5)};
-			\addplot[black!20, line width=1pt, domain=-7:7, samples=2] {x};
-		\end{axis}
-		\end{tikzpicture}
-	}
-\end{center}
-
-Terminology
+%
+\begin{frame}<beamer:0|handout:1>
+Additional comments
 \begin{itemize}
-	\item $\Delta X$ is the \textbf{dynamic range}
-	\item $q$ is the quantization resolution
+	\item When we used the Shannon-Nyquist theorem for sampling a continuous-time signal, we said that we can use an anti-aliasing filter to minimize aliasing, but we could not use the ideal lowpass filter, as it is unfeasible.
+	\item In this discussion on quantization, we just want theoretical assurance that we can reconstruct the PDF from its samples. Therefore, for this purpose, we can use the ideal lowpass filter.
+	\item On the other hand, we cannot guarantee that there won't be aliasing, as many probability distributions are not \textit{band-limited}.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}
+	\textbf{Conclusion:} if the conditions for no aliasing are met, we can perfectly reconstruct the original PDF from its samples, and therefore, quantization noise can be \underline{perfectly modeled} as an uniform random process.
+	
+	\pause
+	\textbf{Bad news:} the conditions for no aliasing are generally not met in practice. \textbf{Example:} Gaussian distribution. The characteristic function of the Gaussian distribution is a Gaussian function. The Gaussian function is not \textit{band-limited}, as it is always non-zero.
+	
+	\pause
+	\textbf{How can we mitigate aliasing?}
+	\begin{enumerate}
+		\item Anti-aliasing filter? This would be equivalent to modify the PDF of the input signal. But what would it do the signal?
+		\item Oversampling $\implies$ shorter sampling period ($\Delta$) $\implies$ finer quantization
+	\end{enumerate}
+\end{frame}
+
+% 
+\begin{frame}{Example for the Gaussian input distribution}
+	\begin{itemize}
+		\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = 2.1\sigma$};}
+		\item Overlap of spectrum replicas results in \underline{significant aliasing}
+		\item The estimated quantization noise PDF differs from the uniform distribution
+	\end{itemize}
+	
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			Fourier transform of sampled PDF
+				\begin{center}
+					\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{2.9920}{$\Delta = 2.1\sigma$}}
+				\end{center}
+		\end{column}
+			\begin{column}{0.5\textwidth}
+			Estimated quantization noise PDF
+			\begin{center}
+					\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=2sigma.tex}}
+			\end{center}
+			\end{column}
+	\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Example for the Gaussian input distribution}
+\begin{itemize}
+	\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = \sigma$};}
+	\item Spectrum replicas are sufficiently apart; \underline{aliasing is negligible}
+	\item The estimated quantization noise PDF agrees well with the uniform distribution
 \end{itemize}
 
-The dynamic range, quantization resolution, and number of bits are related by 
-\begin{equation*}
-q = \frac{\Delta X}{2^{B}}
-\end{equation*}
+\begin{columns}[t]
+	\begin{column}{0.5\textwidth}
+		Fourier transform of sampled PDF
+		\begin{center}
+			\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{6.2832}{$\Delta = \sigma$}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		Estimated quantization noise PDF
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=sigma.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Summary on the probabilistic interpretation of quantization}
+	\begin{itemize}
+		\item In the probability domain, quantization corresponds to area sampling of the input PDF (a linear operation).		
+		\item If there's no aliasing (spectrum replicas of area-sampled input PDF do not overlap)
+		\begin{enumerate}
+			\item Characteristic function of the area-sampled input PDF is \textit{band-limited} with maximum \textit{frequency} $\theta_N$
+			\item Sampling period $\Delta$ satisfies $\Delta < \pi/\theta_N$
+		\end{enumerate}
+		the quantization error is \underline{perfectly modeled} by an uniform random process.
+		\item In general aliasing cannot be avoided, but oversampling (finer quantization) makes aliasing negligible and consequently we can still accurately model quantization error as an uniform random process.  
+	\end{itemize}
+\end{frame}
+
+%
+\section{Linear Noise Model}
+\begin{frame}{Linear noise model}
+We'll model the quantizer as a noise source of a \textbf{white uniformly distributed noise} that is independent of the input signal. 
+
+\begin{center}
+	\resizebox{0.6\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
+\end{center}
+\vspace{-0.5cm}
+\pause
+From these assumptions:
+\begin{align*}
+\sigma_e^2 &= \frac{\Delta^2}{12} \tag{average power} \\
+\phi_{ee}[n] &= \sigma_e^2\delta[n] \tag{autocorrelation function} \\
+\Phi_{ee}(e^{j\omega}) &= \sigma_e^2, |\omega| \leq \pi \tag{PSD}
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Quantizer signal-to-noise ratio (SNR)}
+It's often convinient to characterize the quantizer in terms of a \textbf{signal-to-noise ratio (SNR)}:
+\begin{align*}
+\mathrm{SNR} &= 10\log_{10}\bigg(\frac{\text{Signal Power}}{\text{Quantization noise power}}\bigg)~\text{dB} \\
+&= 10\log_{10}\bigg(\frac{\sigma_x^2}{\sigma_e^2}\bigg) \\
+&= 10\log_{10}\bigg(\frac{12\sigma_x^2}{\Delta^2}\bigg) \\
+&= 10\log_{10}\bigg(\frac{12\sigma_x^2(2^{2B})}{\Delta X^2}\bigg) \tag{substituting \eqref{eq:Delta}} \\
+&= \tikz[baseline]{\node[fill=blue!20,anchor=base] {$6.02B$};} + 10.79  + 20\log_{10}\bigg(\frac{\sigma_x}{\Delta X}\bigg) 
+\end{align*}
+
+For every bit in the quantizer we gain 6.02 dB of SNR.
+
+\textbf{Important:} The signal amplitude must be matched to the quantizer dynamic range, otherwise there'll be excessive clipping or some of the bits may not be used. 
+\end{frame}
+
+\begin{frame}{Effective number of bits (ENOB)}
+
+Another useful metric to evaluate quantizers is the \textbf{effective number of bits (ENOB)}.
+
+\begin{itemize}
+	\item Quantization is not the only source of noise in real quantizers
+	\item Additional noise will consume some bits of resolution
+	\item To continue using the simple linear noise model, we assume that the noisy real quantizer is equal to an ideal quantizer with resolution $ENOB < B$ bits.
+\end{itemize}
+
+\begin{center}
+	\resizebox{0.45\textwidth}{!}{
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+\tikzstyle{annot} = []
+
+\node[node] (xc) {};
+\node[block, right of=xc, text width = 2.5cm, align= center] (DSP) {Real Quantizer};
+\coordinate[right of=DSP] (yc) {};
+
+\path (xc) edge (DSP);
+\path (DSP) edge (yc);
+
+\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+\node[above = 0mm of yc, text width = 1cm, align=center] {$x_Q[n]$}; 
+\node[align=center, text width=3cm] at ($(DSP.south) - (0, 0.3cm)$) {$B$ bits of resolution};
+
+
+\node[node, below=2.3cm of xc] (xc2) {};
+\node[block, right of=xc2, text width = 2.5cm, align= center] (DSP2) {Ideal Quantizer};
+\coordinate[right of=DSP2] (yc2) {};
+
+\path (xc2) edge (DSP2);
+\path (DSP2) edge (yc2);
+
+\node[above = 0mm of xc2, text width = 1cm, align=center] {$x[n]$};
+\node[above = 0mm of yc2, text width = 1cm, align=center] {$x_Q[n]$}; 
+\node[align=center, text width=4cm] at ($(DSP2.south) - (0, 0.3cm)$) {$ENOB$ bits of resolution};
+\end{tikzpicture}
+}
+\end{center}
+
+Datasheets of ADCs will typically give you the ENOB at a certain frequency.
 
 \end{frame}
 
 
+\section{Noise shaping}
+\begin{frame}{Noise shaping}
 
+\begin{itemize}
+	\item Quantization noise is unavoidable, but there are strategies to mitigate it
+	\item One example is \textbf{noise shaping}. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
+	\item To perform noise shaping the signal must be \textbf{oversampled}, otherwise noise aliasing would make most of the noise power fall in the signal band.
+	\item Noise shaping can be used in both A-to-D and D-to-A converters
+\end{itemize}
+\end{frame}
 
+\begin{frame}{Noise shaping in A-to-D conversion}
+\begin{center}
+	\def\ALL{1}
+	\resizebox{0.8\textwidth}{!}{\input{figs/noise_shaping_adc_diagram.tex}}
+\end{center}
+\end{frame}
 
 %
-\begin{frame}{Outline}
-	\begin{itemize}
-		\item Probabilistic interpretation of quantization
-		\item Quantization noise shaping
-	\end{itemize}
+\begin{frame}{Noise shaping in A-to-D conversion}
+\vspace{-0.3cm}
+\begin{center}
+	\let\ALL\undefined
+	\resizebox{0.6\textwidth}{!}{\input{figs/noise_shaping_adc_diagram.tex}}
+\end{center}
+
+Using superposition, we can separately study the effect of the system on the signal $x[n]$ and on quantization noise $e[n]$. 
+
+For the signal
+\begin{align*}
+Y(z) &= (X(z) - Y(z)z^{-1})\frac{1}{1 - z^{-1}} \\
+Y(z)(1 - z^{-1}) &= (X(z) - Y(z)z^{-1}) \\
+Y(z) &= X(z) \tag{signal is unaffected}
+\end{align*}
+
+For the noise
+\begin{align*}
+Y(z) &= E(z) - Y(z)\frac{z^{-1}}{1 - z^{-1}} \\
+&= E(z)(1 - z^{-1}) \tag{noise is filtered}
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}
+The noise is filtered by
+\begin{equation*}
+\frac{Y(z)}{E(z)} = 1 - z^{-1} 
+\end{equation*}
+Therefore, the noise PSD at the output will be
+\begin{align*}
+\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) &= |1 - e^{-j\omega}|^2\sigma_e^2 \tag{since $e[n]$ is white} \\
+&= 4\sigma_e^2\sin^2(\omega/2)
+\end{align*}
+
+\begin{center}
+	\resizebox{0.8\textwidth}{!}{\input{figs/noise_shaping_adc_freq_domain.tex}}
+\end{center}
+
+After noise shaping most of the noise power falls out of the signal band, so we can use a simple lowpass filter to minimize quantization noise.
+
+\pause
+\textbf{Important:} This strategy of noise shaping only works when oversampling is sufficiently high. Otherwise, quantization noise would still fall in the signal band due to aliasing.
+\end{frame}
+
+%
+\begin{frame}{Noise shaping in A-to-D conversion}
+Table 4.1 of the textbook:
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\textwidth]{figs/table41.png}
+\end{figure}
+
 \end{frame}
 
 
 %
 \begin{frame}{Summary}
 \begin{itemize}
-	\item a
+	\item Quantization is unavoidable in DSP systems
+	\item Although quantization is a nonlinear operation on a signal, it is a linear operation on the signal PDF (area sampling)
+	\item The probabilistic interpretation of quantization allows us to model the quantization error as a uniformly distributed random process (linear noise model)
+	\item Using this linear noise model, we simply replace quantizers by noise sources of average power $\sigma_e^2 = \Delta^2/12$
+	\item Quantization noise is assumed white (samples are uncorrelated)
+	\item Every extra bit of resolution in a quantizer improves the SNR by 6.02 dB
+	\item The signal amplitude must be matched to the dynamic range of the quantizer, otherwise there'll be excessive clipping or some bits won't be used
+	\item Noise shaping is a strategy that minimizes quantization noise in A-to-D and D-to-A converters. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
+	\item Noise shaping requires oversampling to minimize noise aliasing
 \end{itemize}
 \end{frame}
 

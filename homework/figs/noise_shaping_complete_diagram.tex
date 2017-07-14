@@ -1,0 +1,58 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+\tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+	
+	\node[node] (xc3) {};
+	\node[block, right of=xc3, minimum size=1.4cm] (CTD2) {C-to-D};
+	\node[adder, right=1.25cm of CTD2] (add3) {\Large $+$};
+	\node[block, right of=add3, minimum size=1.5cm] (H3) {$H(z)$};
+	\node[adder, right=0.75cm of H3] (Q3) {\Large $+$};
+	\node[node, above=0.5cm of Q3] (e) {};
+	\node[block] (z2) at ($(H3.west)!0.5!(Q3.east) - (0, 1.5cm)$) {$z^{-1}$};
+	\coordinate[right=1cm of Q3] (yc3) {};
+	\node[node] at ($(Q3.east)!0.5!(yc3)$) {};
+	
+	\draw (xc3) -- (CTD2);
+	\draw (CTD2) -- (add3);
+	\draw (add3) -- (H3);
+	\draw (H3) -- (Q3);
+	\draw ($(Q3.east)!0.5!(yc3)$) |- (z2.east);
+	\draw (z2.west) -| (add3.south);
+	\draw (e) -- (Q3);
+	
+	\node at ($(add3.north west)+(-0.2, 0)$) {$+$};
+	\node at ($(add3.south west)-(0.05, 0.2)$) {$-$};
+	\node at ($(Q3.north west)+(-0.2, 0)$) {$+$};
+	\node at ($(Q3.north)+(-0.15, 0.15)$) {$+$};
+	\node[node] at ($(Q3.east)!0.5!(yc3)$) {};
+	
+	\node[above=0mm of xc3] {$x_c(t)$};
+	
+	\node[above=0mm of e] {$e[n]$};
+	
+	
+	\ifdefined\UPSAMPLE
+		\node[align=center, text width = 4cm] at ($(CTD2.south)-(0,0.5cm)$) {$\frac{M}{T} = 22.05M$ kHz};
+		
+	 	\node[block, right=1cm of Q3, text width = 1.2cm, align= center, minimum size=1.5cm] (AA) {$H_{aa}(z)$};
+		\node[block, right=0.5cm of AA, text width = 1cm, align= center, minimum size=1.5cm] (M) {$~~M$};
+		\draw[-latex, shorten >= 10pt, shorten <= 10pt, line width=0.75pt] ($(M.north)-(5pt, 0)$) -- ($(M.south)-(5pt, 0)$) {};
+		\coordinate[right=1cm of M] (yc3) {};
+		\node[above=0mm of yc3] {$x_Q[n]$};
+		
+		\draw (Q3) -- (AA);
+		\draw (AA) -- (M);
+		\draw (M) -- (yc3);
+		
+   		\draw[dashed] ($(AA.south west)-(0.3cm, 0.3cm)$) rectangle ($(M.north east)+(0.3cm, 0.3cm)$) {};
+		\node[align=center] at ($(AA.west)!0.5!(M.east) - (0, 1.3cm)$) {Decimator};
+		
+	\else
+		\node at ($(CTD2.east)!0.5!(add3.west) + (0, 0.25cm)$) {$x[n]$};
+		\draw (Q3) -- (yc3);
+		\node[above=0mm of yc3] {$x_Q[n]$};
+		\node[align=center, text width = 4cm] at ($(CTD2.south)-(0,0.5cm)$) {$\frac{1}{T} = 22.05$ kHz};
+	\fi
+	
+\end{tikzpicture}

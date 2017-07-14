@@ -1,0 +1,92 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+	
+	\ifdefined\ALL
+		\node[node] (xc) {};
+	    \node[adder, right=1.5cm of xc] (add) {\Large $+$};
+	    \node[block, right of=add, minimum size=1.5cm, text width=2cm, align=center] (H1) {Sampled data integrator};
+		\node[block, right of=H1] (ADC) {ADC};
+		\node[block] (DAC) at ($(H1.west)!0.5!(ADC.east) - (0, 1.5cm)$) {DAC};
+		\coordinate[right=1cm of ADC] (yc) {};
+		
+		\draw (xc) -- (add);
+		\draw (add) -- (H1);
+		\draw (H1) -- (ADC);
+		\draw (ADC) -- (yc);
+		\draw ($(ADC.east)!0.5!(yc)$) |- (DAC.east);
+		\draw (DAC.west) -| (add.south);
+		
+		\node at ($(add.north west)+(-0.2, 0)$) {$+$};
+		\node at ($(add.south west)-(0.05, 0.2)$) {$-$};
+		\node[node] at ($(ADC.east)!0.5!(yc)$) {};
+		
+		\node[above=0mm of xc] {$x_c(t)$};
+		\node[above=0mm of yc] {$y[n]$};
+		
+		%%%%
+		\node[node, below=3cm of xc] (xc2) {};
+		\node[block, right=0.5cm of xc2, minimum size=1.4cm] (CTD) {C-to-D};
+		\node[adder, right=1.25cm of CTD] (add2) {\Large $+$};
+		\node[block, right of=add2, minimum size=1.6cm] (H2) {$H(z) = \displaystyle\frac{1}{1 - z^{-1}}$};
+		\node[block, right=0.75cm of H2, minimum size=1.25cm, text width=1.6cm, align=center] (Q) {Quantizer};
+		\node[block] (z1) at ($(H2.west)!0.5!(Q.east) - (0, 1.5cm)$) {$z^{-1}$};
+		\coordinate[right=1cm of Q] (yc2) {};
+		\node[node] at ($(Q.east)!0.5!(yc2)$) {};
+		
+		\draw (xc2) -- (CTD);
+		\draw (CTD) -- (add2);
+		\draw (add2) -- (H2);
+		\draw (H2) -- (Q);
+		\draw ($(Q.east)!0.5!(yc2)$) |- (z1.east);
+		\draw (z1.west) -| (add2.south);
+		\draw (Q) -- (yc2);
+		
+		\node at ($(add2.north west)+(-0.2, 0)$) {$+$};
+		\node at ($(add2.south west)-(0.05, 0.2)$) {$-$};
+		\node[node] at ($(Q.east)!0.5!(yc2)$) {};
+		
+		\node[above=0mm of xc2] {$x_c(t)$};
+		\node[above=0mm of yc2] {$y[n]$};
+		\node[align=center, text width = 1.5cm] at ($(CTD.south)-(0,0.4cm)$) {Sampling \\ $T$};
+		\node at ($(CTD.east)!0.5!(add2.west) + (0, 0.2cm)$) {$x[n]$};
+		
+		%%%%
+		\node[node, below=3.5cm of xc2] (xc3) {};
+	\else
+		\node[node] (xc3) {};
+	\fi
+	
+	
+	\node[block, right=0.5cm of xc3, minimum size=1.4cm] (CTD2) {C-to-D};
+	\node[adder, right=1.25cm of CTD2] (add3) {\Large $+$};
+	\node[block, right of=add3, minimum size=1.5cm] (H3) {$\displaystyle\frac{1}{1 - z^{-1}}$};
+	\node[adder, right=0.75cm of H3] (Q3) {\Large $+$};
+	\node[node, above=0.5cm of Q3] (e) {};
+	\node[block] (z2) at ($(H3.west)!0.5!(Q3.east) - (0, 1.5cm)$) {$z^{-1}$};
+	\coordinate[right=1cm of Q3] (yc3) {};
+	\node[node] at ($(Q3.east)!0.5!(yc3)$) {};
+	
+	\draw (xc3) -- (CTD2);
+	\draw (CTD2) -- (add3);
+	\draw (add3) -- (H3);
+	\draw (H3) -- (Q3);
+	\draw ($(Q3.east)!0.5!(yc3)$) |- (z2.east);
+	\draw (z2.west) -| (add3.south);
+	\draw (Q3) -- (yc3);
+	\draw (e) -- (Q3);
+	
+	\node at ($(add3.north west)+(-0.2, 0)$) {$+$};
+	\node at ($(add3.south west)-(0.05, 0.2)$) {$-$};
+	\node at ($(Q3.north west)+(-0.2, 0)$) {$+$};
+	\node at ($(Q3.north)+(-0.15, 0.15)$) {$+$};
+	\node[node] at ($(Q3.east)!0.5!(yc3)$) {};
+	
+	\node[above=0mm of xc3] {$x_c(t)$};
+	\node[above=0mm of yc3] {$y[n]$};
+	\node[above=0mm of e] {$e[n]$};
+	\node[align=center, text width = 1.5cm] at ($(CTD2.south)-(0,0.4cm)$) {Sampling \\ $T$};
+	\node at ($(CTD2.east)!0.5!(add3.west) + (0, 0.2cm)$) {$x[n]$};
+	
+\end{tikzpicture}

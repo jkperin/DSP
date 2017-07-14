@@ -1,0 +1,48 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=1.5, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.25cm, inner sep=0pt]
+    \tikzstyle{adder} =[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+	
+	\node[node] (xc) {};
+	\node[node, below=1.5cm of xc] (e) {};
+	
+	\ifdefined\UPSAMPLE
+		
+	    \node[block, right=1cm of e] (H) {$H(z)$};
+	    \node[adder] (add) at ($(xc)+(3cm, 0)$) {\Large $+$};
+		\coordinate[right=1cm of add] (yc)  {};
+			
+	    \draw (xc) -- (add);
+	    \draw (e) -- (H);
+	    \draw (H) -| (add.south);
+	    \draw (add.east) -- (yc);
+	    
+	    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+	    \node[above = 0mm of yc, text width = 1cm, align=center] {$x_Q[n]$}; 
+	    \node[above = 0mm of e, text width = 1cm, align=center] {$e[n]$}; 
+ 	\else	 	
+   		\node[block, right=1cm of e, text width = 0.5cm, align= center] (L) {$~M$};
+	 	\draw[-latex, shorten >= 10pt, shorten <= 10pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+	 	\node[block, right=0.5cm of L] (H) {$H(z)$};
+	 	\node[block, right=0.5cm of H, text width = 1.2cm, align= center] (AA) {$H_{aa}(z)$};
+	 	\node[block, right=0.5cm of AA, text width = 1cm, align= center] (M) {$~~M$};
+	 	\draw[-latex, shorten >= 10pt, shorten <= 10pt, line width=0.75pt] ($(M.north)-(5pt, 0)$) -- ($(M.south)-(5pt, 0)$) {};
+	 	
+	 	\node[adder] (add) at ($(xc)+(8cm, 0)$) {\Large $+$};
+	 	\coordinate[right=1cm of add] (yc)  {};
+	 	
+	 	\draw (xc) -- (add);
+	 	\draw (e) -- (L);
+	 	\draw (L) -- (H);
+	 	\draw (H) -- (AA);
+	 	\draw (AA) -- (M);
+	 	\draw (M) -| (add.south);
+	 	\draw (add.east) -- (yc);
+	 	
+	 	\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+	 	\node[above = 0mm of yc, text width = 1cm, align=center] {$x_Q[n]$}; 
+	 	\node[above = 0mm of e, text width = 1cm, align=center] {$e[n]$}; 
+   		\draw[dashed] ($(AA.south west)-(0.3cm, 0.3cm)$) rectangle ($(M.north east)+(0.3cm, 0.3cm)$) {};
+	 	\node[align=center] at ($(AA.west)!0.5!(M.east) - (0, 1.3cm)$) {Decimator};
+ 	\fi
+\end{tikzpicture}

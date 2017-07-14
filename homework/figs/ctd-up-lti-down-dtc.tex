@@ -1,0 +1,37 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{annot} = []
+
+	\node[node] (xc) {};
+    \node[block, right=1cm of xc] (ADC) {C-to-D};
+	\node[block, right of=ADC, text width = 0.5cm, align= center] (L) {$~~3$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
+    \node[block, right of=L, text width = 2cm, align= center] (DSP) {$H(e^{j\omega})$};
+ 	\node[block, right of=DSP, text width = 1cm, align= center] (M) {$~~2$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(M.north)-(5pt, 0)$) -- ($(M.south)-(5pt, 0)$) {};
+    \node[block, right of=M] (DAC) {D-to-C};
+	\coordinate[right=1cm of DAC] (yc) {};
+	
+	\coordinate (mid1) at ($(ADC.east)!0.5!(L.west)$) {};
+	\coordinate (mid2) at ($(L.east)!0.5!(DSP.west)$) {};
+	\coordinate (mid3) at ($(DSP.east)!0.5!(M.west)$) {};
+	\coordinate (mid4) at ($(M.east)!0.5!(DAC.west)$) {};		
+	
+    \path (xc) edge (ADC);
+    \path (ADC) edge (L);
+    \path (L) edge (DSP);
+    \path (DSP) edge (M);
+    \path (M) edge (DAC);
+    \path (DAC) edge (yc);
+    
+    \node[above = 0mm of mid1] {$x[n]$};
+    \node[above = 0mm of mid2] {$x_e[n]$};
+    \node[above = 0mm of mid3] {$y_e[n]$};
+    \node[above = 0mm of mid4] {$y_d[n]$};
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y_c(t)$}; 
+    \node at ($(ADC.south)-(0, 0.3cm)$) {$T_1$};
+    \node at ($(DAC.south)-(0, 0.3cm)$) {$T_2$};
+\end{tikzpicture}

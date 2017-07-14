@@ -1,0 +1,452 @@
+\documentclass[12pt]{report}
+\setlength{\textwidth}{6.5 in}
+\setlength{\evensidemargin}{0 in}
+\setlength{\oddsidemargin}{0 in}
+\setlength{\textheight}{9.4 in }
+\setlength{\topmargin}{-0.7 in}
+\pagestyle{myheadings}
+\markboth{\em EE264: Homework \#03}{\em EE264: Homework \#03}
+\usepackage[pdftex]{graphicx} \usepackage{eso-pic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+
+\DeclareGraphicsExtensions{.pdf,.eps,.png}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\begin{document}
+\thispagestyle{empty}
+\begin{centering}
+	{\large Stanford University}\\
+	{\large EE 264: Digital Signal Processing}\\
+	{\large Summer, 2017} \\
+	\mbox{}\\
+	{\large Homework \#03}\\
+	\mbox{}\\
+\end{centering}
+\noindent Date assigned:  July 14, 2017 \hfill
+Date due: July 21, 2017\\
+\noindent \rule{6.5 in}{0.5pt}
+%\mbox{}\\
+\noindent {\bf Reading:}  This assignment covers primarily lectures 3 to 5, which corresponds to chapter 4 of the text book {\bf DTSP 3e}. \\
+\noindent {\bf Homework submission:}  Please submit your solutions on Canvas. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if applicable). \\
+\noindent {\bf Extra practice:}  Problems for extra practice are provided at the end of this assignment. Do \underline{not} turn in solutions to extra practice problems.
+
+\noindent
+\rule{6.5 in}{0.5pt}
+\mbox{}\\
+
+
+\noindent {\bf Problem 1: (25 points)}  Same as problem 4.47 in DTSP3e.
+
+Consider the following system for discrete-time processing of the
+continuous-time input signal $g_c(t)$. \\ \\
+\setlength{\unitlength}{1in}
+\begin{figure}[htb]
+	\begin{center}
+		\begin{picture}(6.2,.8)(0,0)
+		\put(0,.8){\vector(1,0){.6}}
+		\put(.6,.4){\framebox(.8,.8){\shortstack{C-T \\ LTI \\ System \\
+					$H_{aa}(j\Omega)$}}}
+		\put(1.4,.8){\vector(1,0){.6}}
+		\put(2,.4){\framebox(.8,.8){\shortstack{Ideal \\ C/D\\
+					Conv.}}}
+		\put(2.8,.8){\vector(1,0){.6}}
+		\put(3.4,.4){\framebox(.8,.8){\shortstack{D-T \\ LTI \\ System \\
+					$H_1(e^{j\omega})$}}}
+		\put(4.2,.8){\vector(1,0){.6}}
+		\put(4.8,.4){\framebox(.8,.8){\shortstack{Ideal \\ D/C \\
+					Conv.}}}
+		\put(5.6,.8){\vector(1,0){.6}}
+		\put(2.4,0){\vector(0,1){.4}}
+		\put(5.2,0){\vector(0,1){.4}}
+		\put(0,.9){{$g_c(t)$}}
+		\put(5.8,.9){{$y_c(t)$}}
+		\put(1.5,.9){{$x_c(t)$}}
+		\put(2.9,.9){{$x[n]$}}
+		\put(4.3,.9){{$y[n]$}}
+		\put(2.5,0){{$T$}}
+		\put(5.3,0){{$T$}}
+		\end{picture}
+		\vspace*{-.2in}
+	\end{center}\caption{System Block Diagram}\label{fig:system}
+\end{figure}
+
+\noindent
+The continuous-time input signal to the overall system
+is of the form $g_c(t)=f_c(t)+e_c(t)$ where $f_c(t)$ is considered
+to be the ``signal'' component and $e_c(t)$ is considered to be
+an ``additive noise'' component. The Fourier
+transforms of $f_c(t)$ and $e_c(t)$ are as follows: \\
+\setlength{\unitlength}{1in}
+\begin{figure}[htb]
+	\begin{center}
+		\begin{picture}(6.2,1.2)(0,0)
+		\put(0,.4){\vector(1,0){2.2}}
+		\put(3,.4){\vector(1,0){3.4}}
+		\put(1,.4){\vector(0,1){1}}
+		\put(4.6,.4){\vector(0,1){1}}
+		%                \put(.4,.4){\line(1,1){.6}}
+		%                \put(1.6,.4){\line(-1,1){.6}}
+		\put(.4,1){\line(1,0){1.2}}
+		\put(.4,.4){\line(0,1){.6}}
+		\put(1.6,.4){\line(0,1){.6}}
+		\put(3,.7){\line(1,0){1}}
+		\put(4.55,.7){\line(1,0){.1}}
+		\put(5.2,.7){\line(1,0){1.2}}
+		\put(4,.4){\line(0,1){.3}}
+		\put(5.2,.4){\line(0,1){.3}}
+		\put(1.1,1.3){{$F_c(j\Omega)$}}
+		\put(4.7,1.3){{$E_c(j\Omega)$}}
+		\put(.8,1.05){{$A$}}
+		\put(4.4,.7){{$B$}}
+		\put(2.2,.2){{$\Omega$}}
+		\put(6.4,.2){{$\Omega$}}
+		\put(.2,.2){{$-400\pi$}}
+		\put(1.4,.2){{$400\pi$}}
+		\put(3.7,.2){{$-400\pi$}}
+		\put(5.1,.2){{$400\pi$}}
+		\end{picture}
+		\vspace*{-.2in}
+	\end{center}
+	\caption{``Typical" Fourier transforms of the input signal
+		components.}\label{fig:inputs}
+\end{figure}
+
+\noindent
+Since the total input signal $g_c(t)$ does not have a bandlimited Fourier transform,
+a zero-phase continuous-time anti-aliasing filter is used to combat aliasing
+distortion.  Its frequency response is: \\
+\begin{figure}[htb]
+	\begin{center}
+		\begin{picture}(4.4,1.2)(0,0)
+		\put(0,.4){\vector(1,0){4.4}}
+		\put(2,.4){\vector(0,1){1}}
+		%                \put(.8,.4){\line(1,1){.6}}
+		%                \put(3.2,.4){\line(-1,1){.6}}
+		%                \put(1.4,1){\line(1,0){1.2}}
+		\put(2,1){\line(2,-1){1.2}}
+		\put(2,1){\line(-2,-1){1.2}}
+		\put(2.1,1.3){{$H_{aa}(j\Omega) = \left\{ \begin{array}{ll}
+				1 - |\Omega| / (800\pi)& \hspace*{.3in} |\Omega| < 800\pi \\
+				0 & \hspace*{.3in} |\Omega| > 800\pi
+				\end{array} \right.
+				$}}
+		\put(1.9,1.05){{$1$}}
+		\put(4.4,.2){{$\Omega$}}
+		\put(.6,.2){{$-800\pi$}}
+		\put(3,.2){{$800\pi$}}
+		\put(1.2,.2){{$-400\pi$}}
+		\put(2.4,.2){{$400\pi$}}
+		\put(1.4,.35){\line(0,1){.1}}
+		\put(2.6,.35){\line(0,1){.1}}
+		\end{picture}
+		\vspace*{-.4in}
+	\end{center}
+	\caption{Anti-aliasing filter frequency response.}\label{fig:filter}
+\end{figure}
+
+\noindent
+%\[
+%H_{aa}(j\Omega) = \left\{ \begin{array}{ll}
+%   1 - |\Omega| / (800\pi)& \hspace*{.3in} |\Omega| < 800\pi \\
+%   0 & |\Omega| > \hspace*{.3in} 800\pi
+%   \end{array} \right.
+%\]
+\begin{description}
+	\item{(a) }
+	If in Figure \ref{fig:system}, the sampling rate is $2\pi /T = 1600\pi$, and the
+	discrete-time system has frequency response
+	\[
+	H_{1}(e^{j\omega}) = \left\{ \begin{array}{ll}
+	1 & \hspace*{.3in} |\omega| < \pi/2 \\
+	0 & \hspace*{.3in} \pi/2 < |\omega| \leq \pi
+	\end{array} \right.
+	\]
+	sketch the Fourier transform of the continuous-time output signal for the input whose
+	Fourier transform is defined in Figure \ref{fig:inputs}.
+	
+	\item{(b) }
+	If the sampling rate is $2\pi /T = 1600\pi$,
+	determine the magnitude and phase of $H_1(e^{j\omega})$ (the frequency response
+	of the discrete-time system) so that the output of the system in Figure
+	\ref{fig:system} is
+	$y_c(t)= f_c(t-0.1)$. You may
+	use any combination of equations or carefully labeled plots to express your
+	answer.
+	\item{(c) }
+	It turns out that since we are only interested in obtaining $f_c(t)$ at the output,
+	we can use a lower sampling rate than $2\pi /T = 1600\pi$ while still using the
+	anti-aliasing filter in Figure \ref{fig:filter}.  Determine the minimum sampling rate
+	that will avoid aliasing distortion of
+	$F_c(j\Omega)$ and determine the frequency response of the filter $H_1(e^{j\omega})$
+	that can be used so that
+	$y_c(t)=f_c(t)$ at the output of the system in Figure \ref{fig:system}.
+	\item{(d)}
+	Now consider the following system, where $2\pi /T = 1600 \pi$, and the
+	input signal is defined in Figure \ref{fig:inputs} and the anti-aliasing filter is
+	as shown in Figure \ref{fig:filter}.\\
+	\begin{figure}[htb]
+		\begin{center}
+			\begin{picture}(6.2,1.)(0,0)
+			\put(0,.8){\vector(1,0){.6}}
+			\put(.6,.4){\framebox(.8,.8){\shortstack{C-T \\ LTI \\ System \\
+						$H_{aa}(j\Omega)$}}}
+			\put(1.4,.8){\vector(1,0){.6}}
+			\put(2,.4){\framebox(.8,.8){\shortstack{Ideal \\ C/D\\
+						Conv.}}}
+			\put(2.8,.8){\vector(1,0){.6}}
+			\put(3.4,.4){\framebox(.8,.8){\shortstack{$\uparrow 3$}}}
+			\put(4.2,.8){\vector(1,0){.6}}
+			\put(4.8,.4){\framebox(.8,.8){\shortstack{D-T LTI \\ System \\
+						$H_2(e^{j\omega})$}}}
+			\put(5.6,.8){\vector(1,0){.6}}
+			\put(2.4,0){\vector(0,1){.4}}
+			%                \put(5.2,0){\vector(0,1){.4}}
+			\put(0,.9){{$g_c(t)$}}
+			\put(5.8,.9){{$y[n]$}}
+			\put(1.5,.9){{$x_c(t)$}}
+			\put(2.9,.9){{$x[n]$}}
+			\put(4.3,.9){{$v[n]$}}
+			\put(2.5,0){{$T$}}
+			%                \put(5.3,0){{$T$}}
+			\end{picture}
+		\end{center}\caption{Filtering and interpolation system.\label{fig:filterandinterpolation}}
+	\end{figure}
+	
+	where
+	\[
+	v[n] = \left\{  \begin{array}{ll}
+	x[n/3] & \hspace*{.4in} n=0,\pm 3, \pm 6, \ldots \\
+	0 & \hspace*{.4in} \mbox{otherwise}
+	\end{array} \right.
+	\]
+	What should $H_2(e^{j\omega})$ be if it is desired that
+	$y[n]=f_c(nT/3)$?
+\end{description}
+
+\newpage 
+\noindent {\bf Problem 2: (30 points)}\\
+
+Consider the following system for discrete-time processing of
+the continuous-time signal $x_c(t)$.\\
+
+\begin{figure}[h!]
+	\centering
+	\resizebox{\textwidth}{!}{\input{figs/ctd-up-lti-down-dtc.tex}}
+\end{figure}
+
+
+Assume that the input signal has a bandlimited continuous-time Fourier
+transform such that $X_c(j\Omega)=0$ for $|\Omega|\geq 2\pi(2000)$.
+
+\begin{description}
+	\item{(a)} Note that the sampling periods $T_1$ and $T_2$ {\bf cannot} be
+	chosen independently if we wish to maintain a consistent time scale
+	between the input and output. Give the relationship that is required
+	between $T_2$ and $T_1$.
+	\item{(b)} Determine the {\bf maximum} value of $T_2$ (equivalently {\em
+		minimum} sampling rate $f_{s2}=1/T_2$) so that  aliasing cannot occur  in sampling at the input or in the processing and reconstruction of the output of the system.  Also determine the corresponding value of $T_1$.
+	\item{(c)} For the values of $T_2$ and $T_1$  determined in part (b), Sketch the required frequency response $H(e^{j\omega})$ so that $y_c(t)=x_c(t)$.
+	\item{(d)} For the values of $T_2$ and $T_1$ determined in part (b), determine the
+	frequency response $H(e^{j\omega})$ so that $y_c(t)=2x_c(t -4 T_1)$.
+	\item{(e)} For the values of $T_2$ and $T_1$ determined in part (b), determine the
+	frequency response $H(e^{j\omega})$ so that the continuous-time Fourier
+	transform of the output satisfies the condition
+	\[
+	Y_c(j\Omega)=\left\{ \begin{array}{ll}
+	0&\quad |\Omega|\leq 2\pi(500) \\
+	X_c(j\Omega) &\quad 2\pi(500)<|\Omega|<2\pi(1500) \\
+	0 &\quad |\Omega|\geq 2\pi(1500).
+	\end{array}\right.
+	\]
+	Plot your answer.
+	\item{(f)} For the value of $T_2$ determined in part (b), determine (give an equation for) the
+	frequency response $H(e^{j\omega})$ so that
+	\[
+	y_c(t) = \frac{d x_c(t)}{dt}.
+	\]
+	
+\end{description}
+
+\newpage
+\noindent {\bf Problem 3: (15 points)} (adapted from the midterm of 2014)\\
+
+We are given a deterministic signal $x[n]$. We wish to compute the deterministic autocorrelation function (ACF) of an interpolated signal $x_i[n]$ as in the following block diagram
+
+\begin{figure}[h!]
+	\centering
+	\def\sysstate{1}
+	\resizebox{0.7\textwidth}{!}{\input{figs/compute_acf_diagram.tex}}
+\end{figure}
+\noindent where $H_1(e^{j\omega})$ is the ideal lowpass with gain $L$ and cutoff frequency $\pm\pi/L$. The box labeled ``Compute ACF'' computes the deterministic autocorrelation function of its input:
+
+\begin{equation}
+\phi_1[m] = \sum_{n=-\infty}^{\infty} x_i[m+n]x_i[n] \tag{Assume that this inifite sum exists}
+\end{equation}
+
+\begin{description}
+	\item[(a)] An EE 264 student suggests that we can accomplish the same thing with the following system:
+	\begin{figure}[h!]
+		\centering
+		\let\sysstate\undefined
+		\def\sysa{1}
+		\resizebox{0.7\textwidth}{!}{\input{figs/compute_acf_diagram.tex}}
+	\end{figure}
+
+	Note that in this diagram the ACF $\phi_2[m]$ is treated as just another sequence that can be upsampled and filtered. Specify the gain and cutoff frequency of the ideal lowpass filter $H_2(e^{j\omega})$ that will accomplish the task of ensuring $\phi_3[m] = \phi_1[m]$.
+	
+	\item[(b)] Now another EE 264 student says that the following system also works.
+		\begin{figure}[h!]
+		\centering
+		\let\sysa\undefined
+		\def\sysb{1}
+		\resizebox{0.7\textwidth}{!}{\input{figs/compute_acf_diagram.tex}}
+		\end{figure}
+	
+	Is the second student right? i.e., is $\phi_5[m] = \phi_1[m]$? If not, why not? If so, how should the gain and cutoff of $H_3(e^{j\omega})$ be set?
+		
+\end{description}
+
+
+\newpage 
+
+
+\noindent {\bf Problem 4: Quantization and quantization noise shaping (50 points)}
+
+In this problem, you will \textit{hear} how quantization noise affects speech signals and how we can use noise shaping to minimize the effects of coarse quantization.
+
+On Canvas, download the Matlab scritpt \texttt{quantization\_noise\_shaping\_template.m} and the audio file \texttt{speech\_dft.wav}. The script \texttt{quantization\_noise\_shaping\_template.m} loads the speech signal from the file \texttt{speech\_dft.wav}, so you can use it in your simulations. The speech in \texttt{speech\_dft.wav} is of someone saying the phrase ``The discrete Fourier transform of a real-valued signal is conjugate symmetric''. 
+~\\
+
+\noindent\textbf{Part 1: Implementing a quantizer}
+
+\begin{description}
+	\item[(a)]  Write a function \texttt{quantizer} with the following call: 
+	\begin{equation*}
+	\texttt{[xq, e] = quantizer(x, B, range\_lims)},
+	\end{equation*}
+	where \texttt{x} is the input signal to the quantizer, \texttt{xq} is the quantized signal, and \texttt{e = x - xq} is the quantization error. \texttt{B} is the number of bits of resolution of the quantizer, and  \texttt{range\_lims} is a $1\times 2$ vector that defines the range limits of the quantizer. In this exercise, the speech signal varies from $-1$ to $+1$. Hence,  \texttt{range\_lims = [-1, 1]}. Note that the dynamic range of the quantizer is simply  \texttt{range\_lims(2) -  range\_lims(1)}.
+		
+	\textit{Hints:}
+	\begin{itemize}
+		\item You can use the Matlab function \texttt{quantiz} to actually perform the quantization. You'll need to use \texttt{B} and \texttt{range\_lims} to calculate the partitions and codebook used by \texttt{quantiz}.
+		\item It's up to you to choose whether your quantizer will be mid-tread or mid-rise. Either one will work fine.
+		\item To check your implementation, you can see whether the quantization error \texttt{e} is approximately zero mean and whether its histogram resembles an uniform distributed signal.		
+	\end{itemize}
+	
+	\item[(b)] Use your function to quantize the speech signal assuming a resolution of $B = 4$ bits. Use the function \texttt{sound(xq, Fs)} to play the quantized speech signal. In class we assumed that the quantization noise is white, plot the empirical autocorrelation function of $e[n]$. What's the quantization noise average power? Repeat your calculations for $B = 10$.
+	
+	\textit{Hint:} You may use the Matlab function \texttt{xcorr(e, e, maxLag, `unbiased')} to obtain the empirical autocorrelation function, and the function \texttt{stem} to plot it.
+\end{description}
+	
+\noindent\textbf{Part 2: Noise shaping without oversampling}
+	
+To keep things simple, we will not implement the feedback loop (Figure~\ref{fig:noise_shaping_diagram}a) necessary to achieve quantization noise shaping. Instead, we will use superposition to treat signal and quantization noise separately, as illustrated in Figure~\ref{fig:noise_shaping_diagram}b. In this equivalent system, the signal $x[n]$ is unaltered, but the quantization noise is filtered by $H(z)$. The quantization noise $e[n]$ will be the quantization noise you obtained by calling your function \texttt{quantizer} on the input signal $x[n]$.
+	
+As discussed in class, noise shaping can only work well when oversampling is sufficiently high, otherwise the aliased noise will still fall in the signal band. In this first system, we assume that there is no oversampling. The audio recording is done at 22.05 kHz, and we assume that this corresponds to the Nyquist rate of that signal. 
+	
+\begin{figure}[t]
+	\centering
+	\begin{subfigure}{\textwidth}
+		\centering
+		\resizebox{0.7\textwidth}{!}{\input{figs/noise_shaping_complete_diagram.tex}}
+		\caption{Block diagram of noise shaping in analog-to-digital converters, as discussed in lecture 5, slide 24.} 
+	\end{subfigure}
+	
+	\begin{subfigure}{\textwidth}
+		\centering
+		\def\UPSAMPLE{1}
+		\resizebox{0.4\textwidth}{!}{\input{figs/noise_shaping_simplified_diagram.tex}}
+		\caption{Equivalent block obtained by applying superposition in diagram of Figure~\ref{fig:noise_shaping_diagram}a. Signal is unaffected, while quantization noise is filtered by $H(z)$}
+	\end{subfigure}%
+	\caption{Block diagrams for noise shaping without oversampling.} \label{fig:noise_shaping_diagram}
+\end{figure}
+	
+\begin{description}		
+	\item[(c)] Implement system of Figure~\ref{fig:noise_shaping_diagram}b to calculate the new quantized signal $x_Q[n]$ after noise shaping. Assume that the quantizer had $B = 4$ bits of resolution, and that the noise was shaped by $H(z) = 1 - z^{-1}$. Use the function \texttt{sound(xq, Fs)} to play the new quantized signal.  
+	
+	\textit{Hint:} To filter the quantization noise you may use the function \texttt{filter(b, a, e)}. The vector \texttt{e} is the vector you obtained using your function \texttt{quantizer}.
+\end{description}
+
+\noindent\textbf{Part 3: Noise shaping with oversampling}
+
+Now we'll assume that the speech signal was recorded using the analog-to-digital converter illustrated in Figure~\ref{fig:noise_shaping_diagram2}a. Note that in this system, the signal is sampled by the C-to-D with sampling frequency $22.05\times M$ kHz ($M$ times greater than before). All the noise shaping processing is performed at this new rate. Then, at the end, the signal is decimated by $M$, so that $x_Q[n]$ has the same rate of the previous system.
+
+The equivalent system is shown in Figure~\ref{fig:noise_shaping_diagram2}b. Note that the signal component is unaffected and it's the same as before (i.e., the discrete-time speech signal at rate $22.05$ kHz). As for the quantization noise, we'll use the same noise as before (the noise you obtained using your \texttt{quantizer} function). However, before doing noise shaping we must upsample the noise by $M$.
+
+\begin{description}	
+	\item[(d)] Implement system of Figure~\ref{fig:noise_shaping_diagram2}b to calculate the new quantized signal $x_Q[n]$ after noise shaping. Assume that we had the same conditions as before: $B = 4$ and $H(z) = 1 - z^{-1}$. Assume further that the oversampling factor is $M = 3$. 
+	
+	\textit{Hints:}
+	\begin{itemize}
+		\item Use the Matlab function \texttt{upsample(e, M)} to implement upsampling.
+		\item For decimation, you may use the Matlab function \texttt{decimate(e, M)}. This function already includes the anti-aliasing pre-filtering $H_{aa}(z)$. By default, \texttt{decimate(e, M)} uses as anti-aliasing filter the Chebyshev Type I IIR filter of order 8.
+	\end{itemize}
+	
+	\item [(e)] Calculate the quantization noise power after decimation. By how much was the power reduced compared with the original quantization noise? Express this reduction in dB and state how many extra bits of resolution would be needed to achieve the same improvement.
+		
+\begin{figure}[t]
+	\centering
+	\begin{subfigure}{\textwidth}
+		\centering
+		\def\UPSAMPLE{1}
+		\resizebox{0.9\textwidth}{!}{\input{figs/noise_shaping_complete_diagram.tex}}
+		\caption{Block diagram of noise shaping in oversampled analog-to-digital converters.} 
+	\end{subfigure}
+	
+	\begin{subfigure}{\textwidth}
+		\centering
+		\resizebox{0.7\textwidth}{!}{\input{figs/noise_shaping_simplified_diagram.tex}}
+		\caption{Equivalent block diagram of first-order noise shaping system with oversampling factor $M$.} \label{fig:noise_shaping_diagram2}
+	\end{subfigure}%
+	\caption{Block diagrams for noise shaping with oversampling. } \label{fig:noise_shaping_diagram2}
+\end{figure}	
+
+\end{description}
+
+\newpage
+\noindent {\bf Problem 5: Extra credit (25 points)}
+
+Implement the system of Figure~\ref{fig:noise_shaping_diagram2}a with the feedback loop. To realize this system you'll need to follow these steps
+\begin{enumerate}
+	\item Interpolate the signal $x[n]$ with upsampling factor $M$, in order to achieve the signal with rate $22.05\times M$ kHz. You may use the Matlab function \texttt{interp1}, which performs linear interpolation. 
+	\item Implement the feedback loop. You'll need to write $H(z)$ as a difference equation and implement it inside a \texttt{for} loop. Now the noise source will be your function \texttt{quantizer}, which you should call at every iteration.
+	\item Decimate the output signal of the feedback loop in order to obtain the quantized signal $x_Q[n]$. This signal should have the same quality you obtained in the previous problem. Note, however, that now we can no longer separate the signal from the shaped quantization noise.
+\end{enumerate}
+
+
+\newpage
+
+\begin{center}
+	\noindent {\Large \textbf{Extra Practice}}
+\end{center}
+\noindent {\bf The following problems from the textbook are for extra practice if you need it. Do \underline{not} turn in solutions to these problems. }\\
+
+\includepdf[pages=-]{include/DTSP3e_problems467}
+\includepdf[pages=-]{include/DTSP3e_problems463}
+\includepdf[pages=-]{include/DTSP3e_problems463-2}
+
+\end{document}

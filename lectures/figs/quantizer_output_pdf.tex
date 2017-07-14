@@ -1,0 +1,60 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+width=\textwidth,
+height=0.5\textwidth,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth},
+xlabel={\Large $x$},
+ylabel={\Large $p_x(x)$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.9)},
+	xshift=0.7cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=-3.00, xmax=3.4,
+ymin=0, ymax=0.5,
+ytick=\empty,
+xtick={-2.5, -1.5, -0.5, 0.5, 1.5, 2.5},
+xticklabels={\large $-\frac{5\Delta}{2}$, \large$-\frac{3\Delta}{2}$, \large$-\frac{\Delta}{2}$,\large $\frac{\Delta}{2}$, \large$\frac{3\Delta}{2}$, \large$\frac{5\Delta}{2}$},
+xmajorgrids,
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 3, 0.25)}}]
+
+\addplot [name path=g, smooth, black, line width=1.5pt, domain=-5:5, samples=51, forget plot] {gauss(x)};
+\path[name path=axis1] (axis cs:-0.5,0) -- (axis cs:0.5,0);
+
+\addplot [
+thick,
+color=black,
+fill=black, 
+fill opacity=0.10,
+forget plot,
+]
+fill between[
+of=g and axis1,
+soft clip={domain=-0.5:0.5},
+];
+
+\node[black, fill=black!10, minimum size=1cm] at (axis cs: 1.75, 0.45) {\Large $\mathrm{Pr}(-\Delta/2 \leq x \leq \Delta/2)$};
+
+\only<3-|handout:1>{
+\addplot [dirac, line width=1.5pt] coordinates {(-2, 0.05) (-1, 0.15) (0, 0.3) (1, 0.15) (2, 0.05)}; \addlegendentry{\Large $p_{x_Q}(x)$};
+}
+
+\only<2-|handout:1>{
+	\addplot [dirac, line width=1.5pt, forget plot] coordinates {(0, 0.3)};
+}
+\end{axis}
+\end{tikzpicture}
