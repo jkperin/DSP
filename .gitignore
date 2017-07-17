@@ -225,3 +225,4 @@ outgoing/
 *.asv
 lectures/m/*.tex
 homework/m/*.tex
+*.wav

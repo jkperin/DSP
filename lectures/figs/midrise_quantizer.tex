@@ -4,7 +4,7 @@
 			\begin{axis}[
 			axis lines*=middle,
 			enlargelimits = false, clip=false,
-			ymin=-4, ymax=5,
+			ymin=-4, ymax=4.5,
 			xmin=-5, xmax=5,
 			axis line style={->,>=stealth},
 			xlabel={$x[n]$},
@@ -21,13 +21,13 @@
 			},
 			xtick={-4,..., 4},
 			xticklabels={$-4\Delta$, $-3\Delta$, $-2\Delta$, $-\Delta$, 0, $\Delta$, $2\Delta$, $3\Delta$, $4\Delta$},
-			ytick={-4, -3,-2, 1, 2, 3, 4},
-			yticklabels={$-4\Delta$, $-3\Delta$, $-2\Delta$, $\Delta$, $2\Delta$, $3\Delta$, $4\Delta$},
+			ytick={-3.5, -2.5, -1.5, 0.5, 1.5, 2.5, 3.5},
+			yticklabels= {$-\frac{7\Delta}{2}$, $-\frac{5\Delta}{2}$, $-\frac{3\Delta}{2}$, $\frac{\Delta}{2}$, $\frac{3\Delta}{2}$, $\frac{5\Delta}{2}$, $\frac{7\Delta}{2}$},
 			every outer y axis line/.append style={white!15!black},
 			every y tick label/.append style={font=\color{white!15!black}},
 			legend style={draw=white!15!black,fill=white,legend cell align=left}]			
-			\addplot[line width=1pt] coordinates {(0, -1) (0, 1) (1, 1) (1, 2) (2, 2) (2, 3) (3, 3) (3, 4) (4, 4) (5, 4)};
-			\addplot[line width=1pt] coordinates {(0, -1) (-1, -1) (-1, -2) (-2, -2) (-2, -3) (-3, -3) (-3, -4) (-4, -4) (-5, -4)};
+			\addplot[line width=1pt] coordinates {(0, -0.5) (0, 0.5) (1, 0.5) (1, 1.5) (2, 1.5) (2, 2.5) (3, 2.5) (3, 3.5) (4, 3.5) (5, 3.5)};
+			\addplot[line width=1pt] coordinates {(0, -0.5) (-1, -0.5) (-1, -1.5) (-2, -1.5) (-2, -2.5) (-3, -2.5) (-3, -3.5) (-4, -3.5) (-5, -3.5)};
 			\addplot[dashed, black!20, line width=1pt, domain=-4:4, samples=2] {x};
 			
 			\draw[black!10, fill=black!10] (axis cs: -6, 4) rectangle (axis cs: -1, 2) {};
@@ -41,7 +41,7 @@
 			\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
 			\node[above = 0mm of yc, align=center] {$x_Q[n]$}; 
 			
-			\draw[<->, >=stealth, blue2, line width=2pt] (axis cs: -4, 0.5) -- (axis cs: 4, 0.5) {};
-			\node at (axis cs: 2.5, 1) {\color{blue2} $\Delta X$}; 
+			\draw[<->, >=stealth, blue2, line width=2pt] (axis cs: -4, 0.25) -- (axis cs: 4, 0.25) {};
+			\node at (axis cs: 2.5, 0.75) {\color{blue2} $\Delta X$}; 
 			\end{axis}
 			\end{tikzpicture}

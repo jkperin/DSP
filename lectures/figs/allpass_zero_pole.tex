@@ -1,0 +1,54 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis on top=true,
+axis equal,
+axis lines*=middle,
+enlargelimits = false, clip=false,
+xmin=-1.5,
+xmax=2.5,
+ymin=-1,
+ymax=1,
+axis line style={->,>=stealth},
+xlabel={$\mathrm{Re}\{z\}$},
+ylabel={$\mathrm{Im}\{z\}$},
+every axis x label/.style={
+at={(ticklabel* cs:1)},
+anchor=north,
+},
+every axis y label/.style={
+at={(ticklabel* cs:1)},
+anchor=south,
+},
+%xmajorgrids,
+%ymajorgrids,
+xtick={-1.33, -0.75, 0.5, 2},
+xticklabels={$-\frac{1}{0.75}$, $-0.75$, $0.5$, $2$},
+xticklabel style={yshift=-0.2cm},
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\draw (axis cs:0,0) circle [black!50, dashed, line width=2pt, radius=1];
+\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
+table[row sep=crcr]{
+	0.5 0 \\
+	-0.75 0 \\
+	0.565685 0.565685 \\
+	0.565685 -0.565685 \\
+};
+
+\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
+table[row sep=crcr]{
+	2 0 \\
+	-1.33333 0 \\
+	0.883884 -0.883884 \\
+	0.883884 0.883884 \\
+};
+
+% Annotations
+\draw[red!40, thick, fill=red!20] (axis cs: 1.25, 0) ellipse (1.75cm and 0.25cm);
+\draw[blue!40, thick, fill=blue!20] (axis cs: -1, 0) ellipse (1cm and 0.25cm);
+\draw[green!40, thick, fill=green!20, rotate around={45:(0.707,0.707)}] (axis cs: 0.707, 0.707) ellipse (0.75cm and 0.25cm);
+\draw[green!40, thick, fill=green!20, rotate around={-45:(0.707,-0.707)}] (axis cs: 0.707, -0.707) ellipse (0.75cm and 0.25cm);
+\end{axis}
+\end{tikzpicture}
