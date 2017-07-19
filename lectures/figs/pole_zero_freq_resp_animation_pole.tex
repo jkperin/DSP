@@ -1,0 +1,108 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+axis equal,
+axis lines*=middle,
+enlargelimits = false, clip=true,
+xmin=-1.39,
+xmax=1.39,
+ymin=-1.10,
+ymax=1.10,
+axis line style={->,>=stealth},
+xlabel={$\mathrm{Re}\{z\}$},
+ylabel={$\mathrm{Im}\{z\}$},
+every axis x label/.style={
+at={(ticklabel* cs:1)},
+anchor=north,
+},
+every axis y label/.style={
+at={(ticklabel* cs:1)},
+anchor=south,
+},
+xtick=1, ytick=\empty,
+xticklabel style={xshift=0.1cm},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\draw (axis cs:0,0) circle [black!50, dashed, line width=2pt, radius=1];
+\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
+table[row sep=crcr]{
+	0.6364 0.6364\\
+};
+
+\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
+table[row sep=crcr]{
+	0 0 \\
+};
+
+\coordinate (axis) at (axis cs: 1, 0);
+\coordinate (orig) at (axis cs: 0, 0);
+\coordinate (zero) at (axis cs:	0.6364, 0.6364);
+\draw[->, >=stealth, shorten >= 2.5pt, thick] (orig) -- (zero);
+
+\pic [draw, <->, "$\theta$", angle eccentricity=1.5] {angle = axis--orig--zero};
+
+\only<1|handout:0>{
+\coordinate (eval) at (axis cs:	1, 0);
+%\pic [draw, red2, <->, "$\omega$", angle eccentricity=1.25,  angle radius=1cm] {angle = axis--orig--eval};
+\draw[->, >=stealth, shorten >= 2.5pt, thick, red2] (orig) -- (eval);
+\draw[red2, fill=red2] (eval) circle (3pt);
+\draw[->, >=stealth, shorten >= 2.5pt, thick, blue2] (zero) -- (eval);
+}
+
+\only<2|handout:1>{
+	\coordinate (eval) at (axis cs:	0.707, 0.707);
+	\pic [draw, red2, <->, "$\omega$", angle eccentricity=1.25,  angle radius=1cm] {angle = axis--orig--eval};
+	\draw[->, >=stealth, shorten >= 2.5pt, thick, red2] (orig) -- (eval);
+	\draw[red2, fill=red2] (eval) circle (3pt);
+	\draw[->, >=stealth, shorten >= 2.5pt, thick, blue2] (zero) -- (eval);
+}
+
+%\node at ($(orig)!0.5!(zero) + (-0.1cm, 0.3cm)$) {$v_2$};
+%\node[red2] at ($(orig)!0.5!(eval) + (0.1cm, 0.3cm)$) {$v_1$};
+%\node[blue2] at ($(eval)!0.5!(zero) + (-0.1cm, 0.3cm)$) {$v_3$};
+
+\end{axis}
+
+\begin{axis}[
+name=plot2,
+at= (plot1.east), anchor=west,
+xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth},
+xlabel={$\omega$},
+ylabel={$20\cdot\log_{10}(|H(e^{j\omega})|)$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	%yshift=0.35cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=3.14,
+xtick={0, 0.7850, 1.57, 2.3550, 3.14},
+xticklabels ={$0$, $\pi/4$, $\pi/2$, $3\pi/4$, $\pi$},
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [smooth, black, line width=1.5pt, forget plot, domain=0:3.14, samples=101] {-20*log10(sqrt(1+0.81 - 2*0.9*cos(deg(x)-45)))};
+
+\only<1|handout:0>{
+\addplot [red2, mark=*, mark size=3pt] coordinates {(0,2.6986)};
+}
+
+\only<2|handout:1>{
+	\addplot [red2, mark=*, mark size=3pt] coordinates {(0.7854, 20)};
+}
+
+\end{axis}
+\end{tikzpicture}

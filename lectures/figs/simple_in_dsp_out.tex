@@ -1,0 +1,15 @@
+% \xin, \yout, and \Hz must be defined before calling this script
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+\node[node] (xc) {};
+\node[block, right=1cm of xc, text width = 2cm, align= center] (DSP) {\Hz};
+\coordinate[right=1cm of DSP] (yc) {};
+
+\path (xc) edge (DSP);
+\path (DSP) edge (yc);
+
+\node[above = 0mm of xc, text width = 1cm, align=center] {\xin};
+\node[above = 0mm of yc, text width = 1cm, align=center] {\yout}; 
+\end{tikzpicture}

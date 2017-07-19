@@ -51,4 +51,86 @@ table[row sep=crcr]{
 \draw[green!40, thick, fill=green!20, rotate around={45:(0.707,0.707)}] (axis cs: 0.707, 0.707) ellipse (0.75cm and 0.25cm);
 \draw[green!40, thick, fill=green!20, rotate around={-45:(0.707,-0.707)}] (axis cs: 0.707, -0.707) ellipse (0.75cm and 0.25cm);
 \end{axis}
+
+\begin{axis}[
+name=plot2,
+at= (plot1.east), anchor=west, xshift=2cm,
+width=0.6\textwidth,
+height=0.5\textwidth,
+%at=(plot1.below south east), anchor=above north east,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth},
+xlabel={$\omega$},
+ylabel={$\angle H(e^{j\omega})$ (deg)},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+xmin=0, xmax=1,
+xtick={0, 0.25, 0.5, 0.75, 1},
+xticklabels ={$0$, $\pi/4$, $\pi/2$, $3\pi/4$, $\pi$},
+xticklabel style={xshift=0.1cm},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [smooth, black, line width=1pt]
+table[row sep=crcr]{
+	0 7.9342e-31 \\
+	0.02 -16.4081 \\
+	0.04 -32.8087 \\
+	0.06 -49.2255 \\
+	0.08 -65.7433 \\
+	0.1 -82.5385 \\
+	0.12 -99.9141 \\
+	0.14 -118.345 \\
+	0.16 -138.5362 \\
+	0.18 -161.4783 \\
+	0.2 -188.4051 \\
+	0.22 -220.3778 \\
+	0.24 -257.1099 \\
+	0.26 -295.6652 \\
+	0.28 -331.5157 \\
+	0.3 -361.7197 \\
+	0.32 -385.9806 \\
+	0.34 -405.3475 \\
+	0.36 -421.0441 \\
+	0.38 -434.0568 \\
+	0.4 -445.0996 \\
+	0.42 -454.6749 \\
+	0.44 -463.1377 \\
+	0.46 -470.7434 \\
+	0.48 -477.6797 \\
+	0.5 -484.0884 \\
+	0.52 -490.0794 \\
+	0.54 -495.7403 \\
+	0.56 -501.143 \\
+	0.58 -506.3484 \\
+	0.6 -511.4101 \\
+	0.62 -516.3767 \\
+	0.64 -521.2944 \\
+	0.66 -526.2088 \\
+	0.68 -531.1669 \\
+	0.7 -536.2191 \\
+	0.72 -541.422 \\
+	0.74 -546.8407 \\
+	0.76 -552.5529 \\
+	0.78 -558.6542 \\
+	0.8 -565.2644 \\
+	0.82 -572.5373 \\
+	0.84 -580.6732 \\
+	0.86 -589.935 \\
+	0.88 -600.6686 \\
+	0.9 -613.3201 \\
+	0.92 -628.4338 \\
+	0.94 -646.5875 \\
+	0.96 -668.1853 \\
+	0.98 -693.0508 \\
+};
+\end{axis}
 \end{tikzpicture}

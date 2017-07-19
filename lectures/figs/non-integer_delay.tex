@@ -1,0 +1,39 @@
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = false, clip=false,
+ymin=-0.5, ymax=1.2,
+xmin=0, xmax=11,
+axis line style={->,>=stealth},
+xlabel={$n$},
+ylabel={$h[n]$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+ytick=1,
+xtick={0,...,10},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\only<1|handout:1>{
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:10, samples=11] {sinc(x-5)}; 
+\addplot[smooth, black!20, line width=1.5pt, domain=0:11, samples=51] {sinc(x-5)}; 
+\node[black, fill=black!10, text width=3cm, align=center] at (axis cs: 9, 1) {$h[n] = \mathrm{sinc}(n-5)$};
+}
+
+\only<2|handout:2>{
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:10, samples=11] {sinc(x-4.3)}; 
+	\addplot[smooth, black!20, line width=1.5pt, domain=0:11, samples=51] {sinc(x-4.3)}; 
+	\node[black, fill=black!10, text width=3cm, align=center] at (axis cs: 9, 1) {$h[n] = \mathrm{sinc}(n-4.3)$};
+}
+
+\end{axis}
+\end{tikzpicture}

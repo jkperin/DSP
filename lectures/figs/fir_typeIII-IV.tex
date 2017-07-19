@@ -1,0 +1,57 @@
+\begin{tikzpicture} 
+\begin{axis}[
+name=plot1,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+ymin=-1, ymax=1,
+xmin=-1, xmax=7,
+hide y axis,
+axis line style={->,>=stealth},
+xlabel={\Large $n$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+xtick={0, 2},
+xticklabels={0, $M = 2$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-1:7, samples=9] {(x == 0) - (x==2)};
+\draw[dashed] (axis cs: 1, -1) -- (1, 1) {};
+\node[align=center, text width=2cm, scale=0.7] (t1) at (axis cs: 2.5, 0.5) {Center of \\ symmetry};
+\draw[->] ($(t1.west)$) -- (1, 0.4) {};
+
+\end{axis}
+
+\begin{axis}[
+at=(plot1.east), anchor=west, xshift=0.5cm,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+ymin=-1, ymax=1,
+xmin=-1, xmax=7,
+hide y axis,
+axis line style={->,>=stealth},
+xlabel={\Large $n$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+xtick={0, 1},
+xticklabels={0, $M = 1$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-1:7, samples=9] {(x == 0) - (x==1)};
+\draw[dashed] (axis cs: 0.5, -1) -- (0.5, 1) {};
+\node[align=center, text width=2cm, scale=0.7] (t1) at (axis cs: 2, 0.5) {Center of \\ symmetry};
+\draw[->] ($(t1.west)$) -- (0.5, 0.4) {};
+
+\end{axis}
+\end{tikzpicture}

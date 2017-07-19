@@ -1,6 +1,6 @@
 clear, clc, close all
 
-addpath('C:\Users\Joe\Dropbox\research\codes\f')
+%addpath('C:\Users\Joe\Dropbox\research\codes\f')
 
 k = 1:4;
 ck = 0.95*exp(1j*(0.15*pi+0.02*pi*k));
@@ -9,7 +9,7 @@ p = [0.8*exp(1j*0.4*pi) 0.8*exp(-1j*0.4*pi) ck ck conj(ck) conj(ck)].';
 
 zplane(z, p)
 
-m = matlab2tikz(gca, true);
+%m = matlab2tikz(gca, true);
 % m.write('../figs/group_delay_example.tex')
 
 b = conv([1 -0.98*exp(1j*0.8*pi)], [1, -0.98*exp(-1j*0.8*pi)]);
@@ -45,5 +45,5 @@ H = fftshift(H);
 w = linspace(-pi, pi, 100);
 
 figure, plot(w/pi, abs(H))
-figure, plot(w/pi, unwrap(angle(H)))
+figure, plot(w/pi, deg2rad(unwrap(angle(H))))
 

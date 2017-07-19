@@ -1,0 +1,210 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+axis equal,
+axis lines*=middle,
+enlargelimits = false, clip=true,
+xmin=-1.39,
+xmax=1.39,
+ymin=-1.10,
+ymax=1.10,
+axis line style={->,>=stealth},
+xlabel={$\mathrm{Re}\{z\}$},
+ylabel={$\mathrm{Im}\{z\}$},
+every axis x label/.style={
+at={(ticklabel* cs:1)},
+anchor=north,
+},
+every axis y label/.style={
+at={(ticklabel* cs:1)},
+anchor=south,
+},
+xtick=1, ytick=\empty,
+xticklabel style={xshift=0.1cm},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\draw (axis cs:0,0) circle [black!50, dashed, line width=2pt, radius=1];
+\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
+table[row sep=crcr]{
+	0 0 \\
+};
+
+\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
+table[row sep=crcr]{
+	0.6364 0.6364\\
+};
+
+\coordinate (axis) at (axis cs: 1, 0);
+\coordinate (orig) at (axis cs: 0, 0);
+\coordinate (zero) at (axis cs:	0.6364, 0.6364);
+\draw[->, >=stealth, shorten >= 2.5pt, thick] (orig) -- (zero);
+
+\pic [draw, <->, "$\theta$", angle eccentricity=1.5] {angle = axis--orig--zero};
+
+\only<1|handout:0>{
+\coordinate (eval) at (axis cs:	1, 0);
+%\pic [draw, red2, <->, "$\omega$", angle eccentricity=1.25,  angle radius=1cm] {angle = axis--orig--eval};
+\draw[->, >=stealth, shorten >= 2.5pt, thick, red2] (orig) -- (eval);
+\draw[red2, fill=red2] (eval) circle (3pt);
+\draw[->, >=stealth, shorten >= 2.5pt, thick, blue2] (zero) -- (eval);
+}
+
+\only<2|handout:1>{
+	\coordinate (eval) at (axis cs:	0.707, 0.707);
+	\pic [draw, red2, <->, "$\omega$", angle eccentricity=1.25,  angle radius=1cm] {angle = axis--orig--eval};
+	\draw[->, >=stealth, shorten >= 2.5pt, thick, red2] (orig) -- (eval);
+	\draw[red2, fill=red2] (eval) circle (3pt);
+	\draw[->, >=stealth, shorten >= 2.5pt, thick, blue2] (zero) -- (eval);
+}
+
+%\node at ($(orig)!0.5!(zero) + (-0.1cm, 0.3cm)$) {$v_2$};
+%\node[red2] at ($(orig)!0.5!(eval) + (0.1cm, 0.3cm)$) {$v_1$};
+%\node[blue2] at ($(eval)!0.5!(zero) + (-0.1cm, 0.3cm)$) {$v_3$};
+
+\end{axis}
+
+\begin{axis}[
+name=plot2,
+at= (plot1.east), anchor=west,
+xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth},
+xlabel={$\omega$},
+ylabel={$\angle H(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	%yshift=0.35cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=3.14,
+xtick={0, 0.7850, 1.57, 2.3550, 3.14},
+xticklabels ={$0$, $\pi/4$, $\pi/2$, $3\pi/4$, $\pi$},
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [smooth, black, line width=1.5pt, forget plot, domain=0:3.14, samples=101]
+table[row sep=crcr]{
+	0 -60.2586 \\
+	0.031733 -60.8336 \\
+	0.063467 -61.3812 \\
+	0.0952 -61.8979 \\
+	0.12693 -62.3792 \\
+	0.15867 -62.8199 \\
+	0.1904 -63.2139 \\
+	0.22213 -63.5535 \\
+	0.25387 -63.8295 \\
+	0.2856 -64.0303 \\
+	0.31733 -64.1415 \\
+	0.34907 -64.1449 \\
+	0.3808 -64.0171 \\
+	0.41253 -63.7275 \\
+	0.44427 -63.2356 \\
+	0.476 -62.4869 \\
+	0.50773 -61.406 \\
+	0.53947 -59.8875 \\
+	0.5712 -57.7798 \\
+	0.60293 -54.8614 \\
+	0.63467 -50.8046 \\
+	0.6664 -45.1296 \\
+	0.69813 -37.1777 \\
+	0.72986 -26.2297 \\
+	0.7616 -12.0591 \\
+	0.79333 4.0828 \\
+	0.82506 19.5142 \\
+	0.8568 32.1148 \\
+	0.88853 41.4852 \\
+	0.92026 48.2065 \\
+	0.952 53.0011 \\
+	0.98373 56.4394 \\
+	1.0155 58.9191 \\
+	1.0472 60.7096 \\
+	1.0789 61.9937 \\
+	1.1107 62.8975 \\
+	1.1424 63.5099 \\
+	1.1741 63.8948 \\
+	1.2059 64.0991 \\
+	1.2376 64.158 \\
+	1.2693 64.0981 \\
+	1.3011 63.9401 \\
+	1.3328 63.7001 \\
+	1.3645 63.3911 \\
+	1.3963 63.0232 \\
+	1.428 62.605 \\
+	1.4597 62.1432 \\
+	1.4915 61.6437 \\
+	1.5232 61.111 \\
+	1.5549 60.5493 \\
+	1.5867 59.9618 \\
+	1.6184 59.3516 \\
+	1.6501 58.7209 \\
+	1.6819 58.0721 \\
+	1.7136 57.4068 \\
+	1.7453 56.7268 \\
+	1.7771 56.0333 \\
+	1.8088 55.3278 \\
+	1.8405 54.6111 \\
+	1.8723 53.8844 \\
+	1.904 53.1484 \\
+	1.9357 52.404 \\
+	1.9675 51.6517 \\
+	1.9992 50.8923 \\
+	2.0309 50.1263 \\
+	2.0627 49.3541 \\
+	2.0944 48.5762 \\
+	2.1261 47.793 \\
+	2.1579 47.005 \\
+	2.1896 46.2123 \\
+	2.2213 45.4154 \\
+	2.2531 44.6145 \\
+	2.2848 43.81 \\
+	2.3165 43.0019 \\
+	2.3483 42.1905 \\
+	2.38 41.3761 \\
+	2.4117 40.5589 \\
+	2.4435 39.7389 \\
+	2.4752 38.9164 \\
+	2.5069 38.0915 \\
+	2.5387 37.2643 \\
+	2.5704 36.435 \\
+	2.6021 35.6037 \\
+	2.6339 34.7705 \\
+	2.6656 33.9355 \\
+	2.6973 33.0989 \\
+	2.7291 32.2606 \\
+	2.7608 31.4208 \\
+	2.7925 30.5796 \\
+	2.8243 29.737 \\
+	2.856 28.8932 \\
+	2.8877 28.0481 \\
+	2.9195 27.2019 \\
+	2.9512 26.3546 \\
+	2.9829 25.5063 \\
+	3.0147 24.657 \\
+	3.0464 23.8068 \\
+	3.0781 22.9557 \\
+	3.1099 22.1038 \\
+	3.1416 21.2511 \\
+};
+
+\only<1|handout:0>{
+	\addplot [red2, mark=*, mark size=3pt] coordinates {(0,-60)};
+}
+
+\only<2|handout:1>{
+	\addplot [red2, mark=*, mark size=3pt] coordinates {(0.777,0)};
+}
+
+\end{axis}
+\end{tikzpicture}
