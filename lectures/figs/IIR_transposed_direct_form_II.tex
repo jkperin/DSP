@@ -1,0 +1,61 @@
+\begin{tikzpicture}[node distance=1.75cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{$\tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};}$}, right of=02] (y) {};
+
+\foreach \j in {1, 2, 3} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={below}{}, below of=\jn0] (\j0) {};
+	\node[terminal={below}{}, below of=\jn1] (\j1) {};
+	\node[terminal={below}{}, below of=\jn2] (\j2) {};
+}
+
+\coordinate[below of=30] (40) {};
+\coordinate[below of=32] (42) {};
+\node[terminal={below}{}, below of=31] (41) {};
+
+\node[above] (w) at (01) {$\tikz[baseline]{\node[fill=blue!10,anchor=base] {$w_T[n]$};}$};
+
+%
+\draw[zpath={right}] (11) to (01);
+\draw[zpath={right}] (21) to (11);
+\draw[\thickness, dashed] (31) to (21);
+\draw[zpath={right}] (41) to (31);
+
+%
+\draw[amark] (00) to (10);
+\draw[amark] (10) to (20);
+\draw[\thickness, solid] (30) to (40);
+\draw[\thickness, dashed] (20) to (30);
+
+%
+\draw[amark] (02) to (12);
+\draw[amark] (12) to (22);
+\draw[\thickness, solid] (32) to (42);
+\draw[\thickness, dashed] (22) to (32);
+
+%
+\draw[amark={$b_0$}{above}] (00) to (01);
+\draw[amark={$b_1$}{above}] (10) to (11);
+\draw[amark={$b_2$}{above}] (20) to (21);
+\draw[amark={$b_{N-1}$}{above}] (30) to (31);
+\draw[amark={$b_N$}{above}] (40) to (41);
+
+%
+\draw[amark={$1$}{above}] (01) to (02);
+\draw[amark={$a_1$}{above}] (12) to (11);
+\draw[amark={$a_2$}{above}] (22) to (21);
+\draw[amark={$a_{N-1}$}{above}] (32) to (31);
+\draw[amark={$a_N$}{above}] (42) to (41);
+
+
+\draw[amark] (x) to (00);
+\draw[amark] (02) to (y);
+
+\node[below] at ($(40)!0.5!(41)$) {(zeros)};
+\node[below] at ($(41)!0.5!(42)$) {(poles)};
+
+\end{tikzpicture}

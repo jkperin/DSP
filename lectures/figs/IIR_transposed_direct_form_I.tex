@@ -1,0 +1,59 @@
+\begin{tikzpicture}[node distance=2cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right=2cm of 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right=2cm of 02] (03) {};
+\node[terminal={below}{$\tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};}$}, right of=03] (y) {};
+
+\foreach \j in {1, 2} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={left}{}, below of=\jn0] (\j0) {};
+	\node[terminal={left}{}, below of=\jn1] (\j1) {};
+	\node[terminal={left}{}, below of=\jn2] (\j2) {};
+	\node[terminal={right}{}, below of=\jn3] (\j3) {};
+	\draw[amark={$z^{-1}$}{left}] (\j0) to (\jn0);
+	\draw[amark={$a_\j$}{above}] (\j1) to (\j0);
+	\draw[amark={$b_\jn$}{above}] (\j2) to (\j3);
+	\draw[amark={}{left}] (\jn1) to (\j1);
+	\draw[amark={}{left}] (\jn2) to (\j2);
+	\draw[amark={$z^{-1}$}{right}] (\j3) to (\jn3);
+}
+
+\node[terminal={left}{}, below=2.5cm of 20] (30) {};
+\node[terminal={left}{}, below of=30] (40) {};
+\node[terminal={left}{}, below=2.5cm of 21] (31) {};
+\coordinate[below of=31] (41) {};
+
+\draw[\thickness, dashed] (20) to (30);
+\draw[\thickness, dashed] (21) to (31);
+\draw[amark={$z^{-1}$}{left}] (40) to (30);
+\draw[amark={$a_{N-1}$}{above}] (31) to (30);
+\draw[amark={$a_{N}$}{above}] (41) to (40);
+\draw[\thickness] (41) to (31);
+
+\node[terminal={right}{}, below=2.5cm of 23] (33) {};
+\node[terminal={right}{}, below of=33] (43) {};
+\node[terminal={left}{}, below=2.5cm of 22] (32) {};
+\coordinate[below of=32] (42) {};
+
+\draw[\thickness, dashed] (23) to (33);
+\draw[\thickness, dashed] (22) to (32);
+\draw[amark={$z^{-1}$}{right}] (43) to (33);
+\draw[amark={$b_{N-1}$}{above}] (32) to (33);
+\draw[amark={$b_{N}$}{above}] (42) to (43);
+\draw[\thickness] (42) to (32);
+
+\draw[amark={}{right}] (x) to (00);
+\draw[amark={}{right}] (01) to (02);
+\draw[amark={}{right}] (03) to (y);
+
+\draw[amark={$b_0$}{above}] (02) to (03);
+\draw[amark={$1$}{above}] (00) to (01);
+\node[above] at ($(01.north)$) {$\tikz[baseline]{\node[fill=blue!10,anchor=base] {$v_T[n]$};}$};
+
+\node[below=0.1cm] at ($(40)!0.5!(41)$) {(zeros)};
+\node[below=0.1cm] at ($(42)!0.5!(43)$) {(poles)};
+
+\end{tikzpicture}

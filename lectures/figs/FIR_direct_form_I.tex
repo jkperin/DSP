@@ -1,0 +1,36 @@
+\begin{tikzpicture}[node distance=1.75cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right of=02] (03) {};
+\node[terminal={below}{}, right of=03] (04) {};
+
+\coordinate[below of=00] (10) {};
+\node[terminal={below}{}, right of=10] (11) {};
+\node[terminal={below}{}, right of=11] (12) {};
+\node[terminal={below}{}, right of=12] (13) {};
+\node[terminal={below}{}, right of=13] (14) {};
+\node[terminal={below}{$y[n]$}, right of=14] (y) {};
+
+\foreach \l [count=\j]  in {$h[0]$, $h[1]$, $h[2]$, $h[M-1]$} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\ifthenelse{\j = 3}
+		{\draw[\thickness, dashed] (0\jn) to (0\j)}
+		{\draw[zpath={above}] (0\jn) to (0\j)};
+	\ifthenelse{\j = 3}
+		{\draw[\thickness, dashed] (1\jn) to (1\j)}
+		{\draw[amark={}{right}] (1\jn) to (1\j)};
+	%\draw[zpath={above}] (0\jn) to (0\j);
+	\draw[amark={\l}{right}] (0\jn) to (1\jn);
+	
+}
+
+\draw[amark={$h[M]$}{right}] (04) to (14);
+\draw[amark={}{right}] (14) to (y);
+
+\draw[amark] (x) to (00);
+\draw[amark] (14) to (y);
+
+\end{tikzpicture}

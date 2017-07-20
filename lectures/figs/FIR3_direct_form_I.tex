@@ -1,0 +1,52 @@
+\begin{tikzpicture}[node distance=1.75cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of= 01] (02) {};
+
+
+\coordinate[below of=00] (10) {};
+\node[terminal={below}{}, right of=10] (11) {};
+\node[terminal={below}{}, right of=11] (12) {};
+
+\draw[zpath={above}] (00) to (01);
+\draw[zpath={above}] (01) to (02);
+
+\draw[amark={$h_0$}{right}, red2] (00) to (10);
+\draw[amark={$h_1$}{right}] (01) to (11);
+
+
+\draw[amark, red2] (10) to (11);
+\draw[amark, red2] (11) to (12);
+
+\draw[amark, red2] (x) to (00);
+
+
+\ifdefined\PIPE
+	\node[terminal={below}{}, right of= 02] (03) {};
+	\node[terminal={below}{}, right of=12] (13) {};
+	\node[terminal={below}{$y[n]$}, right of=13] (y) {};
+	
+	\draw[zpath={above}] (02) to (03);
+	\draw[zpath={above}] (12) to (13);
+	\draw[amark={$h_2$}{right}] (03) to (13);
+	
+	\draw[amark] (13) to (y);
+	
+	\draw[dashed] ($(02)+(0.25cm, 0.6cm)$) rectangle ($(13)-(0.25cm, 0.1cm)$);
+	\node[above] at ($(02)!0.5!(03) + (0, 0.6cm)$) {Added memory}; 
+	
+	\node[below left, blue2] at (12) {1};
+	\node[below left, blue2] at (13) {2};
+	\node[above right, blue2] at (13) {3};
+	
+\else
+	\node[terminal={below}{$y[n]$}, right of=12] (y) {};
+	\draw[amark, red2] (12) to (y);
+	
+	\draw[amark={$h_2$}{right}] (02) to (12);
+\fi
+
+
+\end{tikzpicture}

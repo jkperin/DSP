@@ -1,0 +1,62 @@
+\begin{tikzpicture}[node distance=1.75cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right of=02] (03) {};
+\coordinate[right of=03] (04) {};
+
+\coordinate[below=3cm of 00] (20) {};
+\node[terminal={below}{}, below=3cm of 00] (21) {};
+\node[terminal={below}{}, below=3cm of 01] (22) {};
+\node[terminal={below}{}, below=3cm of 02] (23) {};
+\node[terminal={below}{}, below=3cm of 03] (24) {};
+\node[terminal={below}{}, right of=24] (25) {};
+
+\node[terminal={below}{}] (11) at ($(00)!0.5!(20) - (1cm, 0)$) {};
+\node[terminal={below}{}, right of=11] (12) {};
+\node[terminal={below}{}, right of=12] (13) {};
+\node[terminal={below}{}, right of=13] (14) {};
+
+\node[terminal={below}{}, below=3cm of 11] (31) {};
+\node[terminal={below}{}, below=3cm of 12] (32) {};
+\node[terminal={below}{}, below=3cm of 13] (33) {};
+\node[terminal={below}{}, below=3cm of 14] (34) {};
+\node[terminal={below}{$y[n]$}] (y) at (31 -| x) {};
+
+\coordinate (35) at (34 -| 25) {};
+
+
+\foreach \l [count=\j]  in {$h[0]$, $h[1]$, $h[2]$, $h[M/2-1]$} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\ifthenelse{\j = 3}
+		{\draw[\thickness, dashed] (0\jn) to (0\j)}
+		{\draw[zpath={above}] (0\jn) to (0\j)};
+	\ifthenelse{\j = 4}
+		{\draw[\thickness, dashed] (2\j) to (2\jn)}
+		{\draw[earlymark={$z^{-1}$}{below}] (2\j) to (2\jn)};
+	%\draw[zpath={above}] (0\jn) to (0\j);
+	\draw[latemark={\l}{right}] (1\j) to (3\j);
+	\draw[amark={}{right}] (0\jn) to (1\j);	
+	\draw[amark={}{right}] (2\j) to (1\j);
+}
+
+\draw[\thickness, solid] (04) to (25);
+\draw[zpath={below}] (25) to (24);
+\draw[amark={$h[M/2]$}{right}] (25) to (35);
+
+\draw[\thickness, solid] (35) to (34);
+\draw[\thickness, dashed] (34) to (33);
+\draw[amark={}{right}] (33) to (32);
+\draw[amark={}{right}] (32) to (31);
+\draw[amark={}{right}] (31) to (y);
+
+
+%\draw[amark={$h[M]$}{right}] (14) to (04);
+%\draw[amark={}{right}] (14) to (y);
+
+\draw[amark] (x) to (00);
+%\draw[amark] (14) to (y);
+
+\end{tikzpicture}

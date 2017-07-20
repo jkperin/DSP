@@ -1,0 +1,596 @@
+\documentclass[10pt, handout]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+\usepackage[makeroom]{cancel}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\definecolor{matlabcomment}{RGB}{34,139,34}
+
+\pgfmathdeclarefunction{gauss}{1}{%
+	\pgfmathparse{1/(sqrt(2*pi))*exp(-((#1)^2)/2)}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\pgfmathdeclarefunction{pretty_func}{1}{%
+	\pgfmathparse{cos(deg(#1/2)) - sin(deg(#1)) + cos(deg(#1/2)-45) - sin(deg(#1/4)-154)}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+\def\thickness{very thick}
+
+\tikzset{
+amark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+earlymark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.25} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+latemark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.8} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+zpath/.style={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#1] {$z^{-1}$};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
+}
+
+
+\tikzset{
+	invisible/.style={opacity=0},
+	visible on/.style={alt={#1{}{invisible}}},
+	alt/.code args={<#1>#2#3}{%
+		\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+	},
+}
+
+\newcommand\PlotSampledSpectrum[4]{%
+	\def\fs{#2}%
+	\def\fmax{#3}%
+	\def\ros{#4}%
+	\input{#1}%
+}
+
+\pgfmathdeclarefunction{invgauss}{2}{%
+	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
+}
+
+\tikzset{
+	declare function={
+		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
+		(and(\x==0, 1) * 1);
+	}
+}
+
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+\input{figs/color_pallete.tex}
+
+\newcommand\SimpleSys[4]{%
+	\def\xin{#2}%
+	\def\Hz{#3}%
+	\def\yout{#4}
+	\input{#1}%
+}
+
+%% 
+\title[EE 264]{Digital Filter Structures}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 20, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Announcements}
+	\begin{itemize}
+		\item Homework \#3 due tomorrow
+		\item Homework \#4 will be released tomorrow and it is due next Sunday, July 30 (after the midterm review session)
+		\item The review session will be on Friday at 1:30pm at \textbf{Gates B03}
+		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Last lecture}
+	\begin{itemize}
+		\item The frequency response of a system tell us how much each frequency is scaled (magnitude response), and delayed (phase response) by the system.
+		\item Poles increase magnitude and introduce phase lag (positive group delay)
+		\item Zeros decrease the magnitude and introduce phase lead (negative group delay)
+		\item All-pass systems have constant magnitude response. For each pole at $e_k$, there will be a zero at the conjugate reciprocal $1/e^*_k$
+		\item Minimum phase systems have all zeros inside the unit circle
+		\item Any system $H(z)$ can be decomposed into a cascade of a minimum phase system and an all-pass system $H(z) = H_{min}(z)H_{ap}(z)$
+		\item For minimum phase systems, the phase response is given by the Hilbert transform of the log-magnitude response. 
+		\item The phase response of a generalized linear phase systems is an affine function of $\omega$
+		\item FIR systems are linear phase as long as their impulse response is either even or odd symmetric
+		\item Linear phase rational IIR systems do not exist
+	\end{itemize}
+\end{frame}
+
+
+\section{Outline}
+%
+\begin{frame}{Today's lecture}
+We know that \textbf{rational LTI systems} can be either FIR or IIR
+\begin{block}{FIR}
+	\vspace{-0.5cm}
+	\begin{align}
+		&H(z) =  b_0 + b_1z^{-1} + \ldots + b_Mz^{-M} \tag{$z$-transform} \\
+		&y[n] = b_0x[n] + b_1x[n-1] + \ldots + b_Mx[n-M] \tag{difference equation}
+	\end{align}
+	All poles are at the origin
+\end{block}
+
+\begin{block}{IIR}
+	\vspace{-0.5cm}
+	\begin{align*}
+	H(z) &=  \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{a_0 + a_1z^{-1} + \ldots + a_Nz^{-N}} \tag{$z$-transform} \\
+	&a_0y[n] + a_1y[n-1] + \ldots + a_Nx[n-N]  \\
+	&= b_0x[n] + b_1x[n-1] + \ldots + b_Mx[n-M] \tag{difference equation}
+	\end{align*}
+	There is at least one pole different from the origin
+\end{block}
+
+\end{frame}
+
+%
+\begin{frame}{Today's lecture}
+	\textbf{Question:} how to realize those systems \textit{efficiently}?
+	
+	\begin{itemize}
+		\item Structures for IIR systems
+		\item Structure for FIR systems
+		\item Pipelining and parallel processing
+	\end{itemize}
+\end{frame}
+
+%
+\section{Structures for IIR Systems}
+\begin{frame}{Structure for IIR systems}
+	\begin{itemize}
+		\item Direct form I
+		\item Direct form II
+		\item Cascade form
+		\item Parallel form
+		\item Transposed forms
+	\end{itemize}
+
+	Ideally, they all produce the same output. However, differences arise when dealing with \textbf{finite-precision arithmetic} (next lecture)
+\end{frame}
+
+
+\begin{frame}{Direct form I}
+	\begin{equation*}
+	\tikz[baseline]{\node[fill=blue!10,anchor=base] {$v[n]$};} = \sum_{k = 0}^{M}b_kx[n-k] \qquad \tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};} = \sum_{k = 1}^{N}a_ky[n-k] + \tikz[baseline]{\node[fill=blue!10,anchor=base] {$v[n]$};}
+	\end{equation*}
+\begin{center}
+		\resizebox{0.7\textwidth}{!}{\input{figs/IIR_direct_form_I.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Direct form II}
+	Swaps order of poles and zeros. Requires fewer delays $z^{-1}$ (less memory).
+	\begin{equation*}
+	\tikz[baseline]{\node[fill=blue!10,anchor=base] {$w[n]$};} = \sum_{k = 1}^{N}a_kw[n-k] + x[n] \qquad \tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};} = \sum_{k = 0}^{M}b_kw[n-k]
+	\end{equation*}
+	\begin{center}
+		\resizebox{0.55\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
+	\end{center}
+\end{frame}
+
+
+\begin{frame}{Cascade forms}
+	The overall system transfer function  $H(z)$ is factored into 1st or 2nd-order subsystems $\{H_1(z),H_2(z),\ldots, H_K(z)\}$
+	
+	\begin{equation*}
+	H(z) = H_1(z)H_2(z)\ldots H_K(z)
+	\end{equation*}
+	
+	Typically, pairs of real factors and complex conjugate pairs are combined into 2nd-order subsystems.
+	
+	The goal of this factorization is to minimize effects of \textbf{finite-precision arithmetic}
+	
+\begin{center}
+		\resizebox{\textwidth}{!}{
+	\begin{tikzpicture}
+	\node (img1) {\includegraphics{figs/IIR_cascade_form.png}};
+	\node[below, black, fill=black!20, scale=3] at ($(img1.south west)!0.2!(img1.south east)$) {$H_1(z)$};
+	\node[below, black, fill=black!20, scale=3] at ($(img1.south west)!0.5!(img1.south east)$) {$H_2(z)$};
+	\node[below, black, fill=black!20, scale=3] at ($(img1.south west)!0.8!(img1.south east)$) {$H_3(z)$};
+	\end{tikzpicture}
+	}
+\end{center}
+
+This figure shows a 6th-order system factored into three 2nd-order subsystems. Each subsystem is realized according to direct form II.
+\end{frame}
+
+\begin{frame}{Parallel forms}
+	Now the factorization is done using \textbf{partial fraction expansion} of $H(z)$:
+	
+	\begin{equation*}
+	H(z) = H_1(z) + H_2(z) + \ldots + H_K(z)
+	\end{equation*}
+	
+	The subsystems $H_k(z), k = 1, \ldots, K$ are obtained by grouping second-order factors. These subsystems will either be simple delays or second-order systems:
+	
+	\begin{equation*}
+	H_k(z) = \begin{cases}
+	C_kz^{-k}, & \text{delay} \\
+	\displaystyle\frac{e_{0k} + e_{1k}z^{-1}}{1 - a_{1k}z^{-1} + a_{2k}z^{-2}}, & \text{2nd-order system}
+	\end{cases}, k = 1,\ldots, K
+	\end{equation*}
+	
+	For partial fraction expansion use the Matlab function \texttt{residuez}
+\end{frame}
+
+\begin{frame}{Transposed forms}
+	Transposed forms are obtained by performing \textbf{flow graph reversal} or \textbf{transposition}.
+
+	In essence flow graph transposition is done by 
+	\begin{enumerate}
+		\item reversing all branches without changing the gain (transmittance) of each branch
+		\item reversing the roles of input and output
+	\end{enumerate}
+
+	 For single-input single-output systems these operations do not change the system function as long as the input and output nodes are interchanged. 
+\end{frame}
+
+\begin{frame}{Transposed direct form I}
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\textbf{Direct form I}
+			\begin{center}
+				\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I.tex}}
+			\end{center}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Transposed direct form I}
+			\begin{center}
+				\resizebox{\textwidth}{!}{\input{figs/IIR_transposed_direct_form_I.tex}}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+\begin{frame}{Transposed direct form II}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Direct form II}
+			\begin{center}
+				\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
+			\end{center}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Transposed direct form II}
+			\begin{center}
+				\resizebox{\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II.tex}}
+			\end{center}
+			\pause
+			Used in Matlab's \texttt{filter} function
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\section{Structures for FIR Systems}
+\begin{frame}<beamer:1|handout:0>{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Structures for FIR systems}
+FIR systems do not have the autoregressive component (no feedback). 
+
+The \textbf{direct form I} simply realizes the convolution sum
+\begin{equation*}
+H(z) = \sum_{k = 0}^Mb_kz^{-k} = \sum_{k = 0}^M h[k]z^{-k}
+\end{equation*}
+
+\begin{center}
+	\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+\end{center}
+
+This operation is commonly called\textbf{ multiply-accumulate (MAC)}
+
+\end{frame}
+
+\begin{frame}{FIR transposed direct form}
+Similarly to IIR structures, we can apply flow graph transposition to obtain the transposed forms
+
+\textbf{Direct form}
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+\end{center}
+
+\textbf{Transposed direct form}
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/FIR_transposed_direct_form_I.tex}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{FIR linear phase systems}
+The impulse response of FIR linear phase systems have either even or odd symmetry
+
+We can \underline{halve} the number of multiplications by leveraging this symmetry
+~\\
+~\\
+\textbf{Example:} Direct form of a \textbf{type I filter} (even symmetry and $M$ even)
+\begin{columns}
+	\begin{column}{0.7\textwidth}
+		\begin{center}
+			\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_typeI_filter.tex}}
+		\end{center}
+	\end{column}
+
+
+	\begin{column}{0.4\textwidth}
+	\begin{center}
+		\resizebox{\textwidth}{!}{
+			\begin{tikzpicture} 
+			\begin{axis}[
+			axis lines*=middle, 
+			enlargelimits = true, clip=false,
+			ymin=0, %ymax=1.2,
+			hide y axis,
+			xmin=0, xmax=15,
+			axis line style={->,>=stealth},
+			xlabel={$n$},
+			every axis x label/.style={
+				at={(ticklabel* cs:1)},
+				anchor=west,
+			},
+			ytick=\empty, xtick={0.01,8,16},
+			xticklabels={$0$, $M/2$, $M$},
+			every outer y axis line/.append style={white!15!black},
+			every y tick label/.append style={font=\color{white!15!black}},
+			legend style={draw=white!15!black,fill=white,legend cell align=left}]
+			\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:16, samples=17] {sinc((x-8)/3)};
+
+			\node[above] at (axis cs: 0, 0.1) {$h[0]$};
+			\node[above] at (axis cs: 8, 1) {$h[M/2]$};
+			
+			\end{axis}
+			\end{tikzpicture}
+		}
+	\end{center}
+	\end{column}
+\end{columns}
+
+Only the samples $h[0], \ldots, h[M/2]$ are used in the implementation
+
+\end{frame}
+
+\section{Pipelining and Parallel Processing}
+\begin{frame}<beamer:1|handout:0>{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{Pipelining and parallel processing}
+\textbf{Question:} how to implement this filter for a signal of rate $1/T = 1$ GHz when the multiplications are performed at $1/T_M = 100$ MHz?
+
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+\end{center}
+
+Two solutions:
+\begin{enumerate}
+	\item Pipelining
+	\item Parallel processing
+\end{enumerate}
+
+Pipelining and parallel processing solve the problem in two complementary ways. Hence, they can be use together, which is generally done in practice. 
+
+\end{frame}
+
+\begin{frame}{Pipelining}
+Suppose we want to implement this 3-tap FIR filter in real time. 
+
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+\end{center}
+
+The {\color{red2} \textbf{critical path}} of this filter has one multiplication, which takes $T_M$ seconds, and two additions, which take $T_A$ seconds each
+
+Therefore the sampling period $T$ should satisfy
+\begin{equation*}
+T > T_M + 2T_A,
+\end{equation*}
+so that all operations in the critical path will have been finished by the time a new input sample comes in.
+
+\pause
+\textbf{Question:} what can we do if $T < T_M + 2T_A$ i.e., operations are too slow? 
+\end{frame}
+
+\begin{frame}{Pipelining}
+\textbf{Solution:} add memory $z^{-1}$
+\begin{center}
+	\def\PIPE{1}
+	\resizebox{0.8\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+\end{center}
+
+By adding the extra memory the function of the filter is not altered. However, now the {\color{red2} \textbf{critical path}} only has one multiplication and one addition. 
+
+
+Therefore, if
+
+\begin{equation*}
+T > T_M + T_A, 
+\end{equation*}
+
+the value at {\color{blue2} node 1} will be stored in the memory by the time a new input sample comes in. Hence, the first part of the circuit can start \textit{working} on the new sample, while the second part still \textit{works} on the previous sample.
+
+\end{frame}
+
+
+\begin{frame}
+The pipelined FIR filter has the following \textit{schedule} assuming $T > T_M + T_A$ 
+
+\begin{center}
+	\def\PIPE{1}
+	\resizebox{0.8\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+\end{center}
+
+\begin{center}
+	\resizebox{\textwidth}{!}{
+\begin{tabular}{cccccc}
+	Time & Input & {\color{blue2} Node 1} & {\color{blue2} Node 2} & {\color{blue2} Node 3} & Output \\
+	\hline
+	0 & $x[0]$ & $h_0x[0] + h_1x[-1]$ & - & - & - \\ \pause
+	T & $x[1]$ & $h_0x[1] + h_1x[0]$ & $h_0x[0] + h_1x[-1]$ & $h_2x[-2]$ & $y[0]$ \\ \pause
+	2T & $x[2]$ & $h_0x[2] + h_1x[1]$ & $h_0x[1] + h_1x[0]$ & $h_2x[-1]$ & $y[1]$ \\ \pause
+	3T & $x[3]$ & $h_0x[3] + h_1x[2]$ & $h_0x[2] + h_1x[1]$ & $h_2x[0]$ & $y[2]$ \\
+	\hline
+\end{tabular}
+}
+\end{center}
+
+\onslide<4|handout:1>{
+Pipelining increases the \textbf{latency}. Note that the outputs are delayed by $1$ sample. That is, when the input is $x[1]$, the output will be $y[0]$, which corresponds to the input $x[0]$.
+}
+\end{frame}
+
+\begin{frame}{Parallel processing}
+Processes several inputs at the same time
+
+This difference equation takes one input $x[n]$ and produces one output $y[n]$
+\begin{equation*}
+y[n] = h_0x[n] + h_1x[n-1] + h_2x[n-2]
+\end{equation*}
+\pause
+We can rewrite it this way
+\begin{align*}
+y[3k] &= h_0x[3k] + h_1x[3k-1] + h_2x[3k-2] \\
+y[3k+1] &= h_0x[3k+1] + h_1x[3k] + h_2x[3k-1] \\
+y[3k+2] &= h_0x[3k+2] + h_1x[3k+1] + h_2x[3k]
+\end{align*}
+
+\begin{itemize}
+	\item Now there are three inputs $\{x[3k], x[3k+1], x[3k+2]\}$ and three outputs $\{y[3k], y[3k+1], y[3k+2]\}$.
+	\item Each difference equation is a FIR filter with the same coefficients as the original filter
+	\item This can be extended to more inputs/outputs.
+\end{itemize}
+\end{frame}
+
+\begin{frame}<beamer:0|handout:1>{Pipelining and parallel processing}
+Additional comments
+
+\begin{itemize}
+	\item Pipelining and parallel processing solve the problem of using a slow hardware to process a fast signal in two complementary ways. 
+	\item Pipelining solves the problem  by introducing memories and reducing the critical path. These memories are used to store ``partial results'', so that computations for new input samples can start before all the output has been calculated. The name pipeline comes from the analogy with a water pipe: ``continue sending water without waiting for the water in the pipe to come out.''
+	\item Pipelining increases the latency and requires more memory
+	\item Parallel processing solves the problem by processing multiple inputs simultaneously
+	\item The effective speed of the hardware is increased by the level of parallelism
+	\item The drawback of parallel processing is that we essentially have to replicate the hardware several times
+\end{itemize}
+\end{frame}
+
+
+%
+\begin{frame}{Summary}
+\begin{itemize}
+	\item There are different forms of realizing IIR and FIR rational systems
+	\item Their difference becomes evident when considering finite arithmetic precision
+	\item Pipelining and parallel processing solve the problem of using a slow hardware to process a fast signal in two complementary ways. 
+	\item Pipelining adds memory (delays) to minimize the critical path. Consequently, pipelining increases latency
+	\item In parallel processing the hardware is replicated to allow processing of multiple input samples simultaneously
+	\item Pipelining and parallel processing can be realized together
+	\item Pipelining and parallel processing are more difficult in IIR systems due to their inherent feedback
+\end{itemize}
+\end{frame}
+
+\end{document}
