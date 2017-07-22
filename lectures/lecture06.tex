@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -742,7 +742,7 @@ There are four types of linear phase FIR systems. They are characterized based t
 
 \begin{frame}{Kramers-Kronig relations}
 
-For any \underline{causal} system defined by $h(t) \leftrightarrow H(j\Omega) = H_r(j\Omega) + jH_i(j\Omega)$, where $H_r(j\Omega) = \mathrm{Re}\{H(j\Omega)\}$ and $H_i(j\Omega) = \mathrm{Im}\{H(j\Omega)\}$,
+For any \underline{real} and \underline{causal} system defined by $h(t) \leftrightarrow H(j\Omega) = H_r(j\Omega) + jH_i(j\Omega)$, where $H_r(j\Omega) = \mathrm{Re}\{H(j\Omega)\}$ and $H_i(j\Omega) = \mathrm{Im}\{H(j\Omega)\}$,
 
 the \textbf{Kramers-Kronig relations} establish that
 \begin{equation*}
@@ -763,30 +763,34 @@ where $\mathcal{H}\{\cdot\}$ is the \textbf{Hilbert transform}.
 
 \begin{frame}{The Hilbert transform}
 
-We can view the Hilbert transform as an LTI system with frequency response
+The Hilbert transform of a signal $x(t)$ is defined as
 
 \begin{equation*}
-\mathcal{H}\{\cdot\} = H_{HT}(j\Omega) = -j\mathrm{sign}(\Omega) = \begin{cases}
--j, & \Omega > 0 \\
-0, & \Omega = 0 \\
-j, & \Omega < 0
-\end{cases}
+\mathcal{H}\{x(t)\} = h_{HT}(t)\ast x(t),
 \end{equation*}
 
-Therefore:
-\begin{align*}
-\mathcal{H}\{H(j\Omega)\} = H_{HT}(j\Omega)H(j\Omega) = -j\mathrm{sign}(\Omega)H(j\Omega)
-\end{align*}
-
-
-The impulse response of $H_{HT}(j\Omega)$ is given by
-
+where 
 \begin{equation*}
 h_{HT}(t) = \begin{cases}
 \frac{1}{\pi t}, & t \neq 0 \\
 0, & t = 0
 \end{cases}
 \end{equation*}
+
+\begin{equation*}
+\mathcal{F}\{h_{HT}(t)\}  = H_{HT}(\Omega) = -j\mathrm{sign}(\Omega) = \begin{cases}
+-j, & \Omega > 0 \\
+0, & \Omega = 0 \\
+j, & \Omega < 0
+\end{cases}
+\end{equation*}
+
+More generally, the Hilbert transform is an operation over a function of some variable. If that function is $H(j\Omega)$ we would have
+
+\begin{equation*}
+\mathcal{H}\{H(j\Omega)\} = h_{HT}(\Omega)\ast H(j\Omega)
+\end{equation*}
+
 \end{frame}
 
 \begin{frame}{Relating magnitude and phase responses}
