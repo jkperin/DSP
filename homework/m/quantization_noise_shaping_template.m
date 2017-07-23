@@ -17,13 +17,13 @@ T = 1/Fs;                                       % sampling period
 sound(x, Fs) % Play speech
 
 % Define parameters
-range_lims = [-1 1];           % range limits
-B = 4;                         % quantizer resolution
+range_lims = [-0.98 1];           % range limits
+B = 10;                         % quantizer resolution
 
 % To be implemented...
-% [xq, e] = quantizer(x, B, range_lims); 
+[xq, e] = quantizer(x, B, range_lims); 
 
-
+hist(e, 50)
 
 
 

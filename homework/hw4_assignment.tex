@@ -110,7 +110,7 @@ H(z) = \frac{(1-9z^{-2})(1+(1/3)z^{-1})}{(1-(1/3)z^{-1})}
 \begin{description}
 	\item[(a)] $H(z)$ can be represented as a cascade of a minimum-phase system $H_{min}(z)$ and a unit-gain all-pass system $H_{ap}(z)$; i.e., $H(z) = H_{min}(z)H_{ap}(z)$. Determine a choice for $H_{min}(z)$ and $H_{ap}(z)$ and specify whether or not they are unique up to a scale factor.
 	\item[(b)] Is the minimum-phase system, $H_{min}(z)$ in part (a) an FIR system? Explain.
-	\item[(c)] For generalized linear phase FIR systems with \underline{real} coefficients, show that if $z = c$ is a zero, then $c^*, 1/c, 1/c^*$ must also be zeros. In words, zeros of generalized linear phase systems appear in conjugate and conjugate reciprocal pairs.
+	\item[(c)] For generalized linear phase FIR systems with \underline{real} coefficients, show that if $z = c$ is a zero, then $c^*, 1/c, 1/c^*$ must also be zeros. In words, zeros of generalized linear phase FIR systems appear in conjugate and conjugate reciprocal pairs.
 	\item[(d)] Can $H(z)$ be represented as a cascade of a FIR generalized linear-phase system $H_{lin}(z)$ and an all-pass system $H_{ap2}(z)$; i.e., $H(z) = H_{lin}(z)H_{ap2}(z)$? If your answer is yes, determine $H_{lin}(z)$ and $H_{ap2}(z)$. If your answer is no, explain why such a representation does not exist.
 \end{description}
 
@@ -249,9 +249,9 @@ This system is minimum phase, as all its zeros are inside the unit circle. This 
 	\begin{itemize}
 		\item In your method you will need to perform a convolution integral. You can still use the \texttt{conv} command for that. For instance,
 		\begin{equation}
-		\frac{1}{2\pi}\int_{-\pi}^{\pi}x(u)y(\omega-u)du \approx \texttt{1/(2*pi)*conv(x, y)*dw},
+		\frac{1}{2\pi}\int_{-\pi}^{\pi}x(u)y(\omega-u)du \approx \texttt{1/(2*pi)*conv(x, y, `same')*dw},
 		\end{equation}
-		where the vectors $\texttt{x}$ and  $\texttt{y}$ are defined for $\texttt{w}$ between $[-\pi, \pi]$ in steps of $\texttt{dw}$. This numerical integration method is equivalent to the trapezoidal rule.
+		where the vectors $\texttt{x}$ and  $\texttt{y}$ are defined for $\texttt{w}$ between $[-\pi, \pi]$ in steps of $\texttt{dw}$. The parameter \texttt{`same'} just guarantees that the output vector will have the same length as \texttt{x} and \texttt{y}. This numerical integration method is equivalent to the trapezoidal rule.
 		\item If your frequency vector \texttt{w} contains the zero frequency, you may want to enforce $\frac{\sin\omega}{1-\cos\omega}  = 0$ to prevent Matlab from generating a \texttt{NaN}.
 	\end{itemize}
 		
@@ -276,7 +276,7 @@ H(z) = 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4
 	\item[(c)] Plot the pole-zero diagram of $H(z)$ for the unquantified coefficients. You may use \texttt{conv} to multiply out the numerator and denominator and obtain the coefficients vectors \texttt{a} and \texttt{b}. Then use \texttt{zplane} to plot the pole-zero diagram.
 	\item[(d)] Quantize the filter coefficients with 6 bits to the right of the imagined binary point. Call the Q6-quantized coefficient vectors \texttt{ah} and \texttt{bh}. Then compare the pole-zero locations using
 	\begin{align*}
-		&\texttt{plot(roots(b),`or');~plot(roots(a),`xr'); hold on} \\
+		&\texttt{plot(roots(b),`ok');~plot(roots(a),`xk'); hold on} \\
 		&\texttt{plot(roots(bh),`or');~plot(roots(ah),`xr');}
 	\end{align*}
 	
