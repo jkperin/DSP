@@ -1,0 +1,44 @@
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=0.2cm, inner sep=2pt, scale=0.75]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right=2cm of 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right=2cm of 02] (03) {};
+\node[terminal={below}{$y[n]$}, right of=03] (y) {};
+
+\foreach \j in {1, 2} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={left}{}, below of=\jn0] (\j0) {};
+	\node[terminal={left}{}, below of=\jn1] (\j1) {};
+	\node[terminal={left}{}, below of=\jn2] (\j2) {};
+	\node[terminal={right}{}, below of=\jn3] (\j3) {};
+	\draw[amark={$z^{-1}$}{left}] (\j0) to (\jn0);
+	\draw[amark={}{left}] (\jn1) to (\j1);
+	\draw[amark={}{left}] (\jn2) to (\j2);
+	\draw[amark={$z^{-1}$}{right}] (\j3) to (\jn3);
+}
+
+\foreach \j in {0, 1, 2} {		
+	\draw[amark={$b_\j$}{above}] (\j2) to (\j3);		
+	\ifthenelse{\j = 0}
+		{\draw[amark={$1$}{above}] (\j0) to (\j1);}
+		{\draw[amark={$a_\j$}{above}] (\j1) to (\j0);}
+}
+
+\draw[amark={}{right}] (x) to (00);
+\draw[amark={}{right}] (01) to (02);
+\draw[amark={}{right}] (03) to (y);
+
+\onslide<2-|handout:0>{
+\node[node, above=0.5cm of 00] (E1) {}; \node[right, red2] at (E1) {$e_1[n]$};
+\draw[->, >=stealth, red2, \thickness] (E1) to (00);
+
+\node[node, above=0.5cm of 03] (E2) {}; \node[right, red2] at (E2) {$e_2[n]$};
+\draw[->, >=stealth, red2, \thickness] (E2) to (03);
+
+}
+
+\end{tikzpicture}

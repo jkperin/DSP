@@ -1,0 +1,51 @@
+\begin{tikzpicture}
+	\tikzstyle{node}=[circle,draw=black!50,fill=black,minimum size=2pt,inner sep=0pt]
+	\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+	\begin{axis}[
+		axis lines*=middle,
+		enlargelimits = false, clip=true,
+		ymin=-4, ymax=5,
+		xmin=-6.5, xmax=6.5,
+		width=\textwidth,
+		height=0.7\textwidth,
+		axis line style={->,>=stealth},
+		xlabel={$x$},
+		ylabel={$x_B = Q_B(x)$},
+		yticklabel style = {yshift=0.2cm},
+		xticklabel style = {yshift=-0.1cm},
+		every axis x label/.style={
+			at={(ticklabel* cs:1)},
+			anchor=west,
+		},
+		every axis y label/.style={
+			at={(ticklabel* cs:1)},
+			anchor=south,
+		},
+		ytick={-4, -3,-2, 1, 2, 3},
+		yticklabels={$-4\Delta$, $-3\Delta$, $-2\Delta$, $\Delta$, $2\Delta$, $3\Delta$},
+		xtick={-4.5,-3.5,-2.5, 0.5,1.5,...,4.5},
+		xticklabels={$-\frac{9\Delta}{2}$, $-\frac{7\Delta}{2}$, $-\frac{5\Delta}{2}$, $\frac{\Delta}{2}$, $\frac{3\Delta}{2}$, $\frac{5\Delta}{2}$, $\frac{7\Delta}{2}$, $\frac{9\Delta}{2}$},
+		every outer y axis line/.append style={white!15!black},
+		every y tick label/.append style={font=\color{white!15!black}},
+		legend style={draw=white!15!black,fill=white,legend cell align=left}]			
+		\addplot[line width=1pt] coordinates {(0, 0) (1/2, 0) (1/2, 1) (3/2, 1) (3/2, 2) (5/2, 2) (5/2, 3) (7/2, 3) (15/2, 3)};
+		\addplot[line width=1pt] coordinates {(0, 0) (-1/2, 0) (-1/2, -1) (-3/2, -1) (-3/2, -2) (-5/2, -2) (-5/2, -3) (-7/2, -3) (-7/2, -4) (-9/2, -4) (-15/2, -4)};
+	
+		%\addplot[line width=1pt] coordinates {(7/2, 3) (7/2, -4) (9/2, -4) (9/2, -3) (11/2, -3) (11/2, -2) (13/2, -2) (13/2, -1) (15/2, -1)};
+		%\addplot[line width=1pt] coordinates {(-9/2, -4) (-9/2, 3) (-11/2, 3) (-11/2, 2) (-13/2, 2) (-13/2, 1) (-15/2, 1)};
+	
+		%\addplot[dashed, black!20, line width=1pt, domain=-4:4, samples=2] {x};
+			
+		\foreach \x [count=\cnt] in {100, 101, 110, 111, 000, 001, 010, 011} {
+			\edef\temp{\noexpand\node [above, align=center] at (axis cs: \cnt-5,\cnt-5) {$\x$};}
+			\temp
+		}	
+			
+		\draw[<->, >=stealth, blue2, line width=2pt] (axis cs: -4.5, 0) -- (axis cs: 3.5, 0) {};
+		\draw[->, >=stealth, red2, line width=2pt] (axis cs: -4.5, 0) -- (axis cs: -6.5, 0) {};
+		\draw[->, >=stealth, red2, line width=2pt] (axis cs: 3.5, 0) -- (axis cs: 6, 0) {};
+		\node at (axis cs: 2.5, 0.5) {\color{blue2} $2X_m$};
+		\node at (axis cs: 4.5, 0.5) {\color{red2} clipping};  
+		\node at (axis cs: -5.5, 0.5) {\color{red2} clipping};
+	\end{axis}
+\end{tikzpicture}

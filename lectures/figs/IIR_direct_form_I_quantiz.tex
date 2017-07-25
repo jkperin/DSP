@@ -1,0 +1,73 @@
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=0.2cm, inner sep=2pt, scale=0.75]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right=2cm of 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right=2cm of 02] (03) {};
+\node[terminal={below}{$y[n]$}, right of=03] (y) {};
+
+\foreach \j in {1, 2} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={left}{}, below of=\jn0] (\j0) {};
+	\node[terminal={left}{}, below of=\jn1] (\j1) {};
+	\node[terminal={left}{}, below of=\jn2] (\j2) {};
+	\node[terminal={right}{}, below of=\jn3] (\j3) {};
+	\draw[amark={$z^{-1}$}{left}] (\jn0) to (\j0);
+	\draw[amark={}{left}] (\j1) to (\jn1);
+	\draw[amark={}{left}] (\j2) to (\jn2);
+	\draw[amark={$z^{-1}$}{right}] (\jn3) to (\j3);
+}
+
+\if\QUANTIZ2  % lumped noise sources
+	\foreach \j in {0, 1, 2} {		
+		\draw[amark={$b_\j$}{above}] (\j0) to (\j1);		
+		\ifthenelse{\j = 0}
+			{\draw[amark={$1$}{above}] (\j3) to (\j2);}
+			{\draw[amark={$a_\j$}{above}] (\j3) to (\j2);}
+	}
+	\node[node, above=0.5cm of 02] (E) {}; \node[right, red2] at (E) {$e[n]$};
+	\draw[->, >=stealth, red2, \thickness] (E) to (02);
+	
+	\onslide<2|handout:1>{
+		\draw[dashed] ($(02)-(0.25cm, -0.5cm)$) rectangle ($(23)+(0.7cm, -0.25cm)$);
+	}
+	
+\else % QUANTIZ = 1 -> Quantizers | QUANTIZ = 0 -> noise sources
+
+	\foreach \j in {0, 1, 2} {
+		\ifthenelse{\QUANTIZ = 1}
+			{\node[block] (Q\j0) at ($(\j0)!0.5!(\j1)$) {$Q_B\{\cdot\}$};}
+			{\node[terminal={left}{}] (Q\j0) at ($(\j0)!0.5!(\j1)$) {};}
+		\ifthenelse{\QUANTIZ = 1}
+			{\node[block] (Q\j1) at ($(\j2)!0.5!(\j3)$) {$Q_B\{\cdot\}$};}
+			{\node[terminal={left}{}] (Q\j1) at ($(\j2)!0.5!(\j3)$) {};}
+			
+		\draw[amark={$b_\j$}{above}] (\j0) to (Q\j0);
+		\draw[amark={}{above}] (Q\j0) to (\j1);
+		
+		\ifthenelse{\j = 0}
+			{\draw[amark={$1$}{above}] (\j3) to (Q\j1);}
+			{\draw[amark={$a_\j$}{above}] (\j3) to (Q\j1);}
+		\draw[amark={}{above}] (Q\j1) to (\j2);
+	}
+	
+	\if\QUANTIZ0
+		\foreach \j in {0, 1, 2} {
+			\node[node, above=0.5cm of Q\j0] (E\j0) {}; \node[right, red2] at (E\j0) {$e_{b_\j}[n]$};
+			\node[node, above=0.5cm of Q\j1] (E\j1) {}; \node[right, red2] at (E\j1) {$e_{a_\j}[n]$};
+			\draw[->, >=stealth, red2, \thickness] (E\j0) to (Q\j0);
+			\draw[->, >=stealth, red2, \thickness] (E\j1) to (Q\j1);
+		}
+	\else\relax
+	\fi
+\fi
+
+
+\draw[amark={}{right}] (x) to (00);
+\draw[amark={}{right}] (01) to (02);
+\draw[amark={}{right}] (03) to (y);
+
+\end{tikzpicture}

@@ -1,0 +1,74 @@
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=0.2cm, inner sep=2pt, scale=0.75]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{}, right of=02] (03) {};
+\node[terminal={below}{}, right of=03] (04) {};
+
+\node[terminal={below}{}, below of=00] (10) {};
+\node[terminal={below}{}, right of=10] (11) {};
+\node[terminal={below}{}, right of=11] (12) {};
+\node[terminal={below}{}, right of=12] (13) {};
+\node[terminal={below}{}, right of=13] (14) {};
+\node[terminal={below}{$\hat{y}[n]$}, right of=14] (y) {};
+
+\if\Quantiz1
+	\node[block] (Q0) at ($(00)!0.8!(10)$)  {$Q_B\{\cdot\}$};
+	\node[block] (Q1) at ($(01)!0.8!(11)$)  {$Q_B\{\cdot\}$};
+	\node[block] (Q2) at ($(02)!0.8!(12)$)  {$Q_B\{\cdot\}$};
+	\node[block] (Q3) at ($(03)!0.8!(13)$)  {$Q_B\{\cdot\}$};
+	\node[block] (Q4) at ($(04)!0.8!(14)$)  {$Q_B\{\cdot\}$};
+	\draw[amark={}{right}] (14) to (y);
+\else\relax
+	\only<1|handout:1>{
+	\node[node, below=1cm of 10] (E0) {}; \node[right, red2] at (E0) {$e_0[n]$};
+	\node[node, below=1cm of 11] (E1) {}; \node[right, red2] at (E1) {$e_1[n]$};
+	\node[node, below=1cm of 12] (E2) {}; \node[right, red2] at (E2) {$e_2[n]$};
+	\node[node, below=1cm of 13] (E3) {}; \node[right, red2] at (E3) {$e_{M-1}[n]$};
+	\node[node, below=1cm of 14] (E4) {}; \node[right, red2] at (E4) {$e_{M}[n]$};
+	
+	\draw[->, >=stealth, red2, \thickness] (E0) to (10);
+	\draw[->, >=stealth, red2, \thickness] (E1) to (11);
+	\draw[->, >=stealth, red2, \thickness] (E2) to (12);
+	\draw[->, >=stealth, red2, \thickness] (E3) to (13);
+	\draw[->, >=stealth, red2, \thickness] (E4) to (14);
+	\draw[amark={}{right}] (14) to (y);
+	}
+	\only<2|handout:2>{
+		\node[terminal={above}{$y[n]$}] (y2) at ($(14)!0.5!(y)$) {};
+		\node[node, below=1cm of y2] (E4) {}; \node[right, red2] at (E4) {$e[n]$};
+		\draw[->, >=stealth, red2, \thickness] (E4) to (y2);
+		\draw[amark] (y2) to (y);
+		\draw[amark] (14) to (y2);
+	}
+\fi
+
+\foreach \l [count=\j]  in {$h[0]$, $h[1]$, $h[2]$, $h[M-1]$} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\ifthenelse{\j = 3}
+		{\draw[\thickness, dashed] (0\jn) to (0\j)}
+		{\draw[zpath={above}] (0\jn) to (0\j)};
+	\ifthenelse{\j = 3}
+		{\draw[\thickness, dashed] (1\jn) to (1\j)}
+		{\draw[amark={}{right}] (1\jn) to (1\j)};
+	%\draw[zpath={above}] (0\jn) to (0\j);
+	\ifthenelse{\Quantiz = 1}
+		{\draw[amark={\l}{right}] (0\jn) to (Q\jn) to (1\jn);}
+		{\draw[amark={\l}{right}] (0\jn) to (1\jn);}
+}
+
+\if\Quantiz1
+	\draw[amark={$h[M]$}{right}] (04) to (Q4) to (14);
+\else
+	\draw[amark={$h[M]$}{right}] (04) to (14);
+\fi
+	
+
+
+\draw[amark] (x) to (00);
+
+\end{tikzpicture}

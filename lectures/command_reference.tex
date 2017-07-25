@@ -1,0 +1,10 @@
+%% Foreach inside axis
+
+\foreach \x [count=\cnt] in {000, 001, 010, 011, 100, 101, 110, 111} {
+	\edef\temp{\noexpand\node [above, align=center] at (axis cs: \cnt-5,\cnt-5) {$\x$};}
+	\temp
+	\edef\temp{\noexpand\node [above, align=center] at (axis cs: \cnt+3,\cnt-5) {$\x$};}
+	\temp
+}
+
+

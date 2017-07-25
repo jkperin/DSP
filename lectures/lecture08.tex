@@ -1,0 +1,786 @@
+\documentclass[10pt, handout]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\input{header.tex}
+
+\makeatletter
+\def\env@dcases{%
+	\let\@ifnextchar\new@ifnextchar
+	\left\lbrace
+	\def\arraystretch{2}%
+	\array{@{}l@{\quad}l@{}}}
+\makeatother
+
+%% 
+\title[EE 264]{Quantization in Digital Filter Structures}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 25, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Announcements}
+	\begin{itemize}
+		\item Homework \#4 due on Sunday, July 30. Start early!
+		\item Midterm review session will be on Friday at 1:30pm at \textbf{Gates B03}
+		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}. \textbf{Deadline:} Today
+		\item We'll release practice midterms today. Their solutions will be released on Friday after the review session.
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item There are different forms of realizing IIR and FIR rational systems
+	\item Their difference becomes evident when considering finite arithmetic precision
+	\item Pipelining and parallel processing solve the problem of using a slow hardware to process a fast signal in two complementary ways. 
+	\item Pipelining adds memory (delays) to minimize the critical path. Consequently, pipelining increases latency
+	\item In parallel processing the hardware is replicated to allow processing of multiple input samples simultaneously
+	\item Pipelining and parallel processing can be realized together
+	\item Pipelining and parallel processing are more difficult in IIR systems due to their inherent feedback
+\end{itemize}
+\end{frame}
+
+%
+\section{Outline}
+\begin{frame}{Today's lecture}	
+	\begin{itemize}
+		\item Fractions and integers representation with two's complement
+		\item Coefficient quantization in FIR systems
+		\item Coefficient quantization in IIR systems
+		\item Roundoff noise in FIR systems
+		\item Roundoff noise in IIR systems
+	\end{itemize}
+\end{frame}
+
+%
+\section{Two's complement}
+\begin{frame}{Two's complement}
+\textbf{Two's complement} is a widely used \textbf{fixed-point} representation. It allows fractions to be represented as integers.
+
+Any real number $x$ can be represented with infinite precision in two's complement:
+\begin{equation*}
+x = X_m\bigg(-b_0 + \sum_{i=1}^{\infty}b_i2^{-i}\bigg) \tag{infinite precision}
+\end{equation*}
+
+$X_m$ is a scaling factor, $b_0$ is the \textbf{sign bit}, and the other bits $b_i, i = 1, \ldots, \infty$ are the \textbf{magnitude bits}.
+~\\
+~\\
+
+\pause
+Assuming \textbf{finite precision} of $(B+1)$ bits: 
+\begin{equation}
+x \approx x_B=  X_m\bigg(-b_0 + \sum_{i=1}^{B}b_i2^{-i}\bigg) \tag{$B+1$ bits precision}
+\end{equation}
+
+$B+1$ is referred to as the \textbf{word length}.
+\end{frame}
+
+%
+\begin{frame}{Two's complement}
+\textbf{Examples:} $(1+5)$-bits and $X_m = 1$. 
+\begin{equation*}
+\begin{tabular}{c||c|c|c|c|c}
+\hline
+$b_0$ & $b_1$ & $b_2$ & $b_3$ & $b_4$ & $b_5$ \\
+\hline
+$0$ & $1$ & $0$ & $0$ & $1$ & $0$ \\
+\hline
+\end{tabular} = 0.5625
+\end{equation*}
+
+\begin{equation*}
+	\begin{tabular}{c||c|c|c|c|c}
+	\hline
+	$b_0$ & $b_1$ & $b_2$ & $b_3$ & $b_4$ & $b_5$ \\
+	\hline
+	$0$ & $1$ & $0$ & $0$ & $1$ & $1$ \\
+	\hline
+	\end{tabular} = 0.5938
+\end{equation*}
+If $X_m = 2^B$. We have integer representation:  
+
+\begin{equation*}
+	2^B\bigg(-b_0 + \sum_{i=1}^{B}b_i2^{-i}\bigg) = -b_02^B + \sum_{i=1}^{B}b_i2^{B-i}
+\end{equation*}
+
+\begin{align*}
+	0.5625\times 2^5 &= 18 \\
+	0.5938\times 2^5 &= 19
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Q notation}
+	The \textbf{Q notation} is a convenient way of keeping track of the \textbf{binary point} ($\lozenge$).
+	
+	Suppose the word length is 16 bits, then we can represent integers from $-32768 \leq A \leq 32767$.
+		
+	If we want to represent a fraction $a$ such that $-1\leq a\leq 1$:
+	\begin{align*}
+	a = A\times 2^{-15} \Longleftrightarrow A = a\times 2^{15}
+	\end{align*}
+		
+	\textbf{Example:}
+	$a =  0.75 \Longleftrightarrow A = 24576_{10}$ in Q15
+	\begin{equation*}
+	0_\lozenge\underbrace{110000000000000}_{\text{15 bits}}
+	\end{equation*}
+		
+	Q15 means 15 bits are used to represent the fraction, and only one bit is used to represent the integer (sign bit).
+\end{frame}
+
+%
+\begin{frame}
+	
+	\textbf{Another example:}
+	
+	Now assume that $-4\leq a\leq 4$. 
+	
+	We can represent $a$ by a Q13 integer $A$ such that $-32768 \leq A \leq 32767$ (16 bits)
+	
+	\begin{align*}
+	a = A\times 2^{-13} \Longleftrightarrow A = a\times 2^{13}
+	\end{align*}
+	
+	Suppose $a =  3.5 \Longleftrightarrow A = 28672_{10}$ Q13
+	\begin{equation*}
+	011_\lozenge\underbrace{1000000000000}_{\text{13 bits}}
+	\end{equation*}
+	
+	In this case, 13 bits are used to represented the fraction (0.5), whereas 3 bits are used to represent the integer part (3)
+	
+	\textbf{Q0 means integers}
+	\begin{equation*}
+	0111000000000000_\lozenge = 28672~\text{Q0}
+	\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Roundoff error}
+
+The difference between the actual number $x$ and its representation $x_B$ is known as \textbf{roundoff error} (or noise):
+\begin{equation*}
+e = x - x_B
+\end{equation*}
+
+Similarly to quantization error, the roundoff error is bounded in the interval of length $\Delta$:
+
+\begin{equation*}
+\Delta = \frac{\text{range}}{\text{number of steps}} = \frac{2X_m}{2^{B+1}} = \frac{X_m}{2^{B}}
+\end{equation*}
+
+For instance, for $X_m = 1$ and Q15, we would have
+\begin{equation*}
+\Delta = \frac{1}{2^{15}} = 0.0000305176
+\end{equation*}
+\end{frame}
+
+\begin{frame}{Overflow vs clipping}
+
+There are two possibilities when number \underline{exceeds} the representation range
+
+\begin{enumerate}
+	\only<1|handout:1>{
+		\item \textbf{Overflow} wraps around.
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
+		\end{center}
+	} \only<2|handout:2>{
+		\setcounter{enumi}{1}
+		\item \textbf{Clipping} holds the output at the highest level.
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_clip.tex}}
+		\end{center}
+	}
+\end{enumerate}
+\end{frame} 
+
+\begin{frame}{Overflow vs clipping}
+Additional comments:
+\begin{itemize}
+\item There's an inherent trade-off between quantization error and overflow/clipping.
+
+\item We'd like to make the signal small in order to make overflow/clipping rare, but making the signal small leads to excessive quantization error, much like losing bits of resolution in quantization
+
+\item If the signal is too large overflow/clipping will be frequent, resulting in frequent arithmetic errors.
+\end{itemize} 
+\end{frame} 
+
+%
+\begin{frame}{Arithmetic operations in two's complement}
+	\begin{block}{Sign change}
+		Complement all bits and add 1 to the least significant bit
+		\begin{equation*}
+		-6 = -(0110) = 1001 + 1 = 1010
+		\end{equation*}
+	\end{block}
+
+	\begin{block}{Accumulation or addition}
+		Regular addition in binary.
+		
+		When adding 3 or more two's complement numbers, the intermediate sum can overflow, but the final sum will be correct if it does not exceed the word length of the numbers.
+		
+		\begin{align*}
+			6 + 4 + (-6) &= \underbrace{{\color{red2} 10}}_{\text{overflow}} - (6) = 4 \\
+			0110 + 0100 + (1010) &= \underbrace{{\color{red2} 1010}}_{\text{overflow}} + 1010 = 0100
+		\end{align*}
+		The final sum is correct, despite the overflow when calculating $6+4$. 
+	\end{block}
+\end{frame}
+
+%
+\begin{frame}{Arithmetic operations in two's complement}
+\begin{block}{Addition in different scales}
+	When adding scaled binary numbers, you must line up the binary points. This can be done by shifting one or the other of the numbers either left or right (multiply by power of 2).
+	
+	\textbf{Example:}
+	\begin{alignat*}{4}
+	&00_\lozenge 	  010000000000000000000000000000 &&= 0.25 &&&~\text{Q30} \\
+	+ & 0001_\lozenge 0010000000000000000000000000 &&= 1.125 &&&~\text{Q28} \\
+	\end{alignat*}
+	
+	\begin{alignat*}{4}
+	&0000_\lozenge 0100000000000000000000000000 &&= 0.25 &&&~\text{Q30} \\
+	+ & 0001_\lozenge 0010000000000000000000000000 &&= 1.125 &&&~\text{Q28} \\
+	\hline
+	&0001_\lozenge 0110000000000000000000000000 &&= 1.375 &&&~\text{Q28} \\
+	\end{alignat*}	
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Arithmetic operations in two's complement}
+	\begin{block}{Multiplication}
+		\begin{equation*}
+		\underbrace{Y}_{2B+1 \text{bits}} = \underbrace{A}_{B+1 \text{bits}}\times \underbrace{X}_{B+1 \text{bits}}
+		\end{equation*}
+		
+		Generally the hardware produces $Y$ with 2B+2 bits (two sign bits)
+		
+		\textbf{Examples:}
+		\begin{alignat*}{4}
+		&0_\lozenge110000000000000 &&= 0.75 &&&~\text{Q15} \\
+		\times & 0_\lozenge100000000000000 &&= 0.5 &&&~\text{Q15} \\
+		\hline
+		00_\lozenge 011000000000000&00000000000000000 &&= 0.375 &&&~\text{Q30}
+		\end{alignat*}
+		
+		
+		\begin{alignat*}{4}
+		&01_\lozenge10000000000000 &&= 1.5 &&&~\text{Q14} \\
+		\times & 00_\lozenge11000000000000 &&= 0.5 &&&~\text{Q14} \\
+		\hline
+		0001_\lozenge 00100000000&00000000000000000 &&= 1.125 &&&~\text{Q28}
+		\end{alignat*}
+		
+		Because of the extra bits, multiplications do not overflow.
+		
+	\end{block}
+\end{frame}
+
+\begin{frame}{Quantization in systems implementation}
+Example of FIR system (same applies to IIR):
+\begin{center}
+	\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+\end{center}
+
+\textbf{Practical issues:}
+\begin{itemize}
+	\item Coefficients $\{h[n]\}$ must be quantized to fit the representation.
+	\item Multiplications and additions are realized with finite precision.
+	\item Multiplications do not overflow
+	\item Additions may overflow. Must scale signals or coefficients to prevent overflow.
+	\item Decreasing the representation leads to roundoff errors e.g., going from $2B+1$ bits to $B+1$ bits after multiplication. Roundoff noise will be treated with the linear noise model, similarly to quantization.
+\end{itemize}
+\end{frame}
+
+
+%
+\section{Coefficient Quantization}
+\begin{frame}{Coefficient quantization}
+	Given a system
+	\begin{align*}
+		H(z) = \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{a_0 + a_1z^{-1} + \ldots + a_Nz^{-N}}.
+	\end{align*}
+	
+	The coefficients $\{a_0, \ldots, a_M, b_0,\ldots b_N\}$ obtained in design must  be quantized to $(B+1)$ bits for implementation:
+	\begin{alignat*}{2}
+		\hat{b}_k &= Q_B\{b_k\} = b_k + \Delta b_k, \qquad &&  k = 0, \ldots, M \\
+		\hat{a}_k &= Q_B\{a_k\} = a_k + \Delta a_k, \qquad && k = 0, \ldots, N
+	\end{alignat*}
+	
+	\pause
+	\vspace{0.25cm}
+	Quantizing to (B+1) bits:
+	
+	\begin{equation*}
+	\hat{b}_k = Q_B\{b_k\} = \begin{cases}
+	2^{-B}\mathrm{round}(b_k\times 2^B), & \text{\textbf{rounding}} \\
+	2^{-B}\big\lfloor b_k\times 2^B\big\rfloor, & \text{\textbf{truncating}}
+	\end{cases}
+	\end{equation*}
+	
+	In Matlab:
+	\begin{equation*}
+	\hat{b}_k = Q_B\{b_k\} = \begin{cases}
+	\texttt{2\textasciicircum(-B)*round(b*2\textasciicircum B)}, & \text{\textbf{rounding}} \\
+	\texttt{2\textasciicircum(-B)*floor(b*2\textasciicircum B)}, & \text{\textbf{truncating}}
+	\end{cases}
+	\end{equation*}
+\end{frame}
+
+\begin{frame}{Coefficient quantization}
+
+\textbf{Question:} what happens to poles, zeros, and the frequency response after coefficient quantization?
+~\\
+~\\
+
+For FIR systems the main concerns are
+\begin{itemize}
+	\item Preserving linear phase (if linear phase)
+	\item Error in magnitude and phase responses
+\end{itemize}
+
+For IIR systems the main concerns are
+\begin{itemize}
+	\item Stability
+	\item Error in magnitude and phase responses
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Example: coefficient quantization of linear-phase FIR filter}
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.35]{figs/fir_quantized_coefficients.png}
+	\end{figure}
+	\pause
+	\textbf{Question:} will the linear phase property of this FIR filter be preserved after coefficient quantization?
+\end{frame}
+
+
+\begin{frame}{Example: coefficient quantization of linear-phase FIR filter}
+	Zeros move around significantly, but they remain in \textbf{conjugate} and \textbf{conjugate reciprocal}  pairs ($\{c, c^*, 1/c, 1/c^*\}$) since symmetry of impulse response is preserved after quantization
+	\begin{figure}
+		\centering
+		\includegraphics[scale=0.33]{figs/pole_zero_fir_quantized.png}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{Example: coefficient quantization of linear-phase FIR filter}
+	Error in the magnitude response for 13-bit quantization. Error for transition band is not shown.
+\begin{center}
+		\resizebox{!}{0.8\textheight}{
+	\begin{tikzpicture}
+		\node (img) {\includegraphics[scale=0.35]{figs/fir_mag_resp_quantized.png}};
+		\node[align=center, text width = 2cm, scale=0.8] at ($(img.north east)+(-1.5cm, -1cm)$) {Magnitude response};
+		\node[align=center, text width = 4cm, scale=0.8] at ($(img.south east)+(-2.3cm, 3cm)$) {Error after 13-bit coefficient quantization};
+	\end{tikzpicture}
+	}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Example: coefficient quantization in IIR filter}
+
+Bandpass 12th-order elliptic filter
+\begin{columns}
+\begin{column}{0.5\textwidth}
+	\begin{center}
+		\resizebox{\textwidth}{!}{\input{figs/irr_coeff_quantiz_pole_zero.tex}}
+	\end{center}
+\end{column}
+
+\begin{column}{0.6\textwidth}
+	\begin{center}
+		\resizebox{\textwidth}{!}{\input{figs/irr_coeff_quantiz_mag_resp.tex}}
+	\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Example: coefficient quantization in IIR filter}	
+Quantization with 16 bits makes the system \textbf{unstable}. Some of the poles fall outside the unit circle.
+\begin{center}
+\includegraphics[width=\textwidth]{figs/iir_coeff_quantiz.png}
+\end{center}	
+
+\pause
+In general, tightly clustered roots are very sensitive to coefficient quantization.
+
+How to mitigate this problem?
+\begin{itemize}
+\item Higher resolution
+\item Cascade or parallel forms are much less sensitive to coefficient quantization than direct forms.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Summary on coefficient quantization}
+\begin{block}{FIR}
+	\begin{itemize}
+		\item FIR systems will remain stable after coefficients quantization since all poles are at $z = 0$.
+		\item We can preserve the linear phase property by keeping the impulse response symmetric: $h[n] = \pm h[M-n]$. This is typically assured in the implementation by using the special structure for linear phase FIR systems (lecture 7)
+		\item Magnitude response is affected, but difference is typically not significant.
+	\end{itemize}
+\end{block}
+
+\begin{block}{IIR}
+	\begin{itemize}
+		\item IIR systems can become unstable after coefficients quantization
+		\item Symmetry conditions are not easy to enforce. In all-pass systems, for  instance, after quantization the pole $c$ may not longer be conjugate reciprocal of the zero $1/c^*$
+		\item These issues are mitigated by increasing word length, or using cascade or parallel forms.
+	\end{itemize}
+\end{block}
+
+\end{frame}
+
+%
+\section{Roundoff Noise}
+\begin{frame}{Roundoff noise and the linear noise model}
+As for quantization, we'll model roundoff noise as noise source of a \textbf{white uniformly distributed noise} that is independent of the input signal. 
+
+\begin{center}
+\resizebox{0.6\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
+\end{center}
+
+Assuming $X_m = 1$ (typical), we have the following values:
+\begin{align*}
+\sigma_B^2 &= \frac{\Delta^2}{12} =  \frac{2^{-2B}}{12}\tag{average power} \\
+\phi_{ee}[m] &= \sigma_B^2\delta[m] \tag{autocorrelation function} \\
+\Phi_{ee}(e^{j\omega}) &= \sigma_B^2 \tag{PSD}
+\end{align*}
+\end{frame}
+
+\subsection{Roundoff Noise in FIR Systems}
+\begin{frame}{Roundoff noise in FIR systems}
+	Direct form of FIR filter
+	\begin{center}
+		\resizebox{0.75\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+	\end{center}
+	\vspace{-0.4cm}
+	Two forms of implementation:
+	\begin{enumerate}
+		\item Quantization immediately after each multiplication:
+		\begin{equation*}
+		H(z) = \sum_{k = 0}^M Q_B\{h[k]z^{-k}\}
+		\end{equation*}
+		The multiplication produces $2B+1$ bits, but the $B$ LSBs are discarded.
+		\item Quantization immediately after accumulation:
+		\begin{equation*}
+		H(z) = Q_B\bigg\lbrace\sum_{k = 0}^M h[k]z^{-k}\bigg\rbrace
+		\end{equation*}
+		Requires ($2B+1$)-bit accumulators (adders). Multiply and accumulate (MAC) instruction in many architectures.
+	\end{enumerate}	
+\end{frame}
+
+
+\begin{frame}{1. Quantization immediately after multiplication}
+	\begin{center}
+		\def\Quantiz{1}
+		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
+	\end{center}
+
+	Equivalent \textbf{linear noise model}:
+	
+	\only<1|handout:1>{Every noise source has average power: $\sigma_B^2 = \frac{\Delta^2}{12}$}
+	\only<2|handout:2>{Lump noise sources into one with average power:  $\E(e^2[n]) = (M+1)\sigma_B^2$}
+	\vspace{-0.25cm}
+	\begin{center}
+		\def\Quantiz{0}
+		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{2. Quantization immediately after accumulation}
+	\begin{center}
+		\def\Quantiz{1}
+		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
+	\end{center}
+	Equivalent \textbf{linear noise model}:
+	
+	Output noise source has average power $\E(e^2[n]) = \frac{\Delta^2}{12}$. The noise power is ($M+1$) times smaller than in quantization after multiplication
+	\vspace{-0.5cm}
+	\begin{center}
+		\def\Quantiz{0}
+		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Preventing overflow in FIR systems}
+	Larger range $X_m$ reduces chance of overflow, but leads to higher quantization error.
+	 \begin{center}
+		\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Preventing overflow in FIR systems}
+	
+	Assuming that the input signal is bounded between $-1 \leq x[n] \leq 1$. Overflow will \underline{not} happen, if $|y[n]| < 1$ for any input $x[n]$. 
+	
+	What are the conditions in the coefficients $h[n]$ to avoid overflow?
+	\begin{align*}
+		|y[n]| &= \bigg|\sum_{k = 0}^{M} h[k]x[n-k]\bigg| \tag{modulus of convolution sum} \\
+		&\leq \sum_{k = 0}^{M} |h[k]|\cdot|x[n-k]| \tag{Schwarz inequality} \\
+		&\leq \sum_{k = 0}^{M} |h[k]| \tag{since $-1 \leq x[n] \leq 1$} \\
+		& < 1 \implies \text{no overflow}
+	\end{align*}
+\end{frame}
+
+\subsection{Roundoff Noise in IIR Systems}
+\begin{frame}{Roundoff noise in IIR systems}
+
+\begin{itemize}
+	\item We'll treat roundoff noise in IIR systems similarly to in FIR systems
+	\item The inherent feedback of IIR systems will lead to roundoff noise \textbf{shaping}
+	\item Now the difference between the different structures will become apparent
+		\begin{itemize}
+		\item Direct form I \& II
+		\item Transposed forms
+		\item Cascade forms
+		\item Parallel forms
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Direct form I IIR filter}
+	Quantization is performed after every multiplication
+	\begin{center}
+		\def\QUANTIZ{1}
+		\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Direct form I IIR filter}
+As for FIR filters, we can replace the quantizers by noise sources with average power
+\begin{equation*}
+\sigma_B^2 = \frac{\Delta^2}{12} = \frac{2^{-2B}}{12}
+\end{equation*}
+\begin{center}
+	\def\QUANTIZ{0}
+	\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Direct form I IIR filter}
+Combining all noise sources into one
+\begin{equation*}
+\sigma_e^2 = (M+1+N)\sigma^2_B = (M+1+N)\frac{2^{-2B}}{12}
+\end{equation*}
+\begin{center}
+	\def\QUANTIZ{2}
+	\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+\end{center}
+
+\onslide<2|handout:1>{Quantization noise is \textbf{shaped} by the filter defined in the dashed rectangle:
+\begin{equation*}
+H_a(z) = \frac{1}{A(z)} = \frac{1}{1 + a_1z^{-1} + a_2z^{-2}} \tag{shaped by the poles}
+\end{equation*}
+}
+\end{frame}
+
+\begin{frame}{Direct form I IIR filter}
+	Calculating the roundoff noise PSD at the output:
+	\begin{align*}
+	\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) &= |H_a(e^{j\omega})|^2\Phi_{ee}(e^{j\omega}) \\
+	& = \frac{1}{|A(e^{j\omega})|^2}(M+N+1)\sigma_B^2
+	\end{align*}
+	
+	The average power is obtained by integrating the PSD over $[-\pi, \pi]$:
+	\begin{align*}
+	\sigma_{\tilde{e}}^2 &=\frac{1}{2\pi}\int_{-\pi}^{\pi}\Phi_{\tilde{e}\tilde{e}}(e^{j\omega})d\omega \\
+	&=(M+N+1)\frac{\sigma_B^2}{2\pi}\int_{-\pi}^{\pi} \frac{1}{|A(e^{j\omega})|^2}d\omega
+	\end{align*}
+	
+	The actual value will depend on $A(e^{j\omega})$, but the integral could be larger than 1. That is, $A(e^{j\omega})$ could \underline{enhance} the roundoff noise.
+	
+\end{frame}
+
+%
+\begin{frame}{Direct form II IIR filter}
+ Similarly to the direct form I, quantization may be performed after multiplications. The quantizers are replaced by noise sources of average power $\sigma_B^2$. Noise sources are combined whenever possible
+ 
+\begin{align*}
+\sigma_{e_1}^2 &= N\sigma_B^2 \tag{average power of $e_1[n]$} \\
+\sigma_{e_2}^2 &= (M+1)\sigma_B^2 \tag{average power of $e_2[n]$} \\
+\end{align*}
+ 
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{figs/IIR_direct_form_II_quantiz.tex}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+
+Noise source $e_2[n]$ is already at the output, but $e_1[n]$ will be shaped by the filter $H(z)$:
+
+\begin{align*}
+\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) &= |H(e^{j\omega})|^2\Phi_{e_1e_1}(e^{j\omega}) +  \Phi_{e_2e_2}(e^{j\omega})\\
+& = N\sigma_{B}^2|H(e^{j\omega})|^2 + (M+1)\sigma_{B}^2
+\end{align*}
+
+The average quantization noise power at the output is given by
+\begin{align*}
+\sigma_{\tilde{e}}^2 & =\frac{1}{2\pi}\int_{-\pi}^{\pi}\Phi_{\tilde{e}\tilde{e}}(e^{j\omega})d\omega \\
+&= N\sigma_{B}^2\frac{1}{2\pi}\int_{-\pi}^{\pi} |H(e^{j\omega})|^2d\omega + (M+1)\sigma_{B}^2 \\
+&= N\sigma_{B}^2\sum_{n=-\infty}^{\infty}|h[n]|^2 + (M+1)\sigma_{B}^2
+\end{align*}
+
+\end{frame}
+
+\begin{frame}{What about transposed forms?}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			\textbf{Transposed direct form I}
+			\begin{center}
+				\resizebox{1.2\textwidth}{!}{\input{figs/IIR_transposed_direct_form_I_quantiz.tex}}
+			\end{center}
+			Average power of each noise source
+			\onslide<3|handout:0> {
+			\begin{align*}
+				\sigma_{e_1}^2 &= (M+1)\sigma_B^2 \\
+				\sigma_{e_2}^2 &= N\sigma_B^2
+			\end{align*}
+			}
+			
+			PSD at the output:
+			\onslide<3|handout:0> {
+			\begin{align*}
+				\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) = (M+1)\sigma_B^2|H(e^{j\omega})|^2 + N\sigma_B^2
+			\end{align*}
+			}
+		
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\textbf{Transposed direct form II}
+			\vspace{-0.07cm}
+			\begin{center}
+				\resizebox{\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II_quantiz.tex}}
+			\end{center}
+			Average power of each noise source
+			\onslide<3|handout:0> {
+				\begin{align*}
+				\sigma_{e}^2 &= (M+N+1)\sigma_B^2 \\
+				\end{align*}
+				\vspace{-0.2cm}
+			}
+			PSD at the output:
+			\onslide<3|handout:0> {
+				\begin{align*}
+				\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) = (M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}
+				\end{align*}
+			}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Summary roundoff noise in IIR systems}
+
+PSD of roundoff noise at the output
+~\\
+
+\begin{tabular}{c||c|c}
+	  & I & II \\
+	\hline
+	Direct & $\displaystyle(M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ & $\displaystyle N\sigma_{B}^2|H(e^{j\omega})|^2 + (M+1)\sigma_{B}^2$ \\
+	Transposed & $\displaystyle(M+1)\sigma_B^2|H(e^{j\omega})|^2 + N\sigma_B^2$ & $\displaystyle (M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ \\
+	\hline
+\end{tabular}
+~\\
+
+$M+1$ coefficients $\{b_0, b_1, \ldots, b_M\}$, assumed \underline{different from} zero and one ($b_i \neq 0, b_i \neq 1$).
+
+$N$ coefficients $\{a_1, \ldots, a_N\}$,  assumed \underline{different from} zero and one ($a_i \neq 0, a_i \neq 1$).
+
+$\sigma_B^2 = 2^{-2B}/12$ for a ($B+1$)-bit two's complement representation.
+
+\vspace{0.5cm}
+\textbf{Conclusions:}
+\begin{itemize}
+	\item The least \textit{noisy} implementation depends on $H(e^{j\omega})$ and on $A(e^{j\omega})$.
+	\item Use parallel and cascade forms to group 2nd-order factors (good grouping is important) and realize each subsystem with the most convenient structure.
+	\item In addition to grouping, in cascade forms attention also has to be paid to the ordering of the subsystems.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Summary}
+\begin{itemize}
+	\item Two's complement is a fixed-point representation that allows fractions to be represented as integers
+	\item There's an inherent trade-off between roundoff noise and overflow/clipping
+	\item FIR systems remain stable after coefficient quantization
+	\item Linear phase FIR systems remain linear phase after coefficient quantization, since the impulse response remains symmetric
+	\item Coefficient quantization may lead to instability in IIR systems, as poles may move outside the unit circle
+	\item Similarly to quantization noise, roundoff noise is modeled by an additive white noise that is independent of the input signal (the linear noise model).
+	\item Roundoff noise is minimized by performing quantization only after accumulation, but this requires $(2B+1)$-bit adders
+	\item In FIR structures the equivalent roundoff noise at the output is white
+	\item IIR structures lead to roundoff noise shaping
+	\item Least noisy IIR structure depends on the system
+	\item Cascade and parallel forms are used to mitigate total roundoff noise
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}

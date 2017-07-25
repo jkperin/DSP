@@ -1,0 +1,60 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis equal,
+axis lines*=middle,
+enlargelimits = false, clip=true,
+xmin=-1.39,
+xmax=1.39,
+ymin=-1.10,
+ymax=1.10,
+axis line style={->,>=stealth},
+xlabel={$\mathrm{Re}\{z\}$},
+ylabel={$\mathrm{Im}\{z\}$},
+every axis x label/.style={
+at={(ticklabel* cs:1)},
+anchor=north,
+},
+every axis y label/.style={
+at={(ticklabel* cs:1)},
+anchor=south,
+},
+xmajorgrids,
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\draw (axis cs:0,0) circle [black!50, dashed, line width=2pt, radius=1];
+\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
+table[row sep=crcr]{
+	0.30259 0.94453 \\
+	0.30259 -0.94453 \\
+	0.31472 0.91236 \\
+	0.31472 -0.91236 \\
+	0.3692 0.84529 \\
+	0.3692 -0.84529 \\
+	0.58654 0.80134 \\
+	0.58654 -0.80134 \\
+	0.55823 0.79298 \\
+	0.55823 -0.79298 \\
+	0.48019 0.79336 \\
+	0.48019 -0.79336 \\
+};
+
+\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
+table[row sep=crcr]{
+	-0.096674 0.99532 \\
+	-0.096674 -0.99532 \\
+	0.23261 0.97257 \\
+	0.23261 -0.97257 \\
+	0.27546 0.96131 \\
+	0.27546 -0.96131 \\
+	0.79688 0.60414 \\
+	0.79688 -0.60414 \\
+	0.63915 0.76908 \\
+	0.63915 -0.76908 \\
+	0.61128 0.79142 \\
+	0.61128 -0.79142 \\
+};
+
+\end{axis}
+\end{tikzpicture}

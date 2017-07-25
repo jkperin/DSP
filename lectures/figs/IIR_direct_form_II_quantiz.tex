@@ -1,0 +1,47 @@
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+
+\foreach \j in {1, 2} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={below}{}, below of=\jn0] (\j0) {};
+	\node[terminal={below}{}, below of=\jn1] (\j1) {};
+	\node[terminal={below}{}, below of=\jn2] (\j2) {};
+}
+
+%
+\draw[zpath={right}] (01) to (11);
+\draw[zpath={right}] (11) to (21);
+
+%
+\draw[amark] (10) to (00);
+\draw[amark] (20) to (10);
+
+%
+\draw[amark] (12) to (02);
+\draw[amark] (22) to (12);
+
+%
+\draw[amark={$1$}{above}] (00) to (01);
+\draw[amark={$a_1$}{above}] (11) to (10);
+\draw[amark={$a_2$}{above}] (21) to (20);
+
+%
+\draw[amark={$b_0$}{above}] (01) to (02);
+\draw[amark={$b_1$}{above}] (11) to (12);
+\draw[amark={$b_2$}{above}] (21) to (22);
+
+\draw[amark] (x) to (00);
+\draw[amark] (02) to (y);
+
+\node[node, above=0.5cm of 00] (E1) {}; \node[right, red2] at (E1) {$e_1[n]$};
+\node[node, above=0.5cm of 02] (E2) {}; \node[right, red2] at (E2) {$e_2[n]$};
+\draw[->, >=stealth, red2, \thickness] (E1) to (00);
+\draw[->, >=stealth, red2, \thickness] (E2) to (02);
+
+\end{tikzpicture}
