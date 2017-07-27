@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -219,11 +219,13 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 \begin{block}{IIR}
 	\vspace{-0.5cm}
 	\begin{align*}
-	H(z) &=  \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{a_0 + a_1z^{-1} + \ldots + a_Nz^{-N}} \tag{$z$-transform} \\
-	&a_0y[n] + a_1y[n-1] + \ldots + a_Nx[n-N]  \\
+	H(z) &=  \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{1 - a_1z^{-1} - \ldots - a_Nz^{-N}} \tag{$z$-transform} \\
+	&y[n] - a_1y[n-1] - \ldots - a_Nx[n-N]  \\
 	&= b_0x[n] + b_1x[n-1] + \ldots + b_Mx[n-M] \tag{difference equation}
 	\end{align*}
 	There is at least one pole different from the origin
+	
+	\textbf{Careful with notation:} Note the \textbf{minus sign} of the coefficients $a_1, \ldots, a_N$. This is the same convention from the textbook. This way the coefficients $a_1, \ldots, a_N$ will appear without the minus sign in the signal flow graphs.
 \end{block}
 
 \end{frame}
