@@ -1,0 +1,32 @@
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = false, clip=true,
+xmax=10, xmin=-10,
+ymin=-4, ymax=4,
+axis line style={->,>=stealth},
+xlabel={$\Omega T$},
+ylabel={$\omega = 2\arctan(\Omega T/2)$},
+every axis x label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=north,
+},
+every axis y label/.style={
+    at={(ticklabel* cs:1)},
+    anchor=south,
+},
+ytick={-3.14, 3.14}, yticklabels={-$\pi$, $\pi$},
+xtick=\empty,
+%xmajorgrids,
+ymajorgrids,
+xticklabel style = {xshift=+0.2cm},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[smooth, black!20, solid, line width=1pt, domain=-20:20, samples=2] {x};
+\addplot[smooth, black, solid, line width=1.5pt, domain=-20:20, samples=51] {rad(2*atan(x/2))};
+
+
+\end{axis}
+\end{tikzpicture}

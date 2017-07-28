@@ -1,0 +1,37 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.3\textwidth,
+	ymin=-0.1,	ymax=0.28,
+	xmin=0, xmax=24.5,
+	axis line style={->,>=stealth, shorten >= -0.5cm},
+	xlabel={\small $t$},
+	ylabel={\small $h_{eq}(t)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.5cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.5cm,
+	},
+	xtick={0, 1, 5, 24},
+	xticklabels={0, $T$, $5T$, $24T$},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\addplot [smooth, color=black, solid, line width=1.5pt] table[x index=0,y index=1] {figs/data/imp_invar_samples.dat};
+	
+	\only<2|handout:1>{
+	\addplot [ycomb, color=red2, mark=*, fill=white, mark options={scale=1, fill=white}, line width=1.5pt, each nth point={4}] table[x index=0,y index=1] {figs/data/imp_invar_samples.dat};
+}
+\end{axis}
+\end{tikzpicture}

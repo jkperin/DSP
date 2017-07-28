@@ -1,0 +1,537 @@
+\documentclass[10pt, handout]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\input{header.tex}
+
+\makeatletter
+\def\env@dcases{%
+	\let\@ifnextchar\new@ifnextchar
+	\left\lbrace
+	\def\arraystretch{2}%
+	\array{@{}l@{\quad}l@{}}}
+\makeatother
+
+%% 
+\title[EE 264]{Filter Design (Part I)}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{July 27, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+%\begin{frame}{Announcements}
+%	\begin{itemize}
+%		\item Homework \#4 due on Sunday, July 30. Start early!
+%		\item Midterm review session will be on Friday at 1:30pm at \textbf{Gates B03}
+%		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}. \textbf{Deadline:} Today
+%		\item We'll release practice midterms today. Their solutions will be released on Friday after the review session.
+%	\end{itemize}
+%\end{frame}
+
+%
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item Two's complement is a fixed-point representation that allows fractions to be represented as integers
+	\item There's an inherent trade-off between roundoff noise and overflow/clipping
+	\item FIR systems remain stable after coefficient quantization
+	\item Linear phase FIR systems remain linear phase after coefficient quantization, since the impulse response remains symmetric
+	\item Coefficient quantization may lead to instability in IIR systems, as poles may move outside the unit circle
+	\item Similarly to quantization noise, roundoff noise is modeled by an additive white noise that is independent of the input signal (the linear noise model).
+	\item Roundoff noise is minimized by performing quantization only after accumulation, but this requires $(2B+1)$-bit adders
+	\item In FIR structures the equivalent roundoff noise at the output is white
+	\item IIR structures lead to roundoff noise shaping
+	\item Least noisy IIR structure depends on the system
+	\item Cascade and parallel forms are used to mitigate total roundoff noise
+\end{itemize}
+\end{frame}
+
+%
+\section{Outline}
+
+\begin{frame}{Practice and theory}
+\begin{block}{In practice}
+	\vspace{-0.5cm}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+	\end{center}
+\end{block}
+
+\begin{block}{DSP theory}
+	\vspace{-0.5cm}
+	\begin{center}
+		\def\Heff{1}
+		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\end{center}
+\end{block}
+
+\pause
+\textbf{Question:} how to design a \textbf{rational} $H(z)$ from a desired $H(e^{j\omega})$?
+\end{frame}
+
+\begin{frame}{Digital filter design}
+	We'll cover two different design problems
+	\begin{enumerate}
+		\item Digital filter design \underline{from analog filter}
+		
+		Given a continuous-time LTI filter defined by $h(t) \Longleftrightarrow H(s)$, how to obtain the corresponding discrete-time filter $h[n] \Longleftrightarrow H(z)$ such that
+		\begin{equation*}
+			H(e^{j\Omega T}) = H(j\Omega), |\Omega| < \Omega_s/2
+		\end{equation*}
+		
+		\textbf{Design techniques:}
+		\begin{itemize}
+			\item Impulse invariance
+			\item Bilinear transformation
+		\end{itemize}
+		Design by impulse invariance can result in either FIR or IIR filters, but bilinear transformation generally results in IIR filters. 
+	\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Digital filter design}
+We'll cover two different design problems
+\begin{enumerate}\setcounter{enumi}{1}
+	\item Digital filter design \underline{from specifications}
+	
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
+	\end{center}
+	
+	\textbf{Design techniques:}
+	\begin{itemize}
+		\item Window method
+		\item Parks-McClellan algorithm (Remez exchange algorithm)
+		\item Least squares (convex optimization)	
+	\end{itemize}
+	These techniques are \textit{limited} to FIR filters.
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Outline}
+\begin{itemize}
+	\item Digital filter design from analog filter
+	\begin{itemize}
+		\item Impulse invariance
+		\item Bilinear transformation
+	\end{itemize}
+	\item FIR filter design from specifications
+	\begin{itemize}
+		\item Window method
+		\item Parks-McClellan algorithm (Remez exchange algorithm)
+		\item Least squares (convex optimization)	
+	\end{itemize}
+\end{itemize}	
+\end{frame}
+
+\section{Design from Analog Filter}
+\begin{frame}{Digital processing of analog signals}
+\begin{center}
+	\def\Heff{1}
+	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+\end{center}
+
+As long as there is no aliasing and that the reconstruction filter is the ideal lowpass filter these equalities hold:
+
+\begin{equation}
+H_{eq}(j\Omega) = \begin{cases}
+H(e^{j\Omega T}), & |\Omega| < \pi/T \\
+0, & |\Omega| > \pi/T
+\end{cases} \tag{from DSP to analog}
+\end{equation}
+
+\begin{equation}
+H(e^{j\omega}) = H_{eq}(j\omega/T), \quad|\omega| < \pi  \tag{from analog to DSP}
+\end{equation}
+
+In practice, these are good approximations.
+\end{frame}
+
+\subsection{Impulse Invariance}
+\begin{frame}{Impulse invariance}
+
+\textbf{Question:} How to design $h[n] \longleftrightarrow H(e^{j\omega})$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(j\Omega)$?
+
+\begin{center}
+	\def\Heff{1}
+	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+\end{center}
+
+Design $h[n]$ by sampling $h_{eq}(t)$ with period $T$.
+\begin{equation}
+	h[n] = Th_c(nT) \tag{impulse invariance}
+\end{equation}
+
+The scaling factor $T$ compensates for the $1/T$ attenuation due sampling.
+
+The resulting $h[n]$ depends on the sampling period $T$.
+
+\end{frame}
+
+\begin{frame}{Impulse invariance example: Butterworth filter}
+\begin{block}{Butterworth filter}
+	Butterworth filters are \textbf{maximally flat} in the passband and are monotonic overall. The downside of Butterworth filter is their relatively slow rolloff.
+	
+	In Matlab, see function \texttt{butter}.
+\end{block}
+
+For this example, consider the following 6th-order continuous-time Butterworth filter:
+
+\begin{align*}
+&H_{eq}(s)  \\
+&= \frac{0.12093}{(s^2 + 0.364s + 0.4945)(s^2 + 0.9945s + 0.4945)(s^2 + 1.3385 + 0.4945)}
+\end{align*}
+
+\end{frame}
+
+%
+\begin{frame}{Impulse invariance example: Butterworth filter}
+To design an \textbf{ FIR filter} through impulse invariance we must
+\begin{enumerate}
+	\item Obtain the continuous-time impulse response $h(t)$ (\texttt{impulse} in Matlab)
+	\item Sample $h(t)$ with period $T$ and record only $N$ first samples 
+	\begin{equation*}
+		h[n] = \begin{cases}
+		Th_{eq}(nT), & n = 0, \ldots, N-1 \\
+		0, & \text{otherwise}
+		\end{cases}, \tag{for causal $h_{eq}(t)$}
+	\end{equation*}
+	$h[n]$ is the FIR filter coefficients. $N$ is typically chosen to satisfy some energy criterion. For instance, samples must contain $95\%$ of the signal energy.
+\end{enumerate} 
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/imp_invar_samples.tex}}
+\end{center}
+
+\end{frame}
+
+%
+\begin{frame}{Impulse invariance example: Butterworth filter}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/imp_invar_FIR_butter_mag.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Phase}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/imp_invar_FIR_butter_phase.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+
+\vspace{0.2cm}
+\textbf{Questions:}
+\begin{enumerate}
+	\item What would happen if we take fewer samples (smaller $N$)?
+	\item What would happen if we decrease the sampling period e.g., $T_2 = 0.5T$?
+\end{enumerate}
+
+\end{frame}
+
+%
+\begin{frame}{Impulse invariance example: Butterworth filter}
+
+\begin{itemize}
+	\item Impulse invariance with FIR system is straightforward, and there are the additional implementation advantages discussed in lectures 7 and 8
+	\item \textbf{Problem:} it may require prohibitively many samples to achieve good accuracy
+\end{itemize}
+
+To design an \textbf{IIR filter} through impulse invariance we must
+
+\begin{enumerate}
+	\item Invert the $s$-transform. Use \textbf{partial fraction expansion} to obtain $h_{eq}(t)$ analytically. Function \texttt{residue} in Matlab	
+	\item Sample $h_{eq}(t)$: $h[n] = Th_{eq}(nT)$
+	\item Calculate the $z$-transform $H(z)$ of $h[n]$
+\end{enumerate}
+\end{frame}
+
+
+%
+\begin{frame}{Impulse invariance example: Butterworth filter}
+
+For the 6th-order Butterworth example:
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{align*}
+		H(z) =& \frac{0.2871 -0.4466z^{-1}}{1 -1.2971z^{-1} + 0.6949z^{-2}} \\ &+\frac{-2.1428 +1.1455z^{-1}}{1 -1.0691z^{-1} + 0.3699z^{-2}}  \\
+		&+\frac{1.8557 - 0.6303z^{-1}}{1 -0.9972^{-1} + 0.2570z^{-2}} 
+		\end{align*}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/imp_invar_butter_iir_pole_zero.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Impulse invariance example: Butterworth filter}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/imp_invar_IIR_butter_mag.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Phase}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/imp_invar_IIR_butter_phase.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+
+\begin{itemize}
+	\item IIR systems achieve better accuracy while requiring fewer operations (coefficients) than FIR systems.
+	\item Similarly to FIR systems, if we change the sampling frequency the behavior of the filter changes.
+\end{itemize}
+\end{frame}
+
+%
+\subsection{Bilinear Transform}
+\begin{frame}<beamer:1|handout:0>{Outline}
+\tableofcontents[currentsubsection]
+\end{frame}
+
+%
+\begin{frame}{Bilinear transformation}
+Another away to answer the question: How to design $h[n] \longleftrightarrow H(e^{j\omega})$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(j\Omega)$?
+
+\begin{block}{Bilinear transformation}
+	The bilinear transformation \underline{maps} the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
+	
+	\begin{equation*}
+		s = \frac{2}{T}\bigg(\frac{1 - z^{-1}}{1 + z^{-1}}\bigg) \tag{Bilinear transformation}
+	\end{equation*}
+	
+	\begin{center}
+		\resizebox{0.9\linewidth}{!}{\input{figs/bilinear_mapping.tex}}
+	\end{center}	
+\end{block}
+\end{frame}
+
+\begin{frame}{Bilinear transformation}
+
+To design a digital filter from an analog filter using the bilinear transformation we just need to make a change of variables:
+
+\begin{equation*}
+H(z) = H_{eq}(s)|_{s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
+\end{equation*}
+
+The resulting $H(z)$ will generally be IIR.
+
+Designing digital filters using the bilinear transformation is easier and more systematic than the impulse invariance method.
+
+In Matlab: \texttt{[bz, az] = bilinear(bs, as, 1/T)}
+
+\end{frame}
+
+\begin{frame}{Frequency warping}
+	Evaluating $z$ on the unit circle is equivalent to evaluating $s$ on the imaginary axis $\Omega$.
+	\begin{equation*}
+j\Omega = \frac{2}{T}\bigg(\frac{1 - e^{-j\omega}}{1 + e^{-j\omega}}\bigg) = j\frac{2}{T}\tan\omega/2
+\end{equation*}
+
+This results in the following relation
+\begin{equation*}
+	\omega =2\arctan(\Omega T/2) \tag{frequency warping}
+\end{equation*}
+
+\textbf{Problem:} with the bilinear transformation we no longer have the linear relation $\omega = \Omega T$.
+
+This is known as \textbf{frequency warping}.
+
+\begin{center}
+	\resizebox{0.4\linewidth}{!}{\input{figs/frequency_warping.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Bilinear transformation example: Butterworth filter}
+Revisiting the Butterworth filter example, to obtain $H(z)$ we simply make:
+\begin{equation*}
+	H(z) = H_{eq}(s)|_{s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
+\end{equation*}
+
+\textbf{Pole-zero diagram}
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/bilinear_butter_pole_zero.tex}}
+\end{center}
+
+\end{frame}
+
+
+%
+\begin{frame}{Bilinear transformation example: Butterworth filter}
+
+\vspace{4mm}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/bilinear_butter_mag.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Phase}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/bilinear_butter_phase.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+%
+\begin{frame}{Frequency pre-warping}
+Frequency warping distorts the frequency response at high frequencies ($\omega\to\pi$).
+
+\textbf{Frequency pre-warping} mitigates this problem by scaling $s$ so that $H(e^{j\Omega_p T}) = H_{eq}(j\Omega_p)$ (no distortion) at some specified frequency $\Omega_p$.
+
+\begin{equation*}
+H(z) = H_{eq}(s)|_{s = \frac{\Omega_p}{\tan(\Omega_pT/2)}\frac{1 - z^{-1}}{1 + z^{-1}}} \tag{bilinear transformation with frequency pre-warping}
+\end{equation*}
+~\\
+
+$\Omega_p$ is chosen so that $H(e^{j\omega})$ will be faithful to a particular characteristic of $H_{eq}(j\Omega)$ e.g., $\Omega_p$ is made equal to the $3$-dB bandwidth.
+
+
+~\\
+~\\
+In Matlab: \texttt{[bz, az] = bilinear(bs, as, 1/T, wp/(2*pi))}
+\end{frame}
+
+%
+\begin{frame}{Bilinear transformation example: Butterworth filter}
+
+Example of frequency prewarping with $\Omega_p = 0.6\pi$, when $T =2$, and $\Omega_p = 0.2\pi$, when $T =0.5$.
+
+\vspace{0.5cm}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/bilinear_prewarp_butter_mag.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Phase}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/bilinear_prewarp_butter_phase.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Famous filters}
+	\begin{itemize}
+		\item \textbf{Butterworth:}
+		It's monotonic in the passband and the stopband.
+		
+		Matlab function \texttt{butter}
+		\item \textbf{Chebyshev type I:}
+		It has equiripple frequency response in the passband and varies monotonically in the stopband.
+		
+		Matlab function \texttt{cheby1}
+		\item \textbf{Chebyshev type II:}
+		It has equiripple frequency response in the stopband and varies monotonically in the passband.
+		
+		Matlab function \texttt{cheby2}
+		\item \textbf{Elliptic:}
+		It has equiripple frequency response in both the passband and the stopband.
+		
+		Matlab function \texttt{ellipt}
+		
+		\item \textbf{Bessel:}
+		It has maximally linear phase response (constant group delay).
+		
+		Matlab function \texttt{besself} (only continuous time)
+	\end{itemize}
+
+	In general (and in Matlab) these filters are first designed in continuous-time $H(s)$, and then they are converted to discrete-time $H(z)$ using the bilinear transformation with frequency pre-warping.
+\end{frame}
+
+\begin{frame}{Summary on designing digital filters from analog filters}
+\textbf{Impulse invariance}
+\begin{itemize}
+	\item Matches impulse response of discrete-time system to the impulse response of the continuous-time system
+	\item In FIR implementations the impulse response is truncated up to a specified number of samples
+	\item In IIR implementations the discrete-time system is obtained analytically.
+\end{itemize}
+
+\textbf{Bilinear transformation}
+	\begin{itemize}
+		\item The bilinear transformation maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
+		\item This mapping is non-linear, therefore there will be a distortion between $\Omega$ and $\omega$, which is known as frequency warping.
+		\item Frequency warping is more severe at high frequencies ($\omega\to\pi$) because of the $\arctan(\cdot)$ shape. 
+		\item Frequency pre-warping is a form of mitigating frequency warping. 
+		\item Oversampling would also mitigate frequency warping, since the spectrum would be more compressed at lower frequencies, where the $\arctan(\cdot)$ is more linear.
+	\end{itemize}
+\end{frame}
+
+\end{document}

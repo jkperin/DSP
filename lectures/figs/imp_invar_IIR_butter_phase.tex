@@ -1,0 +1,40 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot2a,
+%at=(plot2.below south east), anchor=above north east,
+xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth},
+xlabel={$\omega$},
+ylabel={rad},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	%yshift=0.35cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=1,
+ymin=-10, ymax=0,
+xtick={0, 0.25, 0.5, 0.75, 1},
+xticklabels ={$0$, $\pi/4$, $\pi/2$, $3\pi/4$, $\pi$},
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -2)}}]
+
+\addplot [smooth, color=black, solid, line width=2pt] table[x index=0,y index=1] {figs/data/imp_invar_FIR_butter_fir_phase_Hc.dat}; \addlegendentry{$H_{eq}(j\Omega)$};
+
+\addplot [smooth, color=red2, solid, line width=2pt]
+table[x index=0,y index=1] {figs/data/imp_invar_IIR_butter_phase_Hiir.dat}; \addlegendentry{$H(e^{j\omega})$ IIR};
+
+\end{axis}
+\end{tikzpicture}

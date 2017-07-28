@@ -37,28 +37,33 @@
 	
 \else % QUANTIZ = 1 -> Quantizers | QUANTIZ = 0 -> noise sources
 
-	\foreach \j in {0, 1, 2} {
+	\foreach \j in {0, 1, 2} { %b
 		\ifthenelse{\QUANTIZ = 1}
 			{\node[block] (Q\j0) at ($(\j0)!0.5!(\j1)$) {$Q_B\{\cdot\}$};}
 			{\node[terminal={left}{}] (Q\j0) at ($(\j0)!0.5!(\j1)$) {};}
-		\ifthenelse{\QUANTIZ = 1}
-			{\node[block] (Q\j1) at ($(\j2)!0.5!(\j3)$) {$Q_B\{\cdot\}$};}
-			{\node[terminal={left}{}] (Q\j1) at ($(\j2)!0.5!(\j3)$) {};}
 			
 		\draw[amark={$b_\j$}{above}] (\j0) to (Q\j0);
 		\draw[amark={}{above}] (Q\j0) to (\j1);
-		
-		\ifthenelse{\j = 0}
-			{\draw[amark={$1$}{above}] (\j3) to (Q\j1);}
-			{\draw[amark={$a_\j$}{above}] (\j3) to (Q\j1);}
+	}
+
+	\draw[amark={$1$}{above}] (03) to (02);
+	\foreach \j in {1, 2} { %a
+		\ifthenelse{\QUANTIZ = 1}
+		{\node[block] (Q\j1) at ($(\j2)!0.5!(\j3)$) {$Q_B\{\cdot\}$};}
+		{\node[terminal={left}{}] (Q\j1) at ($(\j2)!0.5!(\j3)$) {};}
+			
+		\draw[amark={$a_\j$}{above}] (\j3) to (Q\j1);	
 		\draw[amark={}{above}] (Q\j1) to (\j2);
 	}
 	
 	\if\QUANTIZ0
-		\foreach \j in {0, 1, 2} {
+		\foreach \j in {0, 1, 2} { % b
 			\node[node, above=0.5cm of Q\j0] (E\j0) {}; \node[right, red2] at (E\j0) {$e_{b_\j}[n]$};
-			\node[node, above=0.5cm of Q\j1] (E\j1) {}; \node[right, red2] at (E\j1) {$e_{a_\j}[n]$};
 			\draw[->, >=stealth, red2, \thickness] (E\j0) to (Q\j0);
+		}
+	
+		\foreach \j in {1, 2} { %a
+			\node[node, above=0.5cm of Q\j1] (E\j1) {}; \node[right, red2] at (E\j1) {$e_{a_\j}[n]$};
 			\draw[->, >=stealth, red2, \thickness] (E\j1) to (Q\j1);
 		}
 	\else\relax

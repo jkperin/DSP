@@ -1,7 +1,6 @@
 \begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
     \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
     \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
-    \tikzstyle{annot} = []
 
 	\node[node] (xc) {};
     \node[block, right=1cm of xc] (ADC) {C-to-D};
@@ -26,11 +25,11 @@
     \node[above = 0mm of yc, text width = 1cm, align=center] {$y_r(t)$}; 
     \node[below = 0mm of yc, text width = 1cm, align=center] {$Y_r(j\Omega)$};
     \node at ($(DSP.south)-(0, 0.25cm)$) {$h[n] \leftrightarrow H(e^{j\omega})$};
-    \node at ($(ADC.south)-(0, 0.25cm)$) {Sampling};
+    \node[below, align=center, text width=2cm] at ($(ADC.south)$) {Sampling};
     \node at ($(DAC.south)-(0, 0.25cm)$) {Reconstruction};
     \ifdefined\Heff
     	\draw[dashed] ($(ADC.south west)-(0.3, 0.7cm)$) rectangle ($(DAC.north east)+(0.4, 0.4cm)$);
-    	\node at ($(DSP.south)-(0,1cm)$) {$H_{c}(j\Omega)$};
+    	\node at ($(DSP.south)-(0,1cm)$) {$H_{eq}(j\Omega)$};
     \else
     	\relax
     \fi

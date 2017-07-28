@@ -1,0 +1,51 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis on top=false,
+axis line style={->,>=stealth},
+width=0.6\textwidth,
+height=0.4\textwidth,
+xlabel={$\omega$},
+ylabel={$|H(e^{j\omega})|$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	%yshift=0.35cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=1,
+ymin=0, ymax=1.25,
+ytick={0.2, 0.9, 1.1}, yticklabels={$\delta_2$, $1-\delta_1$, $1+\delta_1$},
+xtick={0, 0.25, 0.6, 1},
+xticklabels ={$0$, $\omega_p$, $\omega_s$, $\pi$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[solid, line width=1pt, domain=0:0.25, samples=2] {1.1}; 
+\addplot[solid, line width=1pt, domain=0:0.25, samples=2] {0.9};
+\addplot[solid, line width=1pt, domain=0.6:1, samples=2] {0.2};
+
+\addplot[blue2, line width=2pt, domain=0:0.25, samples=2] {1};
+\addplot[blue2, line width=2pt, domain=0.6:1, samples=2] {0};
+\addplot[dashed, line width=1pt] coordinates {(0.25, 0) (0.25, 0.9)};
+\addplot[dashed, line width=1pt] coordinates {(0.6, 0) (0.6, 0.9)};
+
+\fill [black!20] (axis cs: 0, 1.1) rectangle (0.25, 1.2);
+\fill [black!20] (axis cs: 0, 0.9) rectangle (0.25, 0.8);
+\fill [black!20] (axis cs: 0.6, 0.2) rectangle (1, 0.3);
+
+\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0, 0.5)!0.5!(axis cs: 0.25, 0.5)$) {Passband};
+\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.25, 0.5)!0.5!(axis cs: 0.6, 0.5)$) {Transition};
+\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.6, 0.5)!0.5!(axis cs: 1, 0.5)$) {Stopband};
+
+\end{axis}
+\end{tikzpicture}

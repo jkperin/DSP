@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -699,15 +699,15 @@ The average quantization noise power at the output is given by
 			Average power of each noise source
 			\onslide<3|handout:0> {
 			\begin{align*}
-				\sigma_{e_1}^2 &= (M+1)\sigma_B^2 \\
-				\sigma_{e_2}^2 &= N\sigma_B^2
+				\sigma_{e_1}^2 &= N\sigma_B^2 \\
+				\sigma_{e_2}^2 &= (M+1)\sigma_B^2
 			\end{align*}
 			}
 			
 			PSD at the output:
 			\onslide<3|handout:0> {
 			\begin{align*}
-				\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) = (M+1)\sigma_B^2|H(e^{j\omega})|^2 + N\sigma_B^2
+				\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) = N\sigma_B^2|H(e^{j\omega})|^2 + (M+1)\sigma_B^2
 			\end{align*}
 			}
 		
@@ -744,7 +744,7 @@ PSD of roundoff noise at the output
 	  & I & II \\
 	\hline
 	Direct & $\displaystyle(M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ & $\displaystyle N\sigma_{B}^2|H(e^{j\omega})|^2 + (M+1)\sigma_{B}^2$ \\
-	Transposed & $\displaystyle(M+1)\sigma_B^2|H(e^{j\omega})|^2 + N\sigma_B^2$ & $\displaystyle (M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ \\
+	Transposed & $\displaystyle N\sigma_B^2|H(e^{j\omega})|^2 + (M+1)\sigma_B^2$ & $\displaystyle (M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ \\
 	\hline
 \end{tabular}
 ~\\
