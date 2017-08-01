@@ -1,0 +1,36 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+    \node[block, right=1cm of xc] (ADC) {C-to-D};
+    \node[block, right of=ADC, text width = 2cm, align= center] (DSP) {LTI \\ System};
+    \node[block, right of=DSP] (DAC) {D-to-C};
+	\coordinate[right=1cm of DAC] (yc) {};
+	
+	\coordinate (mid1) at ($(ADC.east)!0.5!(DSP.west)$) {};
+	\coordinate (mid2) at ($(DSP.east)!0.5!(DAC.west)$) {};
+		
+    \path (xc) edge (ADC);
+    \path (ADC) edge (DSP);
+    \path (DSP) edge (DAC);
+    \path (DAC) edge (yc);
+    
+    \node[above = 0.5mm of mid1] {$x[n]$};
+    \node[below = 0.5mm of mid1] {$X(e^{j\omega})$};
+    \node[above = 0.5mm of mid2] {$y[n]$};
+    \node[below = 0.5mm of mid2] {$Y(e^{j\omega})$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
+    \node[below = 0mm of xc, text width = 1cm, align=center] {$X_c(j\Omega)$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y_r(t)$}; 
+    \node[below = 0mm of yc, text width = 1cm, align=center] {$Y_r(j\Omega)$};
+    \node at ($(DSP.south)-(0, 0.25cm)$) {$h[n] \leftrightarrow H(e^{j\omega})$};
+    \node[below, align=center, text width=2cm] at ($(ADC.south)$) {Sampling};
+    \node at ($(DAC.south)-(0, 0.25cm)$) {Reconstruction};
+    \ifdefined\Heff
+    	\draw[dashed] ($(ADC.south west)-(0.3, 0.7cm)$) rectangle ($(DAC.north east)+(0.4, 0.4cm)$);
+    	\node at ($(DSP.south)-(0,1cm)$) {$H_{eq}(j\Omega)$};
+    \else
+    	\relax
+    \fi
+\end{tikzpicture}

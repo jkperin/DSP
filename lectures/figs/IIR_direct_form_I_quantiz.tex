@@ -25,7 +25,7 @@
 	\foreach \j in {0, 1, 2} {		
 		\draw[amark={$b_\j$}{above}] (\j0) to (\j1);		
 		\ifthenelse{\j = 0}
-			{\draw[amark={$1$}{above}] (\j3) to (\j2);}
+			{\draw[amark={$1$}{above}] (\j2) to (\j3);}
 			{\draw[amark={$a_\j$}{above}] (\j3) to (\j2);}
 	}
 	\node[node, above=0.5cm of 02] (E) {}; \node[right, red2] at (E) {$e[n]$};
@@ -46,7 +46,7 @@
 		\draw[amark={}{above}] (Q\j0) to (\j1);
 	}
 
-	\draw[amark={$1$}{above}] (03) to (02);
+	\draw[amark={$1$}{above}] (02) to (03);
 	\foreach \j in {1, 2} { %a
 		\ifthenelse{\QUANTIZ = 1}
 		{\node[block] (Q\j1) at ($(\j2)!0.5!(\j3)$) {$Q_B\{\cdot\}$};}

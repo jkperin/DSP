@@ -1,3 +1,18 @@
+%%% Page numbering
+\usepackage{etoolbox} % necessary for excluding beamer-only frames from page numbering
+
+\makeatletter
+\pretocmd{\beamer@@@@frame}{\alt<#1>{}{\beamer@noframenumberingtrue}}{}{}
+\makeatother
+
+\addtobeamertemplate{navigation symbols}{}{%
+	\usebeamerfont{footline}%
+	\usebeamercolor[fg]{footline}%
+	\hspace{1em}%
+	\insertframenumber/\inserttotalframenumber
+}
+%%%
+
 \definecolor{matlabcomment}{RGB}{34,139,34}
 
 \pgfmathdeclarefunction{gauss}{1}{%

@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -634,7 +634,7 @@ Combining all noise sources into one
 
 \onslide<2|handout:1>{Quantization noise is \textbf{shaped} by the filter defined in the dashed rectangle:
 \begin{equation*}
-H_a(z) = \frac{1}{A(z)} = \frac{1}{1 + a_1z^{-1} + a_2z^{-2}} \tag{shaped by the poles}
+H_a(z) = \frac{1}{A(z)} = \frac{1}{1 - a_1z^{-1} - a_2z^{-2}} \tag{shaped by the poles}
 \end{equation*}
 }
 \end{frame}
