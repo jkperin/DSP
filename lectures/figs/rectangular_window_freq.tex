@@ -1,0 +1,42 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot2,
+%at=(plot1.below south east), anchor=above north east, xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={$\omega$},
+ylabel={$W(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=-1, xmax=1,
+ymin=-0.25, ymax=1,
+xtick={-1, -0.5, 0, 0.5, 1},
+xticklabels ={$-\pi$, $-\pi/2$, $0$,  $\pi/2$, $\pi$},
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\only<1|handout:1>{
+\def\M{7}
+\addplot [smooth, color=black, solid, line width=2pt, domain=-1:1, samples=100] {1/(2*\M+1)*sin(deg(pi*x*(2*\M+1)/2))/sin(deg(pi*x/2))}; \addlegendentry{$M = 7$};
+}
+
+\only<2|handout:1>{
+\def\M{19}
+\addplot [smooth, color=blue2, solid, line width=2pt, domain=-1:1, samples=200] {1/(2*\M+1)*sin(deg(pi*x*(2*\M+1)/2))/sin(deg(pi*x/2))}; \addlegendentry{$M = 19$};
+}
+\end{axis}
+\end{tikzpicture}

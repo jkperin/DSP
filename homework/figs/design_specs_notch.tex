@@ -1,0 +1,49 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+axis lines*=middle,
+enlargelimits = upper, clip=false,
+scale only axis,
+axis on top=true,
+axis line style={->,>=stealth},
+width=0.6\textwidth,
+height=0.4\textwidth,
+xlabel={$\omega$},
+ylabel={$H_d(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	%yshift=0.35cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=1,
+ymin=0, ymax=1.25,
+ytick={1},
+xtick={0.385},
+xticklabels ={$\omega_c$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[solid, blue2, line width=3pt, domain=0.37:0.4, samples=2] {0}; 
+\addplot[solid, blue2, line width=3pt, domain=0:0.34, samples=2] {1}; 
+\addplot[solid, blue2, line width=3pt, domain=0.43:1, samples=2] {1}; 
+
+\fill [red!30] (axis cs: 0.34, 0) rectangle (axis cs: 0.37, 1);
+\fill [red!30] (axis cs: 0.4, 0) rectangle (axis cs: 0.43, 1);
+\node[red2, fill=red!30] at (axis cs: 0.8, 1.2) {$W(\omega) = 0$};
+\draw[red2, <->] (axis cs: 0.34, 0.5) to (axis cs: 0.37, 0.5); 
+\draw[red2, <->] (axis cs: 0.4, 0.5) to (axis cs: 0.43, 0.5);
+\draw[blue2, <->] (axis cs: 0.37, 1) to (axis cs: 0.40, 1);
+\node[red2, right=0.01pt, align=center] at (axis cs: 0.42, 0.5) {$\Delta\omega_2$};
+\node[red2, left=0.01pt, align=center] at (axis cs: 0.35, 0.5) {$\Delta\omega_2$};
+\node[blue2, above, align=center] at (axis cs: 0.385, 1) {$\Delta\omega_1$};
+\end{axis}
+
+\end{tikzpicture}

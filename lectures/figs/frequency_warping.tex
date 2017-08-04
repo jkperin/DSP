@@ -1,25 +1,26 @@
 \begin{tikzpicture} 
 \begin{axis}[
 axis lines*=middle,
-enlargelimits = false, clip=true,
-xmax=10, xmin=-10,
+enlargelimits = true, clip=true,
+xmax=3.14, xmin=-3.14,
 ymin=-4, ymax=4,
-axis line style={->,>=stealth},
+y axis line style={->,>=stealth},
+x axis line style={->,>=stealth, shorten >= -0.5cm},
 xlabel={$\Omega T$},
 ylabel={$\omega = 2\arctan(\Omega T/2)$},
 every axis x label/.style={
     at={(ticklabel* cs:1)},
     anchor=north,
+    xshift=0.5cm
 },
 every axis y label/.style={
     at={(ticklabel* cs:1)},
     anchor=south,
 },
 ytick={-3.14, 3.14}, yticklabels={-$\pi$, $\pi$},
-xtick=\empty,
+xtick={-3.14, -1.57, 1.57, 3.14}, xticklabels={$-\pi$, $-\frac{\pi}{2}$, $\frac{\pi}{2}$, $\pi$},
 %xmajorgrids,
 ymajorgrids,
-xticklabel style = {xshift=+0.2cm},
 every outer y axis line/.append style={white!15!black},
 every y tick label/.append style={font=\color{white!15!black}},
 legend style={draw=white!15!black,fill=white,legend cell align=left}]

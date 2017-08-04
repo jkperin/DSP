@@ -1,0 +1,269 @@
+\documentclass[12pt]{report}
+\setlength{\textwidth}{6.5 in}
+\setlength{\evensidemargin}{0 in}
+\setlength{\oddsidemargin}{0 in}
+\setlength{\textheight}{9.4 in }
+\setlength{\topmargin}{-0.7 in}
+\pagestyle{myheadings}
+\markboth{\em EE264: Homework \#05}{\em EE264: Homework \#05}
+\usepackage[pdftex]{graphicx} \usepackage{eso-pic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage{placeins}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\DeclareGraphicsExtensions{.pdf,.eps,.png}
+
+\input{flow_graph_defs.tex}
+\input{preamble.tex}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{centering}
+	{\large Stanford University}\\
+	{\large EE 264: Digital Signal Processing}\\
+	{\large Summer, 2017} \\
+	\mbox{}\\
+	{\large Homework \#05}\\
+	\mbox{}\\
+\end{centering}
+\noindent Date assigned:  August 3, 2017 \hfill
+Date due: August 10, 2017\\
+\noindent \rule{6.5 in}{0.5pt}
+%\mbox{}\\
+\noindent {\bf Reading:}  This assignment covers primarily lecture 9, which corresponds to chapter 7 of the textbook {\bf DTSP 3e}. \\
+\noindent {\bf Homework submission:}  Please submit your solutions on Canvas. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if applicable). \\
+\noindent
+\rule{6.5 in}{0.5pt}
+\mbox{}\\
+
+\noindent {\bf Problem 1: Classic filters (25 points)} 
+
+This question will help you familiarize yourself with designing classic filters such as Butterworth, Chebyshev type I \& II, and elliptic filter using Matlab. 
+\begin{description}
+	\item[(a)] Design a Butterworth, a Chebyshev type I, a Chebyshev type II, and an elliptic lowpass filter. All filters should have order 8 and 3-dB bandwidth of approximately $4$ kHz for a sampling rate of $1/T = 8$ kHz. You're free to set all other required parameters such as passband ripple and stopband attenuation. On a single graph, plot the magnitude response of all filters. On a different graph, plot the \underline{unwrapped} phase response of all filters.
+	
+	\textit{Note:} For this question you may use the Matlab functions \texttt{butter, cheby1, cheby2}, and \texttt{ellip}.  
+	
+	\item[(b)] Use your filters to filter the speech signal \texttt{speech\_dft.wav}, available on Canvas/Files/Matlab. This speech signal was recorded with sampling frequency of 22.05 kHz. Hence, before filtering it with your filters, you need to use your knowledge on changing the sampling rate by a non-integer factor to resample the signal to 8 kHz. Use the smallest upsampling and downsampling integer factors possible.
+	 
+	\textit{Hint:} Use the function \texttt{decimate} after upsampling, but remember that the lowpass filter after interpolation must have gain equal to the upsampling factor $L$.
+	
+	\textit{Note:} 4 kHz is approximately the bandwidth of the telephone system. Hence, after filtering, the output signals should have roughly the same quality of a conversation over the phone. However, some of your filters may introduce enough magnitude/phase distortion to worsen the sound quality.
+	
+	\item[(c)] Denote as $H_8(z)$ any of your filters designed above for sampling rate of $1/T = 8$ kHz. Suppose
+	you'd like to design a filter $H_{16}(z)$ that has the same characteristics (e.g., bandwidth of 4 kHz) of $H_8(z)$, but that can be used on signals sampled at a rate of 16 kHz. Give an expression for $H_{16}(z)$ as a function of $H_8(z)$.
+	
+	\textit{Hint:} revisit the notes on interchanging filtering and downsampling.
+\end{description}
+
+\newpage
+\noindent {\bf Problem 2: Notch filter for ECG signals (35 points)}
+
+Notch filters are stopband filters with characteristically narrow stopband. They are used to remove specific frequency components from signals. In this problem, you will design digital notch filters to remove 60 Hz interference from an electrocardiogram (ECG) signal. 60 Hz is the frequency of alternating current (AC) in the electric power grid of most countries. The 60-Hz interference appears in many applications, and in particular, in biological signal recordings.
+
+An analog notch filter is given by
+\begin{equation} \label{eq:analog-notch-filter}
+H(s) = \frac{s^2 + \lambda^2}{s^2 + bs + \lambda^2}.
+\end{equation}
+
+The magnitude plot of this filter is sketched in Figure~\ref{fig:notch_filter_mag}
+
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.45\textwidth}{!}{\input{figs/notch_filter_mag.tex}}
+	\caption{Typical notch filter magnitude response}
+	\label{fig:notch_filter_mag}
+\end{figure}
+
+You will design a discrete-time version of this filter, and use it to filter an ECG signal that has been corrupted by 60 Hz interference. An excerpt of that signal is show in Figure~\ref{fig:sample_ecg}. The rapid oscillations are due to 60 Hz interference.
+
+\FloatBarrier
+\begin{figure}
+	\centering
+	\resizebox{0.9\textwidth}{!}{\input{figs/ecg_sample.tex}}
+	\caption{ECG corrupted by 60-Hz interference.}
+	\label{fig:sample_ecg}
+\end{figure}
+\FloatBarrier
+
+This ECG signal was sampled with sampling period $T = 3$ ms and it's available on Canvas/Files/Matlab/\texttt{ecg\_recordings.mat}. This file also contains a ``clean'' ECG signal, which you can use for comparison. Use the Matlab script \texttt{notch\_filter\_ecg\_template.m} to load the recordings and write your code to solve the following questions.
+
+\begin{description}
+	\item[(a)] Choose appropriate values of $b$ and $\lambda$ that would make the notch filter given in \eqref{eq:analog-notch-filter} suitable for this application. There is more than one right answer. 
+	
+	\item[(b)] Use the bilinear transformation \underline{with} and \underline{without} frequency pre-warping to obtain discrete-time equivalents of the analog notch filter in \eqref{eq:analog-notch-filter}. Specify what value of $\Omega_p$ you used for frequency pre-warping. 
+	
+	\item[(c)] On the same graph, plot the magnitude response of the digital filters obtained by the bilinear transformation. For easier comparison, the $x$-axis of your plot should be $\omega/(2\pi T)$ i.e., actual frequency in Hz. Discuss which filter (with or without frequency pre-warping) is more suitable for this application. For the remainder of this problem, you only need to consider the filter you think is best. 
+	
+	\item[(d)] For the filter you chose in part (c), plot the pole-zero diagram and discuss what characteristics of the pole-zero diagram indicate that this filter works as a notch filter. 
+	 
+	\item[(e)] Use the filter you designed in part (c) to filter the ECG signal corrupted by 60 Hz interference. Plot the output of your filter and compare it with the clean ECG signal, and with the corrupted ECG signal.
+	
+	\item[(f)] Use either the Parks-McClellan algorithm (\texttt{firpm}) or the least-squares algorithm (\texttt{firls}) to design a linear-phase FIR notch filter. Let the filter \underline{length} be \underline{at most} 53 (order 52).
+	
+	Use the following figure to guide your design choices. 
+		
+	\FloatBarrier
+	\begin{figure}[h!]
+		\centering
+		\resizebox{0.6\textwidth}{!}{\input{figs/design_specs_notch.tex}}
+		\caption{Design specifications for FIR notch filter.}
+	\end{figure}
+	\FloatBarrier
+	
+	Specify $\omega_c$, $\Delta\omega_1$, and $\Delta\omega_2$ that you chose in your design. Clearly, this application would require $\Delta\omega_1$ and $\Delta\omega_2$ to be small as possible, but this will introduce too many undesired oscillations in the passband. 
+	
+	Turn in the magnitude and phase plots of your design, as well as the ECG signal filtered by your FIR filter. Note that your filter will introduce a delay of $M/2$, where $M$ is the filter order. Hence, to compare your result with the ``clean'' ECG you will need to delay or advance one of the sequences.
+	
+	\textit{Note:} part (f) of this problem is solved on this \href{http://ieeexplore.ieee.org/document/1351410/}{2004 paper} using the Parks-McClellan algorithm. The figure below shows their best result for an FIR filter of order 52. To receive full credit for this question, you are not expected to do as well or close to what they achieved (though you could). You're expected, however, to make reasonable design choices. 
+	
+	\FloatBarrier
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.4]{figs/notch_fir_paper_2004.png}
+		\caption{Result of notch filter FIR design using the Parks-McClellan algorithm. The filter order was 52.}
+	\end{figure}
+	\FloatBarrier
+	 
+\end{description}
+
+\mbox{}\\
+\noindent {\bf Problem 3: Hilbert transformer (25 points)}
+
+In Homework \#4 you saw some applications of the Hilbert transform. In this problem, we will focus on the Hibert transformer, which is an LTI system used to calculate the Hilbert transform of time-domain signals. More specifically, the Hilbert transformer is used to phase-shift signals by 90 degrees. Hence, the output of a Hilbert transformer to a cosine is a sine of same frequency. This operation has applications in digital communication, radar systems, and medical imaging.
+
+As discussed in class, the Hilbert transform is defined by the convolution:
+\begin{equation}
+	\mathcal{H}\{x(t)\} = \frac{1}{\pi t}\ast x(t) \Longleftrightarrow 	H_{HT}(j\Omega) = -j\mathrm{sign}(\Omega) = \begin{cases}
+	-j, & \Omega > 0 \\
+	0, & \Omega = 0  \\
+	j, & \Omega < 0 \\
+	\end{cases}
+\end{equation}
+
+We will approximate this by the following discrete-time frequency response
+\begin{equation}
+	H_{d}(e^{j\omega}) = -j\mathrm{sign}(\omega) = \begin{cases}
+	-j, & 0 < \omega \leq \pi \\
+	0, & \omega = 0  \\
+	j, & -\pi < \omega < 0 \\
+	\end{cases}
+\end{equation}
+
+Note that this filter acts as an all-pass filter (except at $\omega = 0$) with  90-degree phase shift. Its impulse response is given by
+\begin{equation} \label{eq:hilbert-impulse}
+	h_d[n] = \begin{cases}
+	\displaystyle\frac{2}{\pi}\frac{\sin^2(\pi n/2)}{n}, &n \neq 0 \\
+	0, & n = 0
+	\end{cases}
+\end{equation}
+
+The impulse response has odd symmetry about $n = 0$ i.e., $h_d[n] = -h_d[-n]$. Hence, we can design linear-phase FIR systems to approximate $h_d[n]$.
+
+For the questions below assume the filter order is $M = 30$ (i.e., 31 coefficients).
+
+\noindent\textbf{Note:} Since the FIR filters you will design are linear phase, their frequency response will be approximately
+\begin{equation}
+	H(e^{j\omega}) \approx e^{-j\omega M/2}(-j\mathrm{sign}(\omega)) = \begin{cases}
+	e^{-j(\omega M/2 + \pi/2)}, & 0 < \omega \leq \pi \\
+	0, &\omega = 0 \\
+	e^{-j(\omega M/2 - \pi/2)}, & -\pi < \omega < 0
+	\end{cases} 
+\end{equation}
+
+Therefore, they'll look like an all-pass except around $\omega = 0$ and $\omega = \pi$, but they still have the property of phase shifting the input signal by 90 degrees. However, due to causality and the linear phase condition, the output signal will also be delayed by $M/2$ samples.
+
+\begin{description}
+	\item[(a)] \textbf{Window method}. Use the window method with the window of your choice to design a linear phase FIR filter $H_{win}(z)$ that will approximate $H_{d}(e^{j\omega})$. The impulse response of the Hilbert transformer in discrete time is given in \eqref{eq:hilbert-impulse}. Plot the magnitude and phase response of your design.
+	
+	\item[(b)] \textbf{Parks-McClellan}. Use the Parks-McClellan algorithm to design a linear phase FIR filter $H_{PM}(z)$ that will approximate $H_{d}(e^{j\omega})$. In your design, assume that the \underline{weight function} is 
+	\begin{equation}
+		W(\omega) = \begin{cases}
+		0, & 0 \leq \omega < \Delta\omega \\
+		1, & \Delta\omega \leq \omega \leq \pi-\Delta\omega \\
+		0, & \pi-\Delta\omega < \omega \leq \pi
+		\end{cases}
+	\end{equation}
+	where $\Delta\omega = 0.1\pi$. This means that your Hilbert transformer will only work between $0.1\pi$ and $0.9\pi$, since it will only have magnitude 1 in $[0.1\pi, 0.9\pi]$,  Naturally, you'd like to make $\Delta\omega$ as small as possible, but that will introduce undesired ripples in the passband. Feel free to try different values of $\Delta\omega$.
+	
+	Plot the magnitude and phase response of your design.
+
+	\textit{Matlab hints:} 
+	\begin{itemize}
+		\item When using the function \texttt{firpm}, note that Matlab expects the filter magnitude $|H_{d}(e^{j\omega})|$ (parameter \texttt{a}). However, $|H_{d}(e^{j\omega})| = 1$ over all frequencies, except zero. To differentiate that from an all-pass filter, you have to pass the extra parameter \texttt{`hilbert'}: 
+		\begin{equation*}
+		\texttt{>> hpm = firpm(M, f, a, `hilbert');}
+		\end{equation*}
+		where \texttt{f} is the \underline{normalized} frequency vector and \texttt{a} is the magnitude at frequencies \texttt{f}. This way \texttt{hpm} will have odd symmetry.
+		\item This question is already solved in the Matlab documentation of the function \texttt{firpm}.
+	\end{itemize}
+	
+	\item[(c)] \textbf{Least-squares}. Use the least-squares algorithm (\texttt{firls}) to design a linear phase FIR filter $H_{ls}(z)$ that will approximate $H_{d}(e^{j\omega})$. Use the same assumptions and hints of part (b). Plot the magnitude and phase response of your design.
+	
+\end{description}
+
+\mbox{}\\
+\noindent {\bf Problem 4: Linear equalization (25 points)}
+
+Figure~\ref{fig:linear_eq} shows the block diagram of a digital communication system. In this system, a sequence of bits $x[n]$ is transmitted over a channel, which is a causal LTI system with $z$-transform $C(z)$. Since the channel is causal its output depends not only on the present bit, but also on previous bits transmitted over the channel. Hence, the output of the channel is the result of interference of many bits. This phenomenon is called \textit{inter-symbol interference} (ISI). In addition to ISI, after the channel, a white and zero-mean Gaussian noise $r[n]$ with average power $\sigma^2 = 0.001$ is added to the signal. This models the noise from the receiver circuitry.
+
+The filter $H(z)$ is an FIR linear equalizer, which should be designed to mitigate the interference introduced by the channel. 
+
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\input{figs/linear_eq_diagram.tex}}
+	\caption{Diagram for linear equalization}
+	\label{fig:linear_eq}
+\end{figure}
+
+For this problem, we will consider that the channel is the FIR filter given by
+\begin{equation}
+	C(z) = 0.4032 + 0.3992z^{-1}  + 0.1976z^{-2}
+\end{equation}
+
+When noise is not significant, the optimal linear equalizer is simply the inverse of the channel:
+\begin{equation} \label{eq:zero-forcing}
+	H(z) = C^{-1}(z) = \frac{1}{0.4032 + 0.3992z^{-1}  + 0.1976z^{-2}}
+\end{equation}
+which is an IIR filter. 
+
+In the following questions you will design FIR filters to approximate $H(z)$. In all cases, assume that your FIR filter has order $M = 8$ (9 coefficients).
+\begin{description}
+	\item[(a)] \textbf{Window method}. Design an FIR filter to approximate $H(z)$ using the window method. Since $H(z)$ does not have discontinuities, you can use the rectangular window without problem. On the same graph, plot the frequency response of your FIR filter and $H(z)$. On a different graph, plot the \underline{unwrapped} phase response of your FIR filter and $H(z)$. Note that they are not linear phase.
+	\item[(b)] Test your linear equalizer using the function \texttt{simple\_channel.m}, available on Canvas/Files/Matlab. This function takes one parameter \texttt{h}, which is the coefficients of the FIR filter you designed. The function returns the bit-error rate (BER) (number of wrongly detected bits divided by total number of bits) of this system when the receiver equalizer has coefficients \texttt{h}. Hence, \texttt{simple\_channel(1)} returns the BER of the system without any equalization. Report the BER \underline{with} and \underline{without} equalization. For the given noise power, the BER of the equalized system should be close to 0. 
+	\item[(c)] \textbf{Non-linear phase least-squares algorithm}. Now design an FIR filter using the least squares algorithm to approximate $H(z)$. Since $H(z)$ has no discontinuities, you can assume that the weight function is $W(\omega) = 1~\forall~\omega$. Moreover, since this filter should not be linear phase, you cannot use Matlab's \texttt{firls} function. Instead, use the least-squares algorithm as described in class. You may use the script \texttt{predicing\_bandlimited\_signals.m} as a starting point.
+	
+	On the same graph, plot the frequency response of your FIR filter and H(z). On a different graph, plot the \underline{unwrapped} phase response of your FIR filter and H(z).
+	
+	\textit{Note:} the filter you designed in this part should be (ideally) identical to the filter you designed in part (a), since the rectangular window minimizes the mean-square error (lecture notes 9, slide 33)
+	
+	\item[(d)] Estimate the noise power after the linear equalizer you designed.
+	
+	\textit{Note:} you should see that this value is much larger than $\sigma^2 = 0.001$. This happens because this equalizer tries to force ISI to zero at all costs, even if it enhances the noise. This type of equalizer is called \textit{zero-forcing linear equalizer}. A better choice of equalizer is called the \textit{minimum mean-square linear equalizer}, which tries to minimize ISI without excessively enhancing the noise.
+	
+\end{description}
+\end{document}

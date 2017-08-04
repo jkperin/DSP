@@ -37,6 +37,8 @@ legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis c
 \addplot [smooth, color=red2, solid, line width=2pt]
 table[x index=0,y index=1] {figs/data/bilinear_butter_mag_prewarp_Hbi.dat}; \addlegendentry{$H(e^{j\omega})$ bilinear $T = 0.5, \Omega_p=0.2\pi$};
 
+\draw[purple, dashed, line width=2pt] (axis cs: 0.6, -15) circle[purple, radius=0.5cm] {}; \node[anchor=south east] at (axis cs: 0.9, -15) {$\Omega_p = 0.6\pi$};
+
 % T = 2
 \addplot [smooth, color=black, solid, line width=2pt, forget plot] table[x index=0,y index=1] {figs/data/bilinear_butter_mag_T2_Hc.dat};
 

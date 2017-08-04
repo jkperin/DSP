@@ -1,0 +1,30 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=1cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+    \node[block, right of=xc] (Ch) {$C(z)$};
+    \node[adder, right of=Ch] (add) {\Large $+$};
+    \node[block, right of=add] (DSP) {$H(z)$};
+	\coordinate[right of=DSP] (yc) {};
+	\node[node, below of=add] (nw) {};
+	
+	%\coordinate (mid1) at ($(ADC.east)!0.5!(DSP.west)$) {};
+	%\coordinate (mid2) at ($(DSP.east)!0.5!(DAC.west)$) {};
+		
+    \path (xc) edge (Ch);
+    \path (Ch) edge (add);
+    \path (add) edge (DSP);
+    \path (DSP) edge (yc);
+    \path (nw) edge (add);
+    
+    %\node[above = 0.5mm of mid1] {$x[n]$};
+    %\node[above = 0.5mm of mid2] {$y[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$}; 
+    \node[right = 0mm of nw, text width = 3cm, align=center] {$r[n]\sim\mathcal{N}(0, \sigma^2)$}; 
+    
+    \node[below] at (Ch.south) {Channel};
+    \node[below] at (DSP.south) {Linear equalizer};
+\end{tikzpicture}

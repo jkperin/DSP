@@ -1,0 +1,41 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot2,
+%at=(plot1.below south east), anchor=above north east, xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=false,
+scale only axis,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={$\omega$},
+ylabel={$|X(e^{j\omega})|$},
+width=\textwidth, height=0.2\textwidth,
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	xshift=0.6cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=-1, xmax=1,
+ymin=0, ymax=1.5,
+xtick={-1, -0.7, 0.7, 1}, xticklabels={$-\pi$, $-\omega_c$, $\omega_c$, $\pi$},
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -5)}}]
+
+\addplot [black, fill=blue!50, solid, line width=1pt] coordinates {(-1, 0) (-0.7, 0) (0, 1) (0, 0)}; 
+\addplot [black, solid, line width=1pt] coordinates {(0, 1) (0.7, 0) (1, 0)}; 
+
+\only<beamer:2-|handout:1>{
+\addplot [red2, solid, line width=2pt] coordinates {(-1, 1) (-0.7, 1) (-0.7, 0) (0.7, 0) (0.7, 1) (1, 1)}; 
+\node[red2, above] at (axis cs: 0.9, 1) {$H(z)$};
+}
+
+\end{axis}
+\end{tikzpicture}

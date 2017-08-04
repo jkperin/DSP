@@ -30,6 +30,7 @@
 \usepackage{ifthen}
 %\usepackage{mathtools}
 \usepackage[makeroom]{cancel}
+\usetikzlibrary{spy}
 %\captionsetup{compatibility=false}
 %\usepackage{dsfont}
 \usepackage[absolute,overlay]{textpos}
@@ -41,7 +42,6 @@
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{plotmarks}
 \usetikzlibrary{decorations.markings}
-
 \usepgfplotslibrary{groupplots}
 \pgfplotsset{compat=newest} 
 %\pgfplotsset{plot coordinates/math parser=false}
@@ -54,21 +54,14 @@
     urlcolor=cyan,
 }
 
-\input{header.tex}
-
-\makeatletter
-\def\env@dcases{%
-	\let\@ifnextchar\new@ifnextchar
-	\left\lbrace
-	\def\arraystretch{2}%
-	\array{@{}l@{\quad}l@{}}}
-\makeatother
+%
+\input{header.tex} % some definitions
 
 %% 
-\title[EE 264]{Filter Design (Part I)}
+\title[EE 264]{Filter Design}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{July 27, 2017}
+\date{August 3, 2017}
 
 \begin{document}
 
@@ -122,8 +115,6 @@
 	\end{center}
 \end{block}
 
-\pause
-\textbf{Question:} how to design a \textbf{rational} $H(z)$ from a desired $H(e^{j\omega})$?
 \end{frame}
 
 \begin{frame}{Digital filter design}
@@ -131,9 +122,9 @@
 	\begin{enumerate}
 		\item Digital filter design \underline{from analog filter}
 		
-		Given a continuous-time LTI filter defined by $h(t) \Longleftrightarrow H(s)$, how to obtain the corresponding discrete-time filter $h[n] \Longleftrightarrow H(z)$ such that
+		Given a continuous-time LTI filter defined by $h_{eq}(t) \Longleftrightarrow H_{eq}(s)$, how to obtain the corresponding discrete-time filter $h[n] \Longleftrightarrow H(z)$ such that
 		\begin{equation*}
-			H(e^{j\Omega T}) = H(j\Omega), |\Omega| < \Omega_s/2
+			H(e^{j\Omega T}) \approx H_{eq}(j\Omega), |\Omega| < \Omega_s/2
 		\end{equation*}
 		
 		\textbf{Design techniques:}
@@ -141,16 +132,16 @@
 			\item Impulse invariance
 			\item Bilinear transformation
 		\end{itemize}
-		Design by impulse invariance can result in either FIR or IIR filters, but bilinear transformation generally results in IIR filters. 
+		Design by impulse invariance can result in either FIR or IIR filters, whereas bilinear transformation generally results in IIR filters. 
 	\end{enumerate}
 \end{frame}
 
 %
 \begin{frame}{Digital filter design}
-We'll cover two different design problems
 \begin{enumerate}\setcounter{enumi}{1}
-	\item Digital filter design \underline{from specifications}
+	\item Digital FIR filter design \underline{from specifications}
 	
+	How to find FIR $H(z)$ such that $H(e^{j\omega})$ best approximates a desired frequency response $H_d(e^{j\omega})$? Essentially a polynomial curve fitting problem.
 	\begin{center}
 		\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
 	\end{center}
@@ -158,27 +149,18 @@ We'll cover two different design problems
 	\textbf{Design techniques:}
 	\begin{itemize}
 		\item Window method
-		\item Parks-McClellan algorithm (Remez exchange algorithm)
-		\item Least squares (convex optimization)	
+		\item Optimal filter design
+		\begin{itemize}
+			\item Parks-McClellan algorithm
+			\item Least-squares algorithm
+		\end{itemize}
 	\end{itemize}
-	These techniques are \textit{limited} to FIR filters.
 \end{enumerate}
 \end{frame}
 
+%
 \begin{frame}{Outline}
-\begin{itemize}
-	\item Digital filter design from analog filter
-	\begin{itemize}
-		\item Impulse invariance
-		\item Bilinear transformation
-	\end{itemize}
-	\item FIR filter design from specifications
-	\begin{itemize}
-		\item Window method
-		\item Parks-McClellan algorithm (Remez exchange algorithm)
-		\item Least squares (convex optimization)	
-	\end{itemize}
-\end{itemize}	
+	\tableofcontents
 \end{frame}
 
 \section{Design from Analog Filter}
@@ -207,7 +189,7 @@ In practice, these are good approximations.
 \subsection{Impulse Invariance}
 \begin{frame}{Impulse invariance}
 
-\textbf{Question:} How to design $h[n] \longleftrightarrow H(e^{j\omega})$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(j\Omega)$?
+\textbf{Question:} How to design $h[n] \longleftrightarrow H(z)$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(s)$?
 
 \begin{center}
 	\def\Heff{1}
@@ -219,20 +201,17 @@ Design $h[n]$ by sampling $h_{eq}(t)$ with period $T$.
 	h[n] = Th_c(nT) \tag{impulse invariance}
 \end{equation}
 
-The scaling factor $T$ compensates for the $1/T$ attenuation due sampling.
+The scaling factor $T$ compensates for the $1/T$ attenuation in the frequency domain due to sampling
 
 The resulting $h[n]$ depends on the sampling period $T$.
 
 \end{frame}
 
-\begin{frame}{Impulse invariance example: Butterworth filter}
-\begin{block}{Butterworth filter}
-	Butterworth filters are \textbf{maximally flat} in the passband and are monotonic overall. The downside of Butterworth filter is their relatively slow rolloff.
-	
-	In Matlab, see function \texttt{butter}.
-\end{block}
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
+Butterworth filters are \textbf{maximally flat} in the passband and are monotonic overall. The downside of Butterworth filter is their relatively slow roll-off.
+\vspace{0.25cm}
 
-For this example, consider the following 6th-order continuous-time Butterworth filter:
+For this example, consider the following 6th-order continuous-time lowpass Butterworth filter:
 
 \begin{align*}
 &H_{eq}(s)  \\
@@ -242,18 +221,18 @@ For this example, consider the following 6th-order continuous-time Butterworth f
 \end{frame}
 
 %
-\begin{frame}{Impulse invariance example: Butterworth filter}
-To design an \textbf{ FIR filter} through impulse invariance we must
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
+To design an \textbf{FIR filter} by impulse invariance we must
 \begin{enumerate}
-	\item Obtain the continuous-time impulse response $h(t)$ (\texttt{impulse} in Matlab)
-	\item Sample $h(t)$ with period $T$ and record only $N$ first samples 
+	\item Obtain the continuous-time impulse response $h_{eq}(t) \longleftrightarrow H_{eq}(s)$ (\texttt{impulse} in Matlab)
+	\item Sample and scale $h_{eq}(t)$ with period $T$ and record only $M+1$ first samples 
 	\begin{equation*}
 		h[n] = \begin{cases}
-		Th_{eq}(nT), & n = 0, \ldots, N-1 \\
+		Th_{eq}(nT), & n = 0, \ldots, M \\
 		0, & \text{otherwise}
 		\end{cases}, \tag{for causal $h_{eq}(t)$}
 	\end{equation*}
-	$h[n]$ is the FIR filter coefficients. $N$ is typically chosen to satisfy some energy criterion. For instance, samples must contain $95\%$ of the signal energy.
+	$h[n]$ is the FIR filter coefficients. $M$ is typically chosen to satisfy some energy criterion. For instance, samples must contain $95\%$ of the signal energy.
 \end{enumerate} 
 \begin{center}
 	\resizebox{0.7\linewidth}{!}{\input{figs/imp_invar_samples.tex}}
@@ -262,7 +241,7 @@ To design an \textbf{ FIR filter} through impulse invariance we must
 \end{frame}
 
 %
-\begin{frame}{Impulse invariance example: Butterworth filter}
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
 
 \begin{columns}
 	\begin{column}{0.5\textwidth}
@@ -282,24 +261,25 @@ To design an \textbf{ FIR filter} through impulse invariance we must
 \vspace{0.2cm}
 \textbf{Questions:}
 \begin{enumerate}
-	\item What would happen if we take fewer samples (smaller $N$)?
+	\item What would happen if we take fewer samples (smaller $M$)?
 	\item What would happen if we decrease the sampling period e.g., $T_2 = 0.5T$?
 \end{enumerate}
 
 \end{frame}
 
 %
-\begin{frame}{Impulse invariance example: Butterworth filter}
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
 
 \begin{itemize}
-	\item Impulse invariance with FIR system is straightforward, and there are the additional implementation advantages discussed in lectures 7 and 8
+	\item Designing FIR filters by impulse invariance is straightforward. Plus, FIR systems have the implementation advantages discussed in lectures 7 and 8
 	\item \textbf{Problem:} it may require prohibitively many samples to achieve good accuracy
+	\item IIR systems generally offer better accuracy while requiring fewer operations (coefficients)
 \end{itemize}
 
-To design an \textbf{IIR filter} through impulse invariance we must
+To design an \textbf{IIR filter} by impulse invariance we must
 
 \begin{enumerate}
-	\item Invert the $s$-transform. Use \textbf{partial fraction expansion} to obtain $h_{eq}(t)$ analytically. Function \texttt{residue} in Matlab	
+	\item Invert the Laplace transform $H_{eq}(s)$ using \textbf{partial fraction expansion} to obtain $h_{eq}(t)$ analytically. Function \texttt{residue} in Matlab	
 	\item Sample $h_{eq}(t)$: $h[n] = Th_{eq}(nT)$
 	\item Calculate the $z$-transform $H(z)$ of $h[n]$
 \end{enumerate}
@@ -307,7 +287,7 @@ To design an \textbf{IIR filter} through impulse invariance we must
 
 
 %
-\begin{frame}{Impulse invariance example: Butterworth filter}
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
 
 For the 6th-order Butterworth example:
 
@@ -328,7 +308,7 @@ For the 6th-order Butterworth example:
 \end{frame}
 
 %
-\begin{frame}{Impulse invariance example: Butterworth filter}
+\begin{frame}{Impulse invariance example: lowpass Butterworth filter}
 
 \begin{columns}
 	\begin{column}{0.5\textwidth}
@@ -352,46 +332,48 @@ For the 6th-order Butterworth example:
 \end{frame}
 
 %
-\subsection{Bilinear Transform}
-\begin{frame}<beamer:1|handout:0>{Outline}
+\subsection{Bilinear Transformation}
+\begin{frame}<beamer:1|handout:0>{Outline} 
 \tableofcontents[currentsubsection]
 \end{frame}
 
 %
 \begin{frame}{Bilinear transformation}
-Another away to answer the question: How to design $h[n] \longleftrightarrow H(e^{j\omega})$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(j\Omega)$?
+Another way to answer the question: How to design $h[n] \longleftrightarrow H(z)$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(s)$?
+~\\
+~\\
 
-\begin{block}{Bilinear transformation}
-	The bilinear transformation \underline{maps} the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
+The \textbf{bilinear transformation} maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
 	
-	\begin{equation*}
-		s = \frac{2}{T}\bigg(\frac{1 - z^{-1}}{1 + z^{-1}}\bigg) \tag{Bilinear transformation}
-	\end{equation*}
-	
-	\begin{center}
-		\resizebox{0.9\linewidth}{!}{\input{figs/bilinear_mapping.tex}}
-	\end{center}	
-\end{block}
+\begin{equation*}
+	s = \frac{2}{T}\bigg(\frac{1 - z^{-1}}{1 + z^{-1}}\bigg) \tag{Bilinear transformation}
+\end{equation*}
+
+\begin{center}
+	\resizebox{0.9\linewidth}{!}{\input{figs/bilinear_mapping.tex}}
+\end{center}	
 \end{frame}
 
 \begin{frame}{Bilinear transformation}
 
-To design a digital filter from an analog filter using the bilinear transformation we just need to make a change of variables:
+To design a digital filter from an analog filter using the bilinear transformation, we simply make the following change of variables:
 
 \begin{equation*}
-H(z) = H_{eq}(s)|_{s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
+H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
 \end{equation*}
 
-The resulting $H(z)$ will generally be IIR.
+The resulting $H(z)$ generally has IIR.
+\vspace{0.25cm}
 
-Designing digital filters using the bilinear transformation is easier and more systematic than the impulse invariance method.
+The bilinear transformation method is easier and more systematic than the impulse invariance method.
+\vspace{0.25cm}
 
 In Matlab: \texttt{[bz, az] = bilinear(bs, as, 1/T)}
 
 \end{frame}
 
 \begin{frame}{Frequency warping}
-	Evaluating $z$ on the unit circle is equivalent to evaluating $s$ on the imaginary axis $\Omega$.
+	Evaluating $z$ on the unit circle is equivalent to evaluating $s$ on the imaginary axis $j\Omega$:
 	\begin{equation*}
 j\Omega = \frac{2}{T}\bigg(\frac{1 - e^{-j\omega}}{1 + e^{-j\omega}}\bigg) = j\frac{2}{T}\tan\omega/2
 \end{equation*}
@@ -401,34 +383,32 @@ This results in the following relation
 	\omega =2\arctan(\Omega T/2) \tag{frequency warping}
 \end{equation*}
 
-\textbf{Problem:} with the bilinear transformation we no longer have the linear relation $\omega = \Omega T$.
-
-This is known as \textbf{frequency warping}.
+\textbf{Problem:} with the bilinear transformation we no longer have the linear relation $\omega = \Omega T$. This is known as \textbf{frequency warping}.
 
 \begin{center}
-	\resizebox{0.4\linewidth}{!}{\input{figs/frequency_warping.tex}}
+	\resizebox{0.5\linewidth}{!}{\input{figs/frequency_warping.tex}}
 \end{center}
 \end{frame}
 
 %
-\begin{frame}{Bilinear transformation example: Butterworth filter}
-Revisiting the Butterworth filter example, to obtain $H(z)$ we simply make:
+\begin{frame}{Bilinear transformation example: lowpass Butterworth filter}
+Revisiting the example of the 6th-order lowpass Butterworth filter
+
+To obtain $H(z)$ we simply make:
 \begin{equation*}
-	H(z) = H_{eq}(s)|_{s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
+H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
 \end{equation*}
 
 \textbf{Pole-zero diagram}
 \begin{center}
-	\resizebox{0.7\linewidth}{!}{\input{figs/bilinear_butter_pole_zero.tex}}
+	\resizebox{0.6\linewidth}{!}{\input{figs/bilinear_butter_pole_zero.tex}}
 \end{center}
 
 \end{frame}
 
 
 %
-\begin{frame}{Bilinear transformation example: Butterworth filter}
-
-\vspace{4mm}
+\begin{frame}{Bilinear transformation example: lowpass Butterworth filter}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
@@ -443,34 +423,40 @@ Revisiting the Butterworth filter example, to obtain $H(z)$ we simply make:
 		\end{center}
 	\end{column}
 \end{columns}
+\begin{itemize}
+	\item Similarly to impulse invariance, the resulting frequency response depends on the sampling period $T$.
+	\item Frequency warping leads to the disagreement between continuous-time and discrete-time filters for $\omega > 0.3\pi$
+\end{itemize}
 
 \end{frame}
 
 %
 \begin{frame}{Frequency pre-warping}
-Frequency warping distorts the frequency response at high frequencies ($\omega\to\pi$).
+\textbf{Frequency pre-warping} mitigates the distortion caused by frequency warping by {\color{blue2!50} \textbf{scaling}} $s$ so that $H(e^{j\Omega_p T}) = H_{eq}(j\Omega_p)$ (no distortion) at some specified frequency $\Omega_p$.
 
-\textbf{Frequency pre-warping} mitigates this problem by scaling $s$ so that $H(e^{j\Omega_p T}) = H_{eq}(j\Omega_p)$ (no distortion) at some specified frequency $\Omega_p$.
+
 
 \begin{equation*}
-H(z) = H_{eq}(s)|_{s = \frac{\Omega_p}{\tan(\Omega_pT/2)}\frac{1 - z^{-1}}{1 + z^{-1}}} \tag{bilinear transformation with frequency pre-warping}
+H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \tikz[baseline]{\node[fill=blue2!20,anchor=base] {$\frac{\Omega_p}{\tan(\Omega_pT/2)}$};}\frac{1 - z^{-1}}{1 + z^{-1}}} \tag{bilinear transformation with frequency pre-warping}
 \end{equation*}
 ~\\
-
-$\Omega_p$ is chosen so that $H(e^{j\omega})$ will be faithful to a particular characteristic of $H_{eq}(j\Omega)$ e.g., $\Omega_p$ is made equal to the $3$-dB bandwidth.
+$\Omega_p$ is chosen so that $H(e^{j\omega})$ will preserve a particular characteristic of $H_{eq}(j\Omega)$ e.g., $\Omega_p$ is made equal to the $3$-dB bandwidth.
 
 
 ~\\
 ~\\
-In Matlab: \texttt{[bz, az] = bilinear(bs, as, 1/T, wp/(2*pi))}
+In Matlab: \texttt{[bz, az] = bilinear(bs, as, 1/T, Wp/(2*pi))}
 \end{frame}
 
 %
-\begin{frame}{Bilinear transformation example: Butterworth filter}
+\begin{frame}{Bilinear transformation example: lowpass Butterworth filter}
 
-Example of frequency prewarping with $\Omega_p = 0.6\pi$, when $T =2$, and $\Omega_p = 0.2\pi$, when $T =0.5$.
-
-\vspace{0.5cm}
+Example of bilinear transformation \underline{with} frequency pre-warping
+\begin{itemize}
+	\item  $\Omega_p = 0.6\pi$ for $T =2$ 
+	\item $\Omega_p = 0.2\pi$ for $T =0.5$.
+\end{itemize} 
+\vspace{0.25cm}
 \begin{columns}
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
@@ -488,50 +474,678 @@ Example of frequency prewarping with $\Omega_p = 0.6\pi$, when $T =2$, and $\Ome
 
 \end{frame}
 
-\begin{frame}{Famous filters}
+\subsection{Classic filters}
+\begin{frame}<beamer:1|handout:0>{Outline}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}{Common terminology}
+
+\begin{center}
+	\resizebox{0.55\linewidth}{!}{\input{figs/design_specs.tex}}
+\end{center}
+
+\textbf{Terminology}
+\begin{itemize}
+	\item The filter order is equal to the largest power of $z^{-1}$ or $z$
+	\item $\delta_1$ passband ripple
+	\item $\delta_2$ stopband ripple (stopband attenuation)
+	\item $\omega_p$ passband edge frequency
+	\item $\omega_s$ stopband edge frequency
+	\item The 3-dB bandwidth (cutoff frequency) is the frequency at which $|H_d(e^{j\omega})| = \sqrt{2}/2 \implies 20\log_{10}(|H_d(e^{j\omega})|) \approx -3$ dB. This assumes that the filter has \underline{unit} gain in the passband.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Classic filters}
 	\begin{itemize}
 		\item \textbf{Butterworth:}
-		It's monotonic in the passband and the stopband.
+		It's monotonic in the passband and in the stopband.
 		
-		Matlab function \texttt{butter}
+		Matlab: \texttt{butter(order, w3dB/pi)}
 		\item \textbf{Chebyshev type I:}
-		It has equiripple frequency response in the passband and varies monotonically in the stopband.
+		It has \underline{equiripple} frequency response in the passband and varies monotonically in stopband.
 		
-		Matlab function \texttt{cheby1}
+		Matlab: \texttt{cheby1(order, passband\_ripple, wp/pi)}
 		\item \textbf{Chebyshev type II:}
-		It has equiripple frequency response in the stopband and varies monotonically in the passband.
+		It has \underline{equiripple} frequency response in the stopband and varies monotonically in the passband.
 		
-		Matlab function \texttt{cheby2}
+		Matlab: \texttt{cheby2(order, stopband\_attenuation, ws/pi)}
 		\item \textbf{Elliptic:}
-		It has equiripple frequency response in both the passband and the stopband.
+		It has \underline{equiripple} frequency response in both the passband and the stopband.
 		
-		Matlab function \texttt{ellipt}
+		Matlab: \texttt{ellip(order, passband\_ripple, stopband\_attenuation, wp/pi)}
 		
 		\item \textbf{Bessel:}
-		It has maximally linear phase response (constant group delay).
+		It has \underline{maximally linear phase} response (constant group delay).
 		
-		Matlab function \texttt{besself} (only continuous time)
+		Matlab function \texttt{besself} (only for continuous time)
 	\end{itemize}
 
-	In general (and in Matlab) these filters are first designed in continuous-time $H(s)$, and then they are converted to discrete-time $H(z)$ using the bilinear transformation with frequency pre-warping.
+	In general (and in Matlab) these filters are first designed in continuous-time $H(s)$, and then converted to discrete-time $H(z)$ using the bilinear transformation with frequency pre-warping.
 \end{frame}
 
-\begin{frame}{Summary on designing digital filters from analog filters}
-\textbf{Impulse invariance}
+%
+\begin{frame}{Comparison of classic filters}
 \begin{itemize}
-	\item Matches impulse response of discrete-time system to the impulse response of the continuous-time system
-	\item In FIR implementations the impulse response is truncated up to a specified number of samples
-	\item In IIR implementations the discrete-time system is obtained analytically.
+	\item All are 6th-order filters designed to have 3-dB bandwidth of $\approx \pi/2$.
+	\item Ripple was set to 1 dB in passband
+	\item Stopband attenuation was 30 dB.
 \end{itemize}
 
-\textbf{Bilinear transformation}
+\textbf{Magnitude}
+\begin{center}
+	\resizebox{0.75\linewidth}{!}{\input{figs/classic_filters_mag.tex}}
+\end{center}
+
+\end{frame}
+
+%
+\begin{frame}{Comparison of classic filters}
 	\begin{itemize}
-		\item The bilinear transformation maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
-		\item This mapping is non-linear, therefore there will be a distortion between $\Omega$ and $\omega$, which is known as frequency warping.
-		\item Frequency warping is more severe at high frequencies ($\omega\to\pi$) because of the $\arctan(\cdot)$ shape. 
-		\item Frequency pre-warping is a form of mitigating frequency warping. 
-		\item Oversampling would also mitigate frequency warping, since the spectrum would be more compressed at lower frequencies, where the $\arctan(\cdot)$ is more linear.
+		\item All are 6th-order filters designed to have 3-dB bandwidth of $\approx \pi/2$.
+		\item Ripple was set to 1dB in passband and stopband
+		\item Stopband attenuation was 30 dB.
+	\end{itemize}
+	
+	\textbf{Phase}
+	\begin{center}
+		\resizebox{0.7\linewidth}{!}{\input{figs/classic_filters_phase.tex}}
+	\end{center}
+	
+\end{frame}
+
+%
+\begin{frame}{From lowpass to highpass, bandpass, and bandstop}
+\centering
+\includegraphics[scale=0.6]{figs/filter_transformation.png}
+\end{frame}
+
+\section{Design from Specifications}
+\begin{frame}{Outline}
+	\tableofcontents[currentsection]
+\end{frame}
+
+%
+\begin{frame}{Digital FIR filter design from specifications}
+	
+	How to find FIR $H(z)$ such that $H(e^{j\omega})$ best approximates a desired frequency response $H_d(e^{j\omega})$? Essentially a polynomial curve fitting problem.
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
+	\end{center}
+	
+	\textbf{Design techniques:}
+	\begin{itemize}
+		\item Window method
+		\item Optimal filter design
+		\begin{itemize}
+			\item Parks-McClellan algorithm
+			\item Least squares
+		\end{itemize}
 	\end{itemize}
 \end{frame}
+
+
+\subsection{Window method}
+%
+\begin{frame}{Window method}
+
+An easy way to design an FIR filter to match a desired frequency response $H_d(e^{j\omega})$ is to calculate the inverse DTFT of $H_d(e^{j\omega})$ and truncate the result to a reasonable number of samples (similar to impulse invariance):
+
+\begin{equation}
+	h_d[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}H_d(e^{j\omega})e^{j\omega n} d\omega \tag{inverse DTFT}
+\end{equation}
+
+Then we truncate it to have a most $M+1$ samples
+\begin{equation}
+	h[n] = \begin{cases}
+	h_d[n], & n = 0, 1, \ldots, M \\
+	0, & \text{otherwise}
+	\end{cases} \tag{truncated sequence}
+\end{equation} 
+
+Another way to write truncation is 
+\begin{equation*}
+	h[n] = w[n]h_d[n], \quad\text{where}~w[n] = \begin{cases}
+	1, & n = 0, 1, \ldots, M \\
+	0, & \text{otherwise}
+	\end{cases} \tag{truncated sequence}
+\end{equation*}
+$w[n]$ is the \textbf{window sequence}, which in this case is the rectangular window. 
+\end{frame}
+
+\begin{frame}{Window method}
+
+Representing truncation as $h[n] = w[n]h_d[n]$, gives us an easy way to understand what happens in the frequency domain.
+~\\
+~\\
+
+Multiplication in time domain means convolution in the frequency domain:
+\begin{align*}
+	H(e^{j\omega}) &= \frac{1}{2\pi}W(e^{j\omega}) \ast H_d(e^{j\omega}) \\
+	& = \frac{1}{2\pi}\int_{-\pi}^{\pi} H_d(e^{j\theta})W(e^{j(\omega - \theta)})d\theta \tag{convolution}
+\end{align*}
+
+\textbf{Problem:} $H(e^{j\omega})$ will not be equal to $H_d(e^{j\omega})$. Instead, it will be a \textit{smeared} version of the desired response $H_d(e^{j\omega})$.
+
+\end{frame}
+
+\begin{frame}<beamer:2-|handout:2->{Revisiting the Gibbs phenomenon}
+
+\begin{columns}[t]
+	\begin{column}{0.5\linewidth}
+		\textbf{Time domain}
+		\vspace{0.1cm}
+		\begin{equation*}
+		h_{lpf}[n] = \frac{\sin\omega_cn}{\pi n} = \frac{\omega_c}{\pi}\mathrm{sinc}\Big(\frac{\omega_c}{\pi} n\Big)
+		\end{equation*}
+	\end{column}
+	
+	\begin{column}{0.5\linewidth}
+		\textbf{Frequency domain}
+		\vspace{-0.2cm}
+		\only<1|handout:1>{
+			\begin{equation*}
+			H_{lpf}(e^{j\omega}) = \begin{cases}
+			1, & |\omega|\leq\omega_c \\
+			0, & \omega_c < |\omega|\leq \pi
+			\end{cases}
+			\end{equation*}	
+		}
+		\only<2-|handout:2->{
+			\begin{equation*}
+			H_{M}(e^{j\omega}) = \sum_{n=\tikz[baseline]{
+					\node[fill=blue!20,anchor=base,scale=0.7] {$-M$};
+			}}^{\tikz[baseline]{
+					\node[fill=blue!20,anchor=base,scale=0.7] {$M$};
+			}} \frac{\sin\omega_cn}{\pi n}e^{-j\omega n}
+			\end{equation*}	
+		}
+	\end{column}
+\end{columns}
+\vspace{0.3cm}
+
+\centering
+\resizebox{\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
+\end{frame}
+
+\begin{frame}{Revisiting the Gibbs phenomenon}
+\begin{itemize}
+	\item The Gibbs phenomenon appears when we truncate the impulse response of the ideal lowpass filter (or any discontinuous DTFT). 
+	\item In lecture 1, we attributed this to convergence issues of the DTFT for non-absolute summable sequences. The DTFT of the sinc converges only in the mean square sense, and not uniformly
+	\item Another way to view the Gibbs phenomenon is as a result of windowing.
+\begin{align*}
+H(e^{j\omega}) &= \frac{1}{2\pi}W(e^{j\omega}) \ast H_d(e^{j\omega}) \tag{convolution}
+\end{align*}
+	\item In this case the desired response $H_d(e^{j\omega})$ is the ideal lowpass filter, and the window function is
+	\begin{align*}
+	&w[n] = \begin{cases}
+	1, & n = -M, -M+1, \ldots, M-1, M \\
+	0, & \text{otherwise} 
+	\end{cases} \\
+	&\Longleftrightarrow W(e^{j\omega}) = \frac{\sin(\omega(2M+1)/2)}{\sin(\omega/2)}
+	\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Rectangular window}
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/rectangular_window_freq.tex}}
+\end{center}
+
+The large sidelobes of $W(e^{j\omega})$ cause \textit{ringing} (Gibbs phenomenon) in the frequency response of $H(e^{j\omega})$ near discontinuities of $H_d(e^{j\omega})$.
+
+To minimize the \textit{ringing}, the sidelobes have to be small. 
+\end{frame}
+
+\begin{frame}{Rectangular window}
+
+From Fourier transform theory, we can show that the rectangular window produces $H(e^{j\omega})$ that \underline{best} matches $H_d(e^{j\omega})$ in the mean-square sense. That is,
+
+\begin{equation*}
+\frac{1}{2\pi}\int_{-\pi}^{\pi}|H(e^{j\omega}) - H_d(e^{j\omega})|^2d\omega, \tag{mean-square error}
+\end{equation*}
+is \underline{minimized} when $w[n]$ is the rectangular window.
+
+\textbf{Question:} are there other windows $w[n]$ that minimize issues with discontinuities without excessively increasing the mean-square error?
+\end{frame}
+
+%
+\begin{frame}{Commonly used windows} \fontsize{10pt}{10}\selectfont
+\textbf{Rectangular:}
+\begin{equation*}
+w[n] = \begin{cases}
+1, &0 \leq n \leq M \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+
+\textbf{Bartlett (triangular):}
+\begin{equation*}
+w[n] = \begin{cases}
+2n/M, & 0 \leq n \leq M/2, M \text{ even}\\
+2 - 2n/M, & M/2 < n \leq M \\
+0, & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+\textbf{Hann:}
+\begin{equation*}
+w[n] = \begin{cases}
+0.5 - 0.5\cos(2\pi n/M), & 0 \leq n \leq M, \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+
+\textbf{Hamming:}
+\begin{equation*}
+w[n] = \begin{cases}
+0.54 - 0.46\cos(2\pi n/M), & 0 \leq n \leq M, \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+
+\textbf{Blackman:}
+\begin{equation*}
+w[n] = \begin{cases}
+0.42 - 0.5\cos(2\pi n/M) + 0.08\cos(4\pi n/M), & 0 \leq n \leq M, \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Commonly used windows}
+\textbf{Time domain}
+
+All windows are symmetric about $M/2$.
+
+\begin{center}
+\resizebox{0.9\textwidth}{!}{\input{figs/window_functions_time.tex}}
+\end{center}
+\textbf{Note:} $n$ is discrete. These curves were plotted as continuous functions just for easier visualization.
+
+We will revisit windows when talking about spectrum analysis (lecture 12)
+\end{frame}
+
+%
+\begin{frame}{Linear phase in filters designed by windowing}
+	If the window is causal and symmetric \underline{and} if the desired impulse response $h_d[n]$ is causal and symmetric, then it follows
+	\begin{align}
+		w[n] &= \pm w[M-n] \tag{causal and symmetric window} \\
+		h_d[n] &= \pm h_d[M-n] \tag{causal and symmetric $h_d[n]$} \\
+		h[n] = w[n]h_d[n] &= \pm w[M-n]h_d[M-n] = \pm h[M-n] \tag{causal and symmetric $h[n]$}
+	\end{align}
+	
+	Therefore, $h[n]$ is either even or odd symmetric and consequently $H(e^{j\omega})$ has generalized linear phase.
+	
+\end{frame}
+
+%
+\begin{frame}{Kaiser window}
+
+It's typically desired that the window be maximally concentrated around $\omega = 0$ (small sidelobe area).
+
+The \textbf{Kaiser window} is a nearly optimal choice
+
+\begin{equation*}
+	w[n] = \begin{cases}
+	\displaystyle\frac{I_0\Big(\beta\sqrt{1- (n-M/2)^2/(M/2)^2}\Big)}{I_0(\beta)}, & 0 \leq n \leq M \\
+	0, & \text{otherwise}
+	\end{cases},
+\end{equation*}
+where $\beta$ is a design parameter, and $I_0(\cdot)$ is the \textbf{modified Bessel function of first kind}.
+
+See section 7.5.3 of the textbook for recommendations on values of $\beta$ for lowpass filter design.
+
+\end{frame}
+
+%
+\begin{frame}{Summary on FIR filter design by the window method}
+	\begin{enumerate}
+		\item From the desired frequency response $H_d(e^{j\omega})$ calculate the desired impulse response $h_d[n]$.
+		\item Choose the filter order $M$ and the window $w[n]$. Then,
+		\begin{equation*}
+			h[n] = \begin{cases}
+			h_d[n]w[n], & n = 0, \ldots, M \\
+			0, &\text{otherwise}
+			\end{cases}
+		\end{equation*}
+		Kaiser window depends on parameters $\beta$ and $M$. Other windows only depend on $M$.
+		
+		\item Linear phase is guaranteed by selecting causal and symmetric window $w[n]$ and desired impulse response $h_d[n]$
+	\end{enumerate}
+
+In Matlab: 
+
+\texttt{fir1} uses Hamming window by default. Other windows can be passed as parameters:
+\begin{equation*}
+\texttt{>> fir1(M, wc/pi, `lowpass', kaiser(M+1, beta))}
+\end{equation*} 
+designs a lowpass FIR filter of order $M$ and cutoff frequency $\omega_c$ using the window method with Kaiser window with parameter $\beta$
+
+
+
+\end{frame}
+
+\subsection{Optimal FIR filter design}
+\begin{frame}<beamer:1|handout:0>{Outline}
+	\tableofcontents[currentsubsection]
+\end{frame}
+
+\begin{frame}{Optimal FIR filter design}
+\begin{itemize}
+	\item Though straightforward, filter design by windowing is \underline{sub-optimal} in the sense that it compromises accuracy for better \textit{handling} of discontinuities in $H_d(e^{j\omega})$.
+	\item More importantly, there was no well-defined metric to evaluate filters
+\end{itemize}
+	\vspace{0.25cm}
+	
+	A sensible choice for evaluation metric is the \textbf{weighted error}:
+	\begin{align*}
+		E(\omega) = W(\omega)\Big(H_d(e^{j\omega}) - H(e^{j\omega})\Big), \tag{weighted error}
+	\end{align*}
+	where $0 \leq W(\omega) \leq 1$ is the \textbf{weight function}. 
+	\vspace{0.25cm}
+	
+	\begin{itemize}
+		\item Generally, we choose either $W(\omega) = 1$ or $W(\omega) = 0$ over a certain frequency band.
+		\item Making $W(\omega) = 0$ over a certain band means that we don't care about the error in that band. Generally, we choose $W(\omega) = 0$ around discontinuities of $H_d(e^{j\omega})$ i.e., transition bands.
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Optimal FIR filter design}
+
+	\textbf{Example:}
+		
+	\begin{center}
+		\def\CARE{1}
+		\resizebox{0.9\linewidth}{!}{\input{figs/design_specs.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Matrix notation}
+	It is hard to build efficient algorithms to deal with continuous $\omega$.
+	
+	We will \textit{sample} the weighted error $E(\omega)$ for a set of $N$ frequencies $\{\omega_1, \ldots, \omega_N\}$ and write everything in matrix notation:
+	
+	\begin{align*}
+		E(\omega) &= W(\omega)\Big(H_d(e^{j\omega}) - H(e^{j\omega})\Big) \tag{continuous weighted error} \\
+		e &= W(d - Qh) \tag{matrix notation}
+	\end{align*}
+	
+	\begin{itemize}
+		\item $e$ is the error vector $e_i = E(\omega_i)$
+		\item $W$ is the weight matrix: $W = \text{\textbf{diag}}(w)$, where $w$ is the weight vector: $w_i = W(\omega_i)$
+		\item $d$ is the desired frequency response vector: $d_i =H_d(e^{j\omega_i})$
+		\item $h$ is the FIR filter coefficients vector $h_i = h[i]$. This is the vector we want to find. 
+		
+		\textbf{Note:} If the filter has linear phase, $h[n]$ is symmetric, so we only need to compute the coefficients $h[0], \ldots, h[\lfloor M/2\rfloor]$
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Matrix notation}
+	\begin{itemize}
+		\item $Q$ is the matrix:
+	\end{itemize}
+		\begin{equation*}
+			Q = \begin{bmatrix}
+			2\cos(\omega_1(\frac{M}{2})) & 2\cos(\omega_1(\frac{M}{2}-1)) &\ldots & 2\cos(\omega_1) & 1 \\
+			2\cos(\omega_2(\frac{M}{2})) & 2\cos(\omega_2(\frac{M}{2}-1)) & \ldots & 2\cos(\omega_2) & 1 \\
+			\vdots & \vdots & \ddots & \vdots & \vdots \\
+			2\cos(\omega_N(\frac{M}{2})) & 2\cos(\omega_N(\frac{M}{2}-1)) & \ldots & 2\cos(\omega_N) & 1	\\		
+			\end{bmatrix}_{N\times \frac{M}{2} + 1}
+		\end{equation*}
+		for $h[n]$ \underline{even symmetric} and $M$ \underline{even}.
+		
+		This comes from the relation
+		\begin{equation*}
+		H(e^{j\omega}) = \sum_{m = 0}^{M}h[m]e^{j\omega m} = e^{-j\omega\frac{M}{2}}\bigg(1 + \displaystyle\sum_{n = 0}^{\frac{M}{2}-1}2h[n]\cos(\omega(M/2-n))\bigg). \tag{DTFT of symmetryic FIR $h[n]$}
+		\end{equation*}
+
+		\vspace{0.25cm}
+		\textbf{Note:} in matrix $Q$ we have disregarded the term $e^{j\omega M/2}$. This way matrix $Q$ will be \underline{purely real}. Ignoring the terms $e^{j\omega M/2}$ is equivalent to disregarding the constraint that the filter must be causal. This is not a problem because we can always time-shift the result and make it causal.
+		\pause 
+		\textbf{Questions:} how would matrix $Q$ change for $h[n]$ even symmetric and $M$ odd? What about $h[n]$ odd symmetric?
+\end{frame}
+
+\begin{frame}{Generalized linear phase in optimal FIR filter design}
+	
+	\begin{block}{Even symmetry $h[n] = h[M-n]$}
+		\vspace{-0.5cm}
+		\begin{equation*}
+		H(e^{j\omega}) = \begin{cases}
+		e^{-j\omega\frac{M}{2}}\bigg(1 + \displaystyle\sum_{n = 0}^{\frac{M}{2}-1}2h[n]\cos(\omega(M/2-n))\bigg), & M~\text{even} \\
+		e^{-j\omega\frac{M}{2}}\displaystyle\sum_{n = 0}^{\frac{M-1}{2}}2h[n]\cos(\omega(M/2-n)), & M~\text{odd} 
+		\end{cases}
+		\end{equation*}
+	\end{block}
+	\vspace{-0.25cm}
+	\begin{block}{Odd symmetry $h[n] = -h[M-n]$}
+		\vspace{-0.5cm}
+		\begin{equation*}
+		H(e^{j\omega}) = \begin{cases}
+		e^{-j\omega \frac{M}{2}}\bigg(1 + \displaystyle\sum_{n = 0}^{\frac{M}{2}-1}2jh[n]\sin(\omega(M/2-n))\bigg), & M~\text{even} \\
+		e^{-j\omega \frac{M}{2}}\displaystyle\sum_{n = 0}^{\frac{M-1}{2}}2jh[n]\sin(\omega(M/2-n)), & M~\text{odd} 
+		\end{cases}
+		\end{equation*}
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{Optimal FIR filter design}
+	\textbf{Question:} how to find the coefficients $h[0], \ldots, h[\lfloor\frac{M}{2}\rfloor]$ (the vector $h$)?
+	\vspace{0.25cm}
+	
+	\textbf{Two algorithms:}
+	\begin{enumerate}
+		\item Parks-McClellan algorithm: minimizes the maximum weighted error 
+		\begin{align*}
+		\min_{h[n]} &\max_\omega E(\omega) \tag{min-max problem} \\
+		\min_{h} &\max_i |e_i| \tag{in matrix notation}
+		\end{align*}
+		\texttt{firpm} in Matlab.
+		\item Least squares: minimizes the mean-square weighted error 
+		\begin{align*}
+		\min_{h[n]} &\frac{1}{2\pi}\int_{-\pi}^{\pi} |E(\omega)|^2d\omega \tag{least squares}\\
+		\min_{h} &||e||_2^2 \tag{in matrix notation}
+		\end{align*}
+		\texttt{firls} in Matlab.
+	\end{enumerate}
+\end{frame}
+
+
+\subsubsection{Parks-McClellan Algorithm}
+\begin{frame}{Parks-McClellan algorithm} 
+The \textbf{Parks-McClellan algorithm} finds the filter coefficients that minimize the maximum weighted error:
+
+\begin{align*}
+	\min_{h[n]} &\max_\omega E(\omega) \tag{min-max problem} \\
+	\min_{h} &\max_i |e_i| \tag{in matrix notation}
+\end{align*}
+
+\begin{itemize}
+	\item This problem is also known as the Chebyshev approximation problem
+	\item Traditionally, this problem is solved by using the \textbf{alternation theorem} and the \textbf{Remez exchange} algorithm to iteratively find the impulse response that minimizes the maximum weighted error over a set of closed intervals in the frequency domain.
+	\item We can also recast this problem as a \textbf{linear program} and use standard convex optimization packages to solve it.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Parks-McClellan algorithm as a linear program} 
+
+\begin{equation*}
+\min_{h}\max_i |e_i| \tag{min-max problem}
+\end{equation*}
+
+We can rewrite this optimization problem as
+\vspace{-0.1cm}
+\begin{alignat*}{2}
+&\min_{u} &&u  \\
+&\text{subject to} \quad -&&u \leq e_i \leq u, \quad i = 1, \ldots, N \tag{equivalent linear program}
+\end{alignat*}
+$u$ is just a dummy scalar variable, and $e = W(d - Qh)$.
+\vspace{0.2cm}
+
+In \href{http://cvxr.com/cvx/}{CVX} for Matlab:
+\begin{alignat*}{3}
+\texttt{cvx\_begin} \\
+	&\texttt{variable u(1)} \\
+	&\texttt{variable h(floor(M/2)+1)} \\
+	&\texttt{minimize u}\\
+	&\texttt{subject to -u <= W*(d - Q*h) <= u} \\
+\texttt{cvx\_end}
+\end{alignat*}
+It will return \texttt{u} and the vector \texttt{h}, which is what we really want. \end{frame}
+
+\subsubsection{Least-squares Algorithm}
+\begin{frame}{Least-squares algorithm}
+The \textbf{least-squares algorithm} finds the filter coefficients that minimize the mean-square weighted error:
+
+\begin{align*}
+\min_{h[n]} \quad&\frac{1}{2\pi}\int_{-\pi}^{\pi} |E(\omega)|^2d\omega \tag{mean square weighted error}\\
+\min_{h}\quad &||W(d - Qh)||_2^2 \tag{in matrix notation} \\
+\min_{h} \quad&||Ah - b||_2^2 \tag{change of variables $A = WQ$ and $b = Wd$}
+\end{align*}
+
+Problems of the form $\min_h ||Ah - b||_2^2$ are referred to as \textbf{least-squares problems} and they have analytical solution:
+
+\begin{equation*}
+	h = A^\dagger b \tag{least-squares solution}
+\end{equation*}
+$A^\dagger = (A^HA)^{-1}A^H$ is the \textbf{Moore-Penrose pseudoinverse} (\texttt{pinv} in Matlab). 
+
+\textbf{Note:} $A^H = (A^*)^T$ is the \textbf{Hermitian} (conjugate transpose matrix), since $A$ could be complex.
+\end{frame}
+
+%
+\subsection{Examples}
+\begin{frame}{Example: optimal bandpass FIR design}
+	We want to design an FIR bandpass filter with the following desired response $H_d(e^{j\omega})$
+
+	The weight function is zero in the {\color{red!50} \textbf{transition bands}}. Hence, we don't care about the error in those regions.
+	
+	\begin{center}
+		\resizebox{0.7\textwidth}{!}{\input{figs/design_specs_bandpass_example.tex}}
+	\end{center}
+	
+	See code on Canvas/Files/Matlab/optimal\_fir\_design\_example.m.
+\end{frame}
+
+%
+\begin{frame}{Non-linear phase FIR filter design using least squares}
+	Many applications do not require linear phase FIR filters. In fact, in some applications the filter must have non-linear phase e.g., linear equalization (HW\#5)
+	
+	To design non-linear phase FIR filters using the least-squares algorithm, we just need to redefine matrix $Q$: 
+	
+	\begin{equation*}
+		Q = \begin{bmatrix}
+		1 & e^{-j\omega_1} & e^{-j2\omega_1} & \ldots & e^{-jM\omega_1} \\
+		1 & e^{-j\omega_2} & e^{-j2\omega_2} & \ldots & e^{-jM\omega_2} \\
+		\vdots & \vdots &  \vdots & \ddots & \vdots \\
+		1 & e^{-j\omega_N} & e^{-j2\omega_N} & \ldots & e^{-jM\omega_N}
+		\end{bmatrix}_{N\times M+1}
+	\end{equation*}
+	where $\omega_1, \ldots, \omega_N$ are evenly spaced frequencies in the interval $[-\pi, \pi]$.
+	
+	Note that
+	\begin{equation*}
+		(Qh)_k = \sum_{m = 0}^{M}h[m]e^{-j\omega_km} = H(e^{j\omega_km}) \tag{the DTFT of $h[m]$ at frequency $\omega_k$}
+	\end{equation*}	
+	
+	Therefore, the matrix-vector product $Qh$ gives $H(e^{j\omega})$ at $N$ frequencies $\omega_1, \ldots, \omega_N$.
+\end{frame}
+
+%
+\begin{frame}{Non-linear phase FIR filter design using least squares}
+Now that we have the redefined matrix $Q$, we can apply the least-squares algorithm as usual
+
+\begin{align*}
+	h &= A^{\dagger}b \tag{least squares solution} \\
+	\text{where } & A = WQ \text{ and } b = Wd. 
+\end{align*}
+
+\textbf{Important:} $d$ and $W$ have to be defined for the same frequencies used in calculating $Q$.
+
+If $H_d(e^{j\omega})$ is \textbf{Hermitian symmetric} i.e., $H_d(e^{j\omega}) = H_d^*(e^{-j\omega})$, then $h$ will be purely real.
+
+\end{frame}
+
+%
+\begin{frame}{Example: predicting band-limited signals}
+
+\textbf{Question:} how to predict the next sample from previous samples?
+
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{figs/predict_bandlimited_signals.tex}}
+\end{center}
+
+\end{frame}
+
+%
+\begin{frame}{Example: predicting band-limited signals}
+	Suppose our band-limited signal is such that
+
+	\begin{center}
+		\resizebox{0.7\textwidth}{!}{\input{figs/predict_bandlimited_signals_spectrum.tex}}
+	\end{center}
+	
+	\onslide<3-|handout:1>{
+	Mathematically,
+	\vspace{-0.5cm}
+	\begin{align*}
+		e[n] &= \sum_{m =0}^M h[m]x[n-m] \tag{filter output} \\
+		0 &\approx h[0]x[n] + \sum_{m = 1}^M h[m]x[n-m] \\
+		x[n] &\approx -\frac{1}{h[0]}\sum_{m = 1}^M h[m]x[n-m] \tag{prediction based on $M$ previous samples}
+	\end{align*}
+	}
+	\onslide<3-|handout:1>{
+	\noindent\textbf{Conclusion:} designing a good predictive filter for band-limited signals boils down to designing a good high-pass filter.
+	
+	This method was first proposed by \href{http://authors.library.caltech.edu/6802/1/VAIprocieee87b.pdf}{Vaidyanathan in 1987}
+	}
+\end{frame}
+
+\begin{frame}{Example: predicting band-limited noise}
+	This is an example of prediction of a Gaussian noise with PSD:
+	\begin{equation*}
+	\Phi_{xx}(e^{j\omega}) \approx \begin{cases}
+	1, &|\omega|\leq 0.7\pi \\
+	0, &0.7 < |\omega| \leq \pi 
+	\end{cases}
+	\end{equation*}
+	\pause
+	
+	\begin{center}
+		\includegraphics[scale=0.35]{figs/predicting_bandlimited_signals_example.eps}
+	\end{center}
+
+	Code available on Canvas: Matlab/predicting\_bandlimited\_signals.m.
+\end{frame}
+
+%
+\begin{frame}{Summary}
+	\textbf{Impulse invariance}
+	\begin{itemize}
+		\item The impulse response of the continuous-time system is sampled and scaled by $T$. In FIR implementations the impulse response is truncated up to a specified number of samples. In IIR implementations the discrete-time system is obtained analytically.
+	\end{itemize}
+	
+	\textbf{Bilinear transformation}
+	\begin{itemize}
+		\item The bilinear transformation maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane. This non-linear mapping leads to frequency warping, which can be mitigated by frequency pre-warping. Oversampling also mitigates frequency warping.
+	\end{itemize}
+	
+	\textbf{FIR filter design by windowing}
+	\begin{itemize}
+		\item Design by windowing is almost an art form
+		\item The Kaiser window is a nearly optimal choice
+	\end{itemize}
+
+	\textbf{Optimal FIR filter design}
+	\begin{itemize}
+		\item Optimal FIR filters minimize some characteristic of the weighted error
+		\item The Parks-McClellan method minimizes the maximum weighted error
+		\item The least-squares method minimizes the mean-square weighted error
+	\end{itemize}	
+\end{frame}
+
 
 \end{document}

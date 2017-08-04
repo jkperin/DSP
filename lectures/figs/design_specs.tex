@@ -1,14 +1,15 @@
 \begin{tikzpicture}
 \begin{axis}[
+name=plot1,
 axis lines*=middle,
-enlargelimits = upper, clip=true,
+enlargelimits = upper, clip=false,
 scale only axis,
 axis on top=false,
 axis line style={->,>=stealth},
 width=0.6\textwidth,
 height=0.4\textwidth,
 xlabel={$\omega$},
-ylabel={$|H(e^{j\omega})|$},
+ylabel={$H_d(e^{j\omega})$},
 every axis x label/.style={
 	at={(ticklabel* cs:1)},
 	xshift=-0.2cm,
@@ -44,8 +45,20 @@ legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \fill [black!20] (axis cs: 0.6, 0.2) rectangle (1, 0.3);
 
 \node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0, 0.5)!0.5!(axis cs: 0.25, 0.5)$) {Passband};
-\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.25, 0.5)!0.5!(axis cs: 0.6, 0.5)$) {Transition};
 \node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.6, 0.5)!0.5!(axis cs: 1, 0.5)$) {Stopband};
 
+\ifdefined\CARE
+	\fill [red!30] (axis cs: 0.25, 0) rectangle (axis cs: 0.6, 1);
+	\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.25, 0.5)!0.5!(axis cs: 0.6, 0.5)$) {Don't care};
+\else
+	\node[align=center, text width = 2cm, scale=0.8] at ($(axis cs: 0.25, 0.5)!0.5!(axis cs: 0.6, 0.5)$) {Transition};
+\fi
+
 \end{axis}
+
+\ifdefined\CARE
+	\node[blue2, below=0.5cm, align=right, text width = 2.5cm, scale=0.8] (t1) at ($(plot1.south west)$) {$W(\omega \leq \omega_p) = 1$};
+	\node[red2, below=0.5cm, right=0.01cm of t1, align=center, text width = 4cm, scale=0.8] (t2) {$W(\omega_p < \omega < \omega_s) = 0$};
+	\node[blue2, below=0.5cm, right=0.01cm of t2, align=center, text width = 2.5cm, scale=0.8] (t3) {$W(\omega \geq \omega_s) = 1$};
+\fi
 \end{tikzpicture}

@@ -1,0 +1,45 @@
+\def\M{10} % window length
+\begin{tikzpicture}
+\begin{axis}[
+%at=(plot1.below south east), anchor=above north east, xshift=1cm,
+axis lines*=middle,
+enlargelimits = upper, clip=false,
+scale only axis,
+width=\textwidth,
+height=0.5\textwidth,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={$n$},
+ylabel={$w[n]$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=\M,
+ymin=0, ymax=1,
+xtick={0, 5, \M},
+xticklabels ={$0$, $\frac{M}{2}$, $M$},
+ytick=1,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -5)}}]
+\addplot [smooth, color=black, solid, line width=1.5pt, domain=0:\M, samples=2] {1} node[pos=0.8, black, pin={[pin edge={black, thick}]30:{Rectangular}}, inner sep=0pt] {};
+
+\addplot [smooth, color=blue2, solid, line width=1.5pt, domain=0:\M/2, samples=21] {2*x/\M};
+\addplot [smooth, color=blue2, solid, line width=1.5pt, domain=\M/2:\M, samples=21] {2-2*x/\M} node[pos=0.75, blue2, pin={[pin edge={blue2, thick}]30:{Bartlett (triangular)}}, inner sep=0pt] {};
+
+\addplot [smooth, color=green2, solid, line width=1.5pt, domain=0:\M, samples=21] {0.5-0.5*cos(deg(2*pi*x/\M))} node[pos=0.78, green2, pin={[pin edge={green2, thick}]30:{Hann}}, inner sep=0pt] {};
+
+\addplot [smooth, color=orange2, solid, line width=1.5pt, domain=0:\M, samples=21] {0.54-0.46*cos(deg(2*pi*x/\M))} node[pos=0.75, orange2, pin={[pin edge={orange2, thick}]30:{Hamming}}, inner sep=0pt] {};
+
+\addplot [smooth, color=red2, solid, line width=1.5pt, domain=0:\M, samples=21] {0.42-0.5*cos(deg(2*pi*x/\M)) + 0.08*cos(deg(4*pi*x/\M))} node[pos=0.65, red2, pin={[pin edge={red2, thick}]30:{Blackman}}, inner sep=0pt] {};
+
+\end{axis}
+\end{tikzpicture}
