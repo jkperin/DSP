@@ -64,18 +64,18 @@ Date due: August 10, 2017\\
 
 This question will help you familiarize yourself with designing classic filters such as Butterworth, Chebyshev type I \& II, and elliptic filter using Matlab. 
 \begin{description}
-	\item[(a)] Design a Butterworth, a Chebyshev type I, a Chebyshev type II, and an elliptic lowpass filter. All filters should have order 8 and 3-dB bandwidth of approximately $4$ kHz for a sampling rate of $1/T = 8$ kHz. You're free to set all other required parameters such as passband ripple and stopband attenuation. On a single graph, plot the magnitude response of all filters. On a different graph, plot the \underline{unwrapped} phase response of all filters.
+	\item[(a)] Design a Butterworth, a Chebyshev type I, a Chebyshev type II, and an elliptic lowpass filter. All filters should have order 8 and 3-dB bandwidth of approximately $4$ kHz for a sampling rate of $1/T = 16$ kHz. You're free to set all other required parameters such as passband ripple and stopband attenuation. On a single graph, plot the magnitude response of all filters. On a different graph, plot the \underline{unwrapped} phase response of all filters.
 	
 	\textit{Note:} For this question you may use the Matlab functions \texttt{butter, cheby1, cheby2}, and \texttt{ellip}.  
 	
-	\item[(b)] Use your filters to filter the speech signal \texttt{speech\_dft.wav}, available on Canvas/Files/Matlab. This speech signal was recorded with sampling frequency of 22.05 kHz. Hence, before filtering it with your filters, you need to use your knowledge on changing the sampling rate by a non-integer factor to resample the signal to 8 kHz. Use the smallest upsampling and downsampling integer factors possible.
+	\item[(b)] Use your filters to filter the speech signal \texttt{speech\_dft.wav}, available on Canvas/Files/Matlab. This speech signal was recorded with sampling frequency of 22.05 kHz. Hence, before filtering it with your filters, you need to use your knowledge on changing the sampling rate by a non-integer factor to resample the signal to 16 kHz. Use the smallest upsampling and downsampling integer factors possible.
 	 
 	\textit{Hint:} Use the function \texttt{decimate} after upsampling, but remember that the lowpass filter after interpolation must have gain equal to the upsampling factor $L$.
 	
 	\textit{Note:} 4 kHz is approximately the bandwidth of the telephone system. Hence, after filtering, the output signals should have roughly the same quality of a conversation over the phone. However, some of your filters may introduce enough magnitude/phase distortion to worsen the sound quality.
 	
-	\item[(c)] Denote as $H_8(z)$ any of your filters designed above for sampling rate of $1/T = 8$ kHz. Suppose
-	you'd like to design a filter $H_{16}(z)$ that has the same characteristics (e.g., bandwidth of 4 kHz) of $H_8(z)$, but that can be used on signals sampled at a rate of 16 kHz. Give an expression for $H_{16}(z)$ as a function of $H_8(z)$.
+	\item[(c)] Denote as $H_{16}(z)$ any of your filters designed above for sampling rate of $1/T = 16$ kHz. Suppose
+	you'd like to design a filter $H_{32}(z)$ that has the same characteristics (e.g., bandwidth of 4 kHz) of $H_{16}(z)$, but that can be used on signals sampled at a rate of 32 kHz. Give an expression for $H_{32}(z)$ as a function of $H_{16}(z)$.
 	
 	\textit{Hint:} revisit the notes on interchanging filtering and downsampling.
 \end{description}
@@ -254,6 +254,9 @@ which is an IIR filter.
 In the following questions you will design FIR filters to approximate $H(z)$. In all cases, assume that your FIR filter has order $M = 8$ (9 coefficients).
 \begin{description}
 	\item[(a)] \textbf{Window method}. Design an FIR filter to approximate $H(z)$ using the window method. Since $H(z)$ does not have discontinuities, you can use the rectangular window without problem. On the same graph, plot the frequency response of your FIR filter and $H(z)$. On a different graph, plot the \underline{unwrapped} phase response of your FIR filter and $H(z)$. Note that they are not linear phase.
+	
+	\textit{Hint:} use the Matlab function \texttt{impz} to obtain the impulse response of $H(z)$.
+			
 	\item[(b)] Test your linear equalizer using the function \texttt{simple\_channel.m}, available on Canvas/Files/Matlab. This function takes one parameter \texttt{h}, which is the coefficients of the FIR filter you designed. The function returns the bit-error rate (BER) (number of wrongly detected bits divided by total number of bits) of this system when the receiver equalizer has coefficients \texttt{h}. Hence, \texttt{simple\_channel(1)} returns the BER of the system without any equalization. Report the BER \underline{with} and \underline{without} equalization. For the given noise power, the BER of the equalized system should be close to 0. 
 	\item[(c)] \textbf{Non-linear phase least-squares algorithm}. Now design an FIR filter using the least squares algorithm to approximate $H(z)$. Since $H(z)$ has no discontinuities, you can assume that the weight function is $W(\omega) = 1~\forall~\omega$. Moreover, since this filter should not be linear phase, you cannot use Matlab's \texttt{firls} function. Instead, use the least-squares algorithm as described in class. You may use the script \texttt{predicing\_bandlimited\_signals.m} as a starting point.
 	
