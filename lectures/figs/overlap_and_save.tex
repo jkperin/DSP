@@ -1,0 +1,393 @@
+% \N and \Ns must be defined before calling this picture.
+\def\N{5}
+\def\Ns{10}
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={0}, xmax={44},
+	axis line style={->,>=stealth},
+	%y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $h[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 9},
+	xticklabels={0, $M$},
+	%xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	%\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x+2*\Ns-\N, \N) + triang(x-\N, \N) + triang(x-\N-\Ns, \N) + triang(x-\N+\Ns, \N)};
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:\Ns-1, samples=\Ns] {triang(x-\N, \N)};
+	\node[fill=black!20, text width=3cm, align=center, inner sep=2mm, anchor=south west] at (axis cs: 10, 0.5) {Filter coefficients \\ Length $M+1$};
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis y line=middle, axis x line=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=-2,	ymax=2,
+	%y axis line style={draw=none},
+	xmin={0}, xmax={44},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\only<1|handout:1>{	
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
+	table[row sep=crcr]{
+		0 0.10491 \\
+		1 0.54919 \\
+		2 0.70362 \\
+		3 1.0626 \\
+		4 1.2488 \\
+		5 1.1636 \\
+		6 1.0408 \\
+		7 0.9144 \\
+		8 0.84567 \\
+		9 0.72187 \\
+		10 0.19381 \\
+		11 -0.093603 \\
+		12 -0.095644 \\
+		13 -0.45954 \\
+		14 -0.54561 \\
+		15 -0.57977 \\
+		16 -0.48307 \\
+		17 -0.21808 \\
+		18 -0.051949 \\
+		19 0.22502 \\
+		20 0.70008 \\
+		21 0.69747 \\
+		22 0.94023 \\
+		23 1.311 \\
+		24 1.4125 \\
+		25 1.6667 \\
+		26 1.7249 \\
+		27 1.4084 \\
+		28 1.1416 \\
+		29 0.60004 \\
+		30 0.30779 \\
+		31 -0.0025167 \\
+		32 -0.47202 \\
+		33 -0.98919 \\
+		34 -1.3251 \\
+		35 -1.3521 \\
+		36 -1.3193 \\
+		37 -1.2023 \\
+		38 -0.88282 \\
+		39 -0.64963 \\
+		40 -0.42971 \\
+		41 -0.004122 \\
+		42 0.43751 \\
+		43 0.90842 \\
+		44 1.0804 \\
+	};
+	}
+
+	\only<2-3|handout:2-3>{	
+	\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
+	table[row sep=crcr]{
+		0 0.10491 \\
+		1 0.54919 \\
+		2 0.70362 \\
+		3 1.0626 \\
+		4 1.2488 \\
+		5 1.1636 \\
+		6 1.0408 \\
+		7 0.9144 \\
+		8 0.84567 \\
+		9 0.72187 \\
+		10 0.19381 \\
+		11 -0.093603 \\
+		12 -0.095644 \\
+		13 -0.45954 \\
+		14 -0.54561 \\
+		15 -0.57977 \\
+		16 -0.48307 \\
+		17 -0.21808 \\
+		18 -0.051949 \\
+		19 0.22502 \\
+		20 0.70008 \\
+		21 0.69747 \\
+		22 0.94023 \\
+		23 1.311 \\
+		24 1.4125 \\
+		25 1.6667 \\
+		26 1.7249 \\
+		27 1.4084 \\
+		28 1.1416 \\
+		29 0.60004 \\
+	};
+
+	\node[anchor=south west, blue2] at (axis cs: 8, 0.8) {\Large $x_1[n]$};
+	\node[below, blue2] at (axis cs: 7, 0.1) {$L$ samples};
+	}
+
+	\only<3|handout:3>{	
+	\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
+	table[row sep=crcr]{
+		20 0.70008 \\
+		21 0.69747 \\
+		22 0.94023 \\
+		23 1.311 \\
+		24 1.4125 \\
+		25 1.6667 \\
+		26 1.7249 \\
+		27 1.4084 \\
+		28 1.1416 \\
+		29 0.60004 \\
+		30 0.30779 \\
+		31 -0.0025167 \\
+		32 -0.47202 \\
+		33 -0.98919 \\
+		34 -1.3251 \\
+		35 -1.3521 \\
+		36 -1.3193 \\
+		37 -1.2023 \\
+		38 -0.88282 \\
+		39 -0.64963 \\
+		40 -0.42971 \\
+		41 -0.004122 \\
+		42 0.43751 \\
+		43 0.90842 \\
+		44 1.0804 \\
+	};
+	\node[anchor=south west, red2] at (axis cs: 33, 0.8) {\Large $x_2[n]$};
+	\node[below, red2] at (axis cs: 27, 0.1) {$L$ samples};
+	}
+\end{axis}
+
+\begin{axis}[
+name=plot3,
+at=(plot2.below south east), anchor=above north east,
+axis y line=middle, axis x line=center,
+enlargelimits = false, clip=false,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=-11,	ymax=11,
+%y axis line style={draw=none},
+xmin={0}, xmax={44},
+axis line style={->,>=stealth},
+x axis line style={shorten >= -0.25cm}, 
+xlabel={\large $n$},
+ylabel={},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.25cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+	xshift=0.6cm,
+},
+xtick=\empty,
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\only<2-3|handout:2-3>{
+\addplot[ycomb, blue2!20, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	0 6.9006 \\
+	1 6.6909 \\
+	2 6.0407 \\
+	3 5.1558 \\
+	4 4.2891 \\
+	5 3.7146 \\
+	6 3.6642 \\
+	7 3.9472 \\
+	8 4.4134 \\
+	9 4.852 \\
+}; % y1 unsable
+
+\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	10 5.0554 \\
+	11 4.8532 \\
+	12 4.3257 \\
+	13 3.5541 \\
+	14 2.5648 \\
+	15 1.4274 \\
+	16 0.32928 \\
+	17 -0.61988 \\
+	18 -1.3915 \\
+	19 -1.8206 \\
+	20 -1.842 \\
+	21 -1.4528 \\
+	22 -0.74957 \\
+	23 0.20981 \\
+	24 1.3603 \\
+	25 2.5941 \\
+	26 3.7653 \\
+	27 4.9059 \\
+	28 5.9084 \\
+	29 6.6045 \\
+}; % y1 usable
+
+\node[anchor=south west, blue2] at (axis cs: 1, -8) {\large $y_1 = h[n]~\encircle{L}~x_1[n]$};
+\node[above, blue2!60, anchor=south west, align=center, text width=4cm] at (axis cs: -3, 5) {$M-1$ unusable \\ samples};
+}
+
+\only<3|handout:3>{
+\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	30 6.9006 \\
+	31 6.7315 \\
+	32 6.0115 \\
+	33 4.8217 \\
+	34 3.2397 \\
+	35 1.4352 \\
+	36 -0.42955 \\
+	37 -2.2122 \\
+	38 -3.7647 \\
+	39 -4.8699 \\
+	40 -5.4549 \\
+	41 -5.5235 \\
+	42 -5.0656 \\
+	43 -4.1338 \\
+	44 -2.865 \\
+};%y2 usable
+
+\addplot[ycomb, red2!20, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	20 4.1463 \\
+	21 4.1594 \\
+	22 3.9567 \\
+	23 3.6881 \\
+	24 3.6425 \\
+	25 3.89 \\
+	26 4.3944 \\
+	27 5.1421 \\
+	28 5.9661 \\
+	29 6.6045 \\
+};%y2 unusable
+\node[anchor=south west, red2] at (axis cs: 22, -8) {\large $y_2 = h[n]~\encircle{L}~x_2[n]$};
+\node[above, red2!60, anchor=south west, align=center, text width=4cm] at (axis cs: 16, 5) {$M-1$ unusable \\ samples};
+}
+\end{axis}
+
+\begin{axis}[
+	name=plot4,
+	at=(plot3.below south east), anchor=above north east,
+	axis y line=middle, axis x line=center,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=-10,	ymax=10,
+	%y axis line style={draw=none},
+	xmin={0}, xmax={44},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $y[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick=\empty,
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\only<2-|handout:2->{
+		\addplot[ycomb, black, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:9, samples=10] {0};
+		
+		\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+		table[row sep=crcr]{
+			10 5.0554 \\
+			11 4.8532 \\
+			12 4.3257 \\
+			13 3.5541 \\
+			14 2.5648 \\
+			15 1.4274 \\
+			16 0.32928 \\
+			17 -0.61988 \\
+			18 -1.3915 \\
+			19 -1.8206 \\
+			20 -1.842 \\
+			21 -1.4528 \\
+			22 -0.74957 \\
+			23 0.20981 \\
+			24 1.3603 \\
+			25 2.5941 \\
+			26 3.7653 \\
+			27 4.9059 \\
+			28 5.9084 \\
+			29 6.6045 \\
+		}; % y1 usable
+	}	
+
+	\only<3|handout:3>{
+		\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+		table[row sep=crcr]{
+			30 6.9006 \\
+			31 6.7315 \\
+			32 6.0115 \\
+			33 4.8217 \\
+			34 3.2397 \\
+			35 1.4352 \\
+			36 -0.42955 \\
+			37 -2.2122 \\
+			38 -3.7647 \\
+			39 -4.8699 \\
+			40 -5.4549 \\
+			41 -5.5235 \\
+			42 -5.0656 \\
+			43 -4.1338 \\
+			44 -2.865 \\
+			45 -1.3852 \\
+			46 0.19957 \\
+			47 1.6994 \\
+			48 2.9545 \\
+			49 3.7801 \\
+		};%y2 usable
+	}
+\end{axis}
+\end{tikzpicture}	

@@ -1,0 +1,799 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+\usetikzlibrary{spy}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%
+\input{header.tex} % some definitions
+
+%% 
+\title[EE 264]{The Discrete Fourier Transform}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{August 8, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Last lecture}
+\textbf{Impulse invariance}
+\begin{itemize}
+	\item The impulse response of the continuous-time system is sampled and scaled by $T$. In FIR implementations the impulse response is truncated up to a specified number of samples. In IIR implementations the discrete-time system is obtained analytically.
+\end{itemize}
+
+\textbf{Bilinear transformation}
+\begin{itemize}
+	\item The bilinear transformation maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane. This non-linear mapping leads to frequency warping, which can be mitigated by frequency pre-warping. Oversampling also mitigates frequency warping.
+\end{itemize}
+
+\textbf{FIR filter design by windowing}
+\begin{itemize}
+	\item Design by windowing is almost an art form
+	\item The Kaiser window is a nearly optimal choice
+\end{itemize}
+
+\textbf{Optimal FIR filter design}
+\begin{itemize}
+	\item Optimal FIR filters minimize some characteristic of the weighted error
+	\item The Parks-McClellan method minimizes the maximum weighted error
+	\item The least-squares method minimizes the mean-square weighted error
+\end{itemize}	
+\end{frame}
+
+%
+\begin{frame}{Outline}
+	\tableofcontents
+\end{frame}
+
+%
+\section{The Discrete Fourier Transform}
+\begin{frame}{Sampling the discrete-time Fourier transform (DTFT)}
+	Consider the DTFT $X(e^{j\omega})$
+	\begin{center}
+		\resizebox{0.65\textwidth}{!}{\input{figs/sampled_dtft.tex}}
+	\end{center}
+	\vspace{-0.25cm}	
+	
+	\pause	
+	\begin{equation*}
+		X_s(e^{j\omega}) = \frac{2\pi}{N}\sum_{k=-\infty}^\infty X(e^{j\omega})\delta\Big(\omega-k\frac{2\pi}{N}\Big) \tag{impulse train samples of $X(e^{j\omega})$}
+	\end{equation*}
+	
+	\textbf{Question:} what is the inverse DTFT of $X_s(e^{j\omega})$ i.e., the sampled version of $X(e^{j\omega})$?
+
+\end{frame}
+
+%
+\begin{frame}{Sampling the discrete-time Fourier transform (DTFT)}
+
+Revisiting the \textbf{impulse train} interpretation of sampling:
+\begin{center}
+	\resizebox{\textwidth}{!}{\input{figs/impulse_train_dtft.tex}}
+\end{center}
+
+We need the following DTFT pairs:
+\begin{align*}
+X(e^{j\omega}) &\Longleftrightarrow x[n] \tag{inverse DTFT of $X(e^{j\omega})$}\\
+s(\omega) = \frac{2\pi}{N}\sum_{k=-\infty}^\infty\delta\Big(\omega-k\frac{2\pi}{N}\Big) &\Longleftrightarrow s[n] = \sum_{m=-\infty}^\infty\delta[n-mN] \tag{inverse DTFT of impulse train}
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}
+
+We can calculate the inverse DTFT of $X_s(e^{j\omega}) = X(e^{j\omega})s(\omega)$ as the convolution of $x[n]$ and $s[n]$:
+\begin{align*}
+x_s[n] &= x[n]\ast s[n] = \sum_{r=-\infty}^{\infty} \bigg(x[n-r]\cdot \sum_{m=-\infty}^\infty\delta[r-mN]\bigg)\\
+&= \sum_{r=-\infty}^{\infty} \sum_{m=-\infty}^\infty x[n-r]\delta[r-mN] \tag{only non-zero when $r = mN$} \\
+&= \sum_{m=-\infty}^\infty x[n-mN]
+\end{align*}
+
+\textbf{Conclusion:} sampling in frequency domain results in signal replicas in time domain. The replicas of $x[n]$ appear with period $N$.
+
+\begin{itemize}
+	\item If $x[n]$ is \textbf{time-limited} with duration $\leq N$, $x_s[n]$ is periodic with period $N$ and replicas of $x[n]$ do not overlap
+	\item If $x[n]$ is longer than $N$, replicas of $x[n]$ do overlap leading to \textbf{time-domain aliasing}
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{The discrete Fourier transform (DFT)}
+\begin{block}{Definition}
+	\vspace{-0.6cm}
+	\begin{align}
+		X[k] &= \sum_{n = 0}^{N-1}x[n]e^{-j(2\pi/N)kn},\quad k = 0, \ldots, N-1 \tag{direct transform} \\
+		x[n] &= \frac{1}{N}\sum_{n = 0}^{N-1}X[k]e^{j(2\pi/N)kn}, \quad n = 0, \ldots, N-1 \tag{inverse transform}
+	\end{align}
+	\noindent\textbf{Notation:} $k$ indexes frequency, while $n$ indexes time.
+\end{block}
+
+\begin{block}{Important observations}
+\begin{itemize}
+	\item The direct and inverse transforms are periodic with period $N$:
+	\begin{equation*}
+	x[n] = x[n+N], \forall~n \qquad\text{and}\qquad X[k] = X[k+N], \forall~k
+	\end{equation*}
+	\item The direct and inverse transform can be computed efficiently with complexity $\mathcal{O}({N\log N})$ using fast Fourier transform (FFT) algorithms.
+\end{itemize}
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{The discrete Fourier transform (DFT)}
+\begin{block}{Another common notation}
+	Represent complex exponentials by $W_N \equiv e^{-j2\pi/N}$
+	
+	\begin{align}
+	X[k] &= \sum_{n = 0}^{N-1}x[n]W_N^{kn}, \quad k = 0, \ldots, N-1 \tag{direct transform} \\
+	x[n] &= \frac{1}{N}\sum_{n = 0}^{N-1}X[k]W_N^{-kn}, \quad n = 0, \ldots, N-1 \tag{inverse transform}
+	\end{align}
+\end{block}	
+This is equivalent to the previous slide, but with a more compact notation.
+\end{frame}
+
+%
+\begin{frame}{Relation between the DFT and the DTFT}
+
+Suppose we calculate the DTFT of some signal $x[n]$:
+\begin{equation*}
+X(e^{j\omega}) = \sum_{n=-\infty}^{\infty} x[n]e^{-j\omega n} \tag{DTFT of $x[n]$}
+\end{equation*}
+
+\pause
+Now we sample $X(e^{j\omega})$ at frequencies $\omega_k = 2\pi/Nk$, $k = 0, \ldots, N-1$:
+\begin{align*}
+	X(e^{j\omega})\Big|_{\omega = 2\pi/Nk} &= \sum_{n=-\infty}^{\infty}x[n]e^{-j(2\pi/N)kn} \\
+	&= \sum_{n=0}^{N-1}x[n]e^{-j(2\pi/N)kn}= X[k] \tag{\underline{ony if} $x[n]$ is time-limited with duration $< N$}
+\end{align*}
+The sampled DTFT $X(e^{j\omega_k})$ is \underline{identical} to the DFT $X[k]$ \underline{only if} $x[n]$ is time-limited with duration $\leq N$.
+
+\pause
+Computing the inverse DFT of $X[k] = X(e^{j2\pi/Nk})$ i.e., samples of DTFT:
+\begin{equation} \label{eq:replicated_xn}
+	\tilde{x}[n] = \frac{1}{N}\sum_{k=0}^{N-1}X(e^{j(2\pi/N)k})e^{j(2\pi/N)kn} = \sum_{r=-\infty}^{\infty} x[n-rN]
+\end{equation}
+\end{frame}
+
+%
+\begin{frame}
+
+Proof of \eqref{eq:replicated_xn}:
+\begin{align*}
+	\tilde{x}[n] &= \frac{1}{N}\sum_{k=0}^{N-1}X(e^{j(2\pi/N)k})e^{j(2\pi/N)kn} \\
+	&= \frac{1}{N}\sum_{k=0}^{N-1}X[k]e^{j(2\pi/N)kn} \tag{since $X(e^{j\omega})\Big|_{\omega = 2\pi/Nk} = X[k]$} \\
+	&= \frac{1}{N}\sum_{k=0}^{N-1}\bigg(\sum_{m=0}^{N-1}x[m]e^{-j(2\pi/N)km}\bigg)e^{j(2\pi/N)kn} \tag{defintion of DFT} \\
+	&= \sum_{m=0}^{N-1}x[m]\underbrace{\bigg(\frac{1}{N}\sum_{k=0}^{N-1}e^{j(2\pi/N)k(n-m)}\bigg)}_{\text{inverse DFT of impulse train}} \tag{interchanging summations} \\
+	&= \sum_{m=0}^{N-1}x[m]\sum_{r=-\infty}^{\infty}\delta[n-m-rN] = \sum_{r=-\infty}^{\infty}\sum_{m=0}^{N-1}x[m]\delta[n-m-rN] \tag{only non-zero when $m = n-rN$}\\
+	&= \sum_{r=-\infty}^{\infty}x[n-rN]
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Relation between the DFT and the DTFT}
+	Main conclusions from the previous derivation
+	\begin{equation*} 
+	\tilde{x}[n] = \frac{1}{N}\sum_{k=0}^{N-1}X(e^{j(2\pi/N)k})e^{j(2\pi/N)kn} = \sum_{r=-\infty}^{\infty} x[n-rN]
+	\end{equation*}
+	
+	\begin{itemize}
+		\item The $N$-point DFT of $x[n]$ is only equal to the DTFT sampled with period $2\pi/N$ if $x[n]$ is time-limited with duration $\leq N$.  
+		\item The inverse DFT of the sampled DTFT produces a \underline{periodic} signal $\tilde{x}[n]$ with period $N$, even though $x[n]$ is not periodic.
+		\item $\tilde{x}[n]$ is called the \textbf{periodic extension} of $x[n]$
+		\item For the $N$-point DFT and inverse DFT, all signals are periodic with period $N$
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{DFT as a sampled DTFT example}
+\vspace{-0.25cm}
+\begin{center}
+	\def\N{3}
+	\def\Ns{8}
+	\resizebox{\linewidth}{!}{\input{figs/sampling_dtft.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}<beamer:3|handout:1>{DFT as a sampled DTFT example}
+\vspace{-0.7cm}
+\begin{center}
+	\def\N{3}
+	\def\Ns{5}
+	\resizebox{\linewidth}{!}{\input{figs/sampling_dtft.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}<beamer:3|handout:1>{DFT as a sampled DTFT example}
+\vspace{-0.25cm}
+\begin{center}
+	\def\N{3}
+	\def\Ns{4}
+	\def\TIMEALIASING{1}
+	\resizebox{\linewidth}{!}{\input{figs/sampling_dtft.tex}}
+\end{center}
+\end{frame}
+
+% 
+\begin{frame}{Relation between DFT and the DTFT}
+As another example, let's consider the \underline{infinitely-long} signal 
+\begin{equation*}
+x[n] = \frac{1}{2}\mathrm{sinc}\Big(\frac{n-N/2}{2}\Big) \Longleftrightarrow |X(e^{j\omega})| = \begin{cases}
+1, & |\omega| \leq \pi/2 \\
+0, & \pi/2 < |\omega|\leq\pi
+\end{cases}
+\end{equation*}
+
+The DTFT of $x[n]$ is the ideal lowpass filter with cutoff frequency $\pi/2$.
+\vspace{0.25cm}
+
+\textbf{Question:} what about the $N$-point DFT of $x[n]$?
+\pause
+
+Instead of applying the direct transform, let's define a $N$-point truncated version of $x[n]$:
+\begin{equation*}
+x_N[n] = x[n]w[n] \quad\text{where}\quad w[n] = \begin{cases}
+1, &n =0, \ldots, N-1 \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+$w[n]$ is the \textbf{rectangular window}.
+
+\textbf{Note:}
+\begin{itemize}
+	\item The DFT of $x_N[n]$ is equal to the DFT of $x[n]$
+	\item $x_N[n]$ is a time-limited sequence of duration $N$, hence the DFT of $x_N[n]$ is equal to the DTFT of $x_N[n]$ sampled with period $2\pi/N$.
+\end{itemize}
+\end{frame}
+
+% 
+\begin{frame}{Graphically}
+
+\only<1|handout:1>{
+	Consider the particular case of $N = 20$. The 20-point DFT of $x_N[n]$ is equal to the DTFT of $x_N[n]$ sampled with period $2\pi/20$.
+
+	The rectangular window causes significant \textit{ringing}.}
+
+\only<2|handout:2>{Same scenario as before, but now $w[n]$ is the \textbf{Hamming window}. \textit{Ringing} was reduced at the expense of slower roll-off.}
+\begin{center}
+	\def\N{10}
+	\def\Ns{20}
+	\hspace*{-0.6cm}\resizebox{0.96\paperwidth}{!}{\input{figs/sinc_dft.tex}}
+\end{center}
+
+See code on Canvas/Files/Matlab/\texttt{DFT\_sinc\_example.m}
+\end{frame}
+
+% 
+\begin{frame}{Relation between DFT and the DTFT}
+One more example, now with a \underline{periodic} signal 
+\begin{equation*}
+x[n] = \cos(n\pi/2) \Longleftrightarrow X(e^{j\omega}) = \pi\delta(\omega-\pi/2) + \pi\delta(\omega+\pi/2), \quad |\omega|\leq\pi
+\end{equation*}
+
+The DTFT of $x[n]$ (in the interval $[-\pi, \pi]$) is simply impulses at frequencies $\pm\pi/2$.
+\vspace{0.25cm}
+
+As in the previous example, define a $N$-point truncated version of $x[n]$:
+\begin{equation*}
+	x_N[n] = x[n]w[n] \quad\text{where}\quad w[n] = \begin{cases}
+	1, &n =0, \ldots, N-1 \\
+	0, &\text{otherwise}
+	\end{cases}
+\end{equation*}
+
+Once again, the DFT of $x_N[n]$ is equal to the DTFT of $x_N[n]$ sampled with period $2\pi/N$.
+\end{frame}
+
+% 
+\begin{frame}{Graphically}
+
+\only<1|handout:1>{
+Consider the particular case of $N = 20$. 
+
+$x_N[n]$ contains \underline{exactly} 5 periods of $x[n]$. As a result, windowing had no effect on the DFT, as its samples fall at frequencies where the \textit{windowed} DTFT is zero.
+}
+
+\only<2|handout:2>{
+	Now $N = 21$.
+	
+	Samples of DFT fall at frequencies where the \textit{windowed} DTFT is non-zero.
+}
+
+\begin{center}
+	\hspace*{-0.6cm}\resizebox{0.96\paperwidth}{!}{\input{figs/cosine_dft.tex}}
+\end{center}
+
+\end{frame}
+
+%
+\begin{frame}{Another interpretation}
+	Let's look back at the sampling equation \eqref{eq:replicated_xn}. 
+
+	Sampling in the frequency domain results in signal replicas in time domain:
+	\begin{equation*}
+	\tilde{x}[n] = \sum_{r=-\infty}^\infty x_N[n-rN]
+	\end{equation*}
+	
+	\begin{itemize}
+		\item If $N$ is an integer multiple of the period of $x[n]$, the replicas of $x_N[n]$ will \underline{perfectly} reconstruct the periodic signal $x[n]$, i.e., $\tilde{x}[n] = x[n]$.
+		\item If $N$ is \underline{not} an integer multiple of the period of $x[n]$, the replicas will lead to time-domain aliasing and consequently $\tilde{x}[n]\neq x[n]$.
+	\end{itemize}
+	
+	\vspace{0.25cm}	
+	\textbf{Side note:} Remember that $\cos(\omega_0n)$ and $\sin(\omega_0n)$ are only periodic if $\omega_0/\pi$ is rational. Hence, for $\omega_0$ irrational we cannot find a value of $N$ that would allow us to eliminate the effects of windowing.
+\end{frame}
+
+
+%
+\begin{frame}{Relation between DFT and the $z$-transform}
+For time-limited sequences of duration $N$:
+\vspace{-0.3cm}
+\begin{columns}[t]
+\begin{column}{0.5\textwidth}
+	\begin{block}{DFT}
+		\vspace{-0.3cm}
+		\begin{equation} \tag{direct transform}
+		X[k] = \sum_{n=0}^{N-1} x[n]\tikz[baseline]{
+			\node[fill=blue!20,anchor=base] (t1) {$e^{-j(2\pi/N)kn}$};
+		}
+		\end{equation}
+	\end{block}
+\end{column}
+\begin{column}{0.5\textwidth}
+	\begin{block}{$z$-transform}
+		\vspace{-0.3cm}
+		\begin{equation} \tag{direct transform}
+		X(z) = \sum_{n=0}^{N-1} x[n]\tikz[baseline]{
+			\node[fill=blue!20,anchor=base] (t1) {$z^{-n}$};
+		}
+		\end{equation}
+	\end{block}
+\end{column}
+\end{columns}
+\vspace{0.5cm}
+The DFT is equal to samples of the $z$-transform on the unit circle
+\begin{figure}
+\centering
+\resizebox{0.5\linewidth}{!}{\input{figs/sampled_unit_circle.tex}}
+\label{fig:sampled_unit_circle}
+\end{figure}
+\end{frame}
+
+%
+\section{The Fast Fourier Transform}
+\begin{frame}{Outline}
+	\tableofcontents[currentsection]
+\end{frame}
+
+\begin{frame}{DFT as a matrix-vector product}
+\begin{align}
+X[k] &= \sum_{n = 0}^{N-1}x[n]W_N^{kn}, \quad k = 0, \ldots, N-1 \tag{direct transform}
+\end{align}
+
+We can write the direct transform as a matrix-vector product:
+\begin{align*}
+X &= Qx \\
+\begin{bmatrix}
+X[0] \\
+X[1] \\
+\vdots \\
+X[N-1] \\
+\end{bmatrix} &= \begin{bmatrix}
+W_N^{0(1)} & W_N^{0(2)} & \ldots & W_N^{0(N-1)} \\
+W_N^{1(1)} & W_N^{1(2)} & \ldots & W_N^{1(N-1)} \\
+\vdots & \vdots & \ddots & \vdots \\
+W_N^{(N-1)(1)} & W_N^{(N-1)(2)} & \ldots & W_N^{(N-1)(N-1)}
+\end{bmatrix}\begin{bmatrix}
+x[0] \\
+x[1] \\
+\vdots \\
+x[N-1] \\
+\end{bmatrix}
+\end{align*}
+
+Similarly, for the inverse transform: $x = Q^HX$, where $Q^H = (Q^*)^T$ is the \textbf{Hermitian} of $Q$ (conjugate transpose)
+
+\vspace{0.25cm}
+In Matlab: \texttt{>> Q = dftmtx(N)}.
+\end{frame}
+
+%
+\begin{frame}{Fast Fourier transform (FFT) algorithms}
+\begin{itemize}
+	\item Computing $x = Q^HX$ or $X = Qx$ has complexity $\mathcal{O}(N^2)$. That is, the number of computations grows quadratically for $N$ large.
+	\item \textbf{Fast Fourier transform (FFT)} refers to a collection of algorithms to compute the discrete Fourier transform (DFT) with complexity $\mathcal{O}(N\log N)$. That is, the number of computations grows at $N\log N < N^2$ for $N$ large.
+	\item This algorithm was known by Gauss back in 1800's, and it was rediscovered by Cooley and Tukey in 1965.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Application example: OFDM}
+\textbf{Orthogonal frequency-division multiplexing (OFDM)} is a widely used transmission technique in digital communications.
+
+It is based on transmitting information on narrow-band and orthogonal sub-carriers
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.3]{figs/analog_ofdm.png}\\
+	{\color{gray} \small Analog implementation of OFDM. Diagram taken from EE 379 lecture notes.}
+\end{figure}
+
+OFDM was proposed in the 60's, but making such transmission in analog electronics was impossible, since the oscillators had to be perfectly synchronize to guarantee orthogonality
+\end{frame}
+
+
+%
+\begin{frame}{Application example: OFDM}
+With the advent of the FFT, it was realized that OFDM could be implemented using the IFFT/FFT:
+
+\begin{figure}
+	\centering
+	\includegraphics[scale=0.4]{figs/ofdm_diagram_fft.png}\\
+	{\color{gray} \small FFT/IFFT-based implementation of OFDM.}
+\end{figure}
+
+
+OFDM is used in
+\begin{itemize}
+	\item \textbf{Long-term evolution (LTE)}, IFFT/FFT size up to 2048
+	\item \textbf{Wi-Fi}, IFFT/FFT size up to 256
+	\item \textbf{Bluetooth}
+\end{itemize} 
+\end{frame}
+
+% 
+\begin{frame}{FFT algorithms}
+	FFT algorithms achieve dramatic reduction in computation by
+	\begin{enumerate}
+		\item Exploiting the \textbf{periodicity} and \textbf{symmetry} of complex exponentials $W^{kn}$:
+		\begin{align*}
+		W_N^{k(N-n)} &= W_N^{-kn} = (W_N^{kn})^* \tag{complex conjugate symmetry} \\
+		W_N^{kn} &= W_N^{k(n+N)} = W_N^{(k+N)n}  \tag{periodicity in $n$ and $k$}
+		\end{align*}
+		\item By decomposing the computation into successively smaller DFTs. 
+		\begin{itemize}
+			\item Decomposition of $x[n]$ into successively smaller subsequences is called \textbf{decimation in time}.
+			\item Decomposition of $X[k]$ into successively smaller subsequences is called \textbf{decimation in frequency}.
+		\end{itemize}
+	\end{enumerate}
+\end{frame}
+
+% 
+\begin{frame}{Decimation-in-time algorithm}
+8-point DFT calculation using decimation in time.
+
+The red rectangle represents a 2-point DFT, which requires only one multiplication by using the periodicity and symmetry of $W_N^{kn}$.
+\begin{center}
+	\begin{tikzpicture}
+		\node (img) {\includegraphics[scale=0.7]{figs/decimation_in_time.png}};
+	\end{tikzpicture}
+\end{center}
+
+\end{frame}
+
+% 
+\begin{frame}{Decimation-in-frequency algorithm}
+8-point DFT calculation using decimation in frequency.
+
+The red rectangle represents a 2-point DFT, which requires only one multiplication by using the periodicity and symmetry of $W_N^{kn}$. 
+\begin{center}
+	\begin{tikzpicture}
+		\node (img) {\includegraphics[scale=0.7]{figs/decimation_in_frequency.png}};
+	\end{tikzpicture}
+\end{center}
+\end{frame}
+
+% 
+\begin{frame}{FFT algorithms}
+	FFT generalizations
+	\begin{itemize}
+		\item Radix $R$-algorithms
+		\begin{equation*}
+			N = R^\nu
+		\end{equation*}
+		DFTs are broken into factors of $R$
+		
+		\item Mixed-radix algorithms
+		\begin{equation*}
+			N = N_1N_2\ldots N_\nu
+		\end{equation*}
+		DFTs are broken into factors of $\{N_1, N_2, \ldots, N_\nu\}$.
+		
+		\item Prime-factor algorithms
+		\begin{equation*}
+			N = N_1N_2\ldots N_\nu
+		\end{equation*}
+		DFTs are broken into prime factors $\{N_1, N_2, \ldots, N_\nu\}$.
+\end{itemize}
+\vspace{0.25cm}
+For more detailed information on FFT algorithms see Chapter 9 of the textbook.
+
+\vspace{0.25cm}
+For open-source implementation of FFT, see \href{http://www.fftw.org/}{the Fastest Fourier Transform in the West (FFTW)}. FFTW is used in Matlab.
+\end{frame}
+
+\begin{frame}{FFT and IFFT in Matlab}
+	\textbf{Useful commands:}
+	
+	Compute the $N$-point DFT of the vector \texttt{x}. If \texttt{N} is not passed, Matlab assumes \texttt{N = length(x)}.
+	\begin{equation*}
+		\texttt{>> X = fft(x, N)}
+	\end{equation*}
+		
+	Compute the $N$-point inverse DFT of the vector \texttt{X}. If \texttt{N} is not passed, Matlab assumes \texttt{N = length(X)}.
+	\begin{equation*}
+	\texttt{>> x = ifft(X, N)}
+	\end{equation*}
+	
+	To obtain the $N$-point DFT for frequencies in $[-\pi, \pi)$
+	\begin{equation*}
+	\texttt{>> fftshift(X)}
+	\end{equation*}
+	
+	To restore the $N$-point DFT for frequencies in $[0, 2\pi)$
+	\begin{equation*}
+	\texttt{>> ifftshift(X)}
+	\end{equation*}
+	
+\end{frame}
+
+%
+\section{Properties of the DFT}
+\begin{frame}{Outline}
+	\tableofcontents[currentsection]
+\end{frame}
+\begin{frame}{Properties of the DFT}
+	\begin{itemize}
+		\item The DFT shares many properties with the DTFT and with the $z$-transform
+		\item However, since the DFT is periodic in time and frequency, most properties will appear in a \textit{circular} form
+		\item For this reason, it is convenient to define a notation for \textbf{circular indexing}:
+		\begin{equation*}
+			((n))_N \equiv n~\text{modulo}~N
+		\end{equation*}
+		\textbf{Examples:} $X[0] = X[((7))_7]$, $X[1] = X[((6))_5]$, $X[8] = X[((17))_9]$.
+		
+		\item A complete list of properties is given in Table 8.2 of the textbook DTSP. This table is shown in the next slide
+		\item We will cover in detail the circular time shift and circular convolution properties
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Properties of the DFT}
+	\centering
+	\resizebox{!}{0.9\textheight}{\includegraphics{figs/dft_properties_table.png}}
+\end{frame}
+
+%
+\begin{frame}{Circular time shift}
+\begin{equation*}
+	x[((n-m))_N] \Longleftrightarrow W_N^{km}X[k] \tag{circular time shift}
+\end{equation*}
+
+To understand circular time shift and other properties of the DTF, it is useful to work with the periodic extension of $x[n]$, $\tilde{x}[n]$
+
+\begin{center}
+	\resizebox{\textwidth}{!}{\input{figs/circular_time_shift.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Circular convolution}
+	Product in the frequency domain means \textbf{circular convolution} in time domain
+	\begin{equation*}
+		x[n]~\encircle{N}~y[n] = \sum_{m=0}^{N-1} x[m]y[((n-m))_N] \Longleftrightarrow X[k]Y[k] \tag{circular convolution in time}
+	\end{equation*}
+	
+	Similarly, product in time domain means \textbf{circular convolution} in frequency domain
+	
+	\begin{equation*}
+	x[n]y[n] \Longleftrightarrow X[k]~\encircle{N}~Y[k] = \sum_{m=0}^{N-1} X[m]Y[((k-m))_N] \tag{circular convolution in frequency}
+	\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Understanding circular convolution}
+	\begin{center}
+		\resizebox{0.65\textwidth}{!}{\input{figs/circular_convolution.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Understanding circular convolution}
+In this first example
+\begin{itemize}
+	\item $x[n]$ has length $L$, while $y[n]$ has length $P$
+	\item The result of linear convolution $x[n]\ast [y]$ has length $L+P-1$
+	\item For the $N$-point circular convolution, the {\color{blue2} samples that fall beyond $N-1$} are added to the begining of the sequence
+	\item Note that the $N$-point circular convolution and the linear convolution produce different results
+	\item We can make the circular convolution equal to the linear convolution by zero-padding the sequences and performing the $(L+P-1)$-point circular convolution
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Understanding circular convolution}
+\begin{center}
+	\resizebox{0.65\textwidth}{!}{\input{figs/circular_convolution_zero_pad.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Linear convolution using circular convolution}
+By zero-padding and performing the $(L+P-1)$-point circular convolution, we can calculate the linear convolution using the DTFT
+
+\vspace{0.25cm}
+In Matlab:\\
+The vector \texttt{x} has length $L$ while \texttt{y} has length $P$
+\begin{equation*}
+	\texttt{>> conv(x, y, `full')} \tag{linear convolution}
+\end{equation*}
+
+This will produce an output of length $N = L+P-1$. The linear convolution has complexity $\mathcal{O}(N^2)$
+
+\begin{equation*}
+\texttt{>> ifft(fft(x, N).*fft(y, N))} \tag{circular convolution}
+\end{equation*}
+
+The parameter \texttt{N} tells Matlab to zero-pad vectors \texttt{x} and \texttt{y}  and compute the $N$-point DFT. The FFT/IFFT has complexity $\mathcal{O}(N\log N)$
+
+\vspace{0.25cm}
+\textbf{Conclusion:} for $N$ large, it is more efficient to compute the linear convolution through the DFT using FFT algorithm.
+\end{frame}
+
+\begin{frame}{Linear convolution using circular convolution}
+
+	Recall that for FIR filters, filtering is essentially a linear convolution between the input and the filter coefficients:
+	\begin{equation*}
+		y[n] = x[n] \ast h[n] = \sum_{m =0}^{M} h[m]x[n-m]
+	\end{equation*}
+	where $M$ is the filter order.
+	
+	\vspace{0.25cm}
+	We can implement this filter using the DFT:
+	\begin{center}
+		\resizebox{0.8\textwidth}{!}{\input{figs/fir_filter_fft.tex}}
+	\end{center}
+
+	By using \textbf{block convolution} we process the samples in batches.
+	\begin{enumerate}
+		\item Overlap and add
+		\item Overlap and save
+	\end{enumerate}
+\end{frame}
+
+
+\begin{frame}{Overlap and add}
+In the overlap and add method the incoming signal $x[n]$ is broken down into several \underline{non-overlapping} segments $x_r[n]$, each of length $L$:
+\begin{equation*}
+	x_r[n] = \begin{cases}
+	x[n + rL], & 0 \leq n \leq L-1\\
+	0, & \text{otherwise}
+	\end{cases}
+\end{equation*}
+
+For each segment, we compute the $N$-point circular convolution of $x_r[n]$ and the filter impulse response $h[n]$:
+
+\begin{equation*}
+	y_r[n] = h[n]~\encircle{N}~x_r[n] = h[n]\ast x_r[n]
+\end{equation*}
+where $N \geq L + M$ so that $y_r[n]$ is equivalent to the linear convolution of $x_r[n]$ and $h[n]$. Note that $M$ is the filter order. Hence, the filter has $M+1$ coefficients.
+
+Finally, the output is computed by adding the filtered segments
+\begin{equation*}
+	y_r[n] = \sum_{r = 0}^{\infty} y_r[n - rL]
+\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Overlap and add}
+\begin{center}
+	\resizebox{0.85\textwidth}{!}{\input{figs/overlap_and_add.tex}}
+\end{center}	
+\end{frame}
+
+%
+\begin{frame}{Overlap and save}
+In the \textbf{overlap and save method} the incoming signal $x[n]$ is decomposed into several \underline{overlapping} segments $x_r[n]$, each of length $L$:
+\begin{equation*}
+x_r[n] = \begin{cases}
+x[n + r(L-M) - M], & 0 \leq n \leq L-1\\
+0, & \text{otherwise}
+\end{cases}
+\end{equation*}
+
+Then, we compute the $L$-point circular convolution of $h[n]$ and $x_r[n]$:
+
+\begin{equation*}
+y_r[n] = h[n]~\encircle{L}~x_r[n]
+\end{equation*}
+
+The first $M-1$ samples of $y_r[n]$ are \underline{unusable}, since they are not equal to the linear convolution  $h[n]\ast x_r[n]$. Hence, we define the \underline{usable} part of $y_r[n]$:
+
+\begin{equation*}
+y_{r,u}[n] = \begin{cases}
+y_r[n], & M \leq n \leq L-1 \\
+0, &\text{otherwise}
+\end{cases}
+\end{equation*}
+
+Finally, the output is computed by adding the \underline{usable} parts of the filtered segments
+\begin{equation*}
+y_r[n] = \sum_{r = 0}^{\infty} y_{r, u}[n + r(L-M) - M]
+\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Overlap and save}
+\begin{center}
+	\resizebox{0.85\textwidth}{!}{\input{figs/overlap_and_save.tex}}
+\end{center}	
+\end{frame}
+
+
+%
+\begin{frame}{Summary}
+	\begin{itemize}
+		\item Sampling the DTFT in frequency domain results in signal replicas in time domain
+		\item The $N$-point DFT of $x[n]$ is equal to the DTFT of $x[n]$ sampled with period $2\pi/N$, only if $x[n]$ is time-limited with duration $\leq N$
+		\item For sequences longer than $N$, the $N$-point DFT is equal to the samples of the windowed DTFT
+		\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log N)$
+		\item We can use DFT to perform linear convolution (filtering) efficiently using block convolution
+		\item In the overlap and add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
+		\item In the overlap and save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points
+	\end{itemize}
+\end{frame}
+\end{document}

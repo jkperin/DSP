@@ -21,7 +21,7 @@ d(abs(w) >= fc*pi) = 1; % highpass filter
 
 % Weight function. 
 % Transition band
-Deltaw = 0.29*pi; % transition band
+Deltaw = 0.1*pi; % transition band
 wv  = ones(size(w));
 wv(w > fc*pi & w < fc*pi+Deltaw) = 0; % transition band (don't care)
 wv(w < -fc*pi & w >= -fc*pi-Deltaw) = 0; % transition band (don't care)

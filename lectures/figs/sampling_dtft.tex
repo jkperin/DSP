@@ -1,0 +1,158 @@
+% \N and \Ns must be defined before calling this picture.
+\begin{tikzpicture}
+\onslide<1-|handout:1>{
+	\pgfmathparse{-\Ns-\N};
+\begin{axis}[
+	name=plot1a,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.5\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={\pgfmathresult}, xmax={-\pgfmathresult},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={-\Ns, -\N, \N, \Ns},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x, \N)};
+	\node[fill=black!20, align=center, text width=2cm, inner sep=1mm, anchor=south east] at (axis cs: -1, 0.75) {\large Duration \pgfmathparse{2*(\N-1)+1} $\pgfmathprintnumber{\pgfmathresult}$ samples};
+\end{axis}
+}
+\onslide<1-|handout:1>{
+\begin{axis}[
+	name=plot1b,
+	at= (plot1a.east), anchor=west, xshift=1cm,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.5\textwidth,
+	ymin=0, ymax=1.1,
+	xmin=0, xmax=6.28,
+	axis line style={->,>=stealth},
+	xlabel={\large $\omega$},
+	ylabel={\large $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.7cm,
+	},
+	ytick=1,
+	yticklabels={},
+	xtick={0, 3.14, 6.28},
+	xticklabels={$0$, $\pi$, $2\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, smooth, line width=1pt, domain=0.01:2*pi+0.01, samples=51] {(1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))^2};
+\end{axis}
+
+\draw[->, ultra thick, shorten >= 0.2cm, shorten <= -0.4cm] (plot1a.east) to (plot1b.west);
+\node[above=0.25cm]  at ($(plot1a.east)!0.15!(plot1b.west)$) {\Large DTFT};
+}
+
+\onslide<3-|handout:1>{
+	\pgfmathparse{-\Ns-\N};
+	\begin{axis}[
+	name=plot2a,
+	at=(plot1a.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.5\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={\pgfmathresult}, xmax={-\pgfmathresult},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $\tilde{x}[n] = \displaystyle\sum_{r=-\infty}^{\infty}x[n-\Ns r]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.9)},
+		anchor=south,
+		xshift=2cm,
+	},
+	xtick={-\Ns, -\N, \N, \Ns},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+	\ifdefined\TIMEALIASING
+		\draw[red2, dashed, very thick, fill=red2!20] (axis cs: \N-1.5, -0.1) rectangle (axis cs: \Ns-\N+1.5, 0.72);
+		\draw[red2, dashed, very thick, fill=red2!20] (axis cs: -\N+1.5, -0.1) rectangle (axis cs: -\Ns+\N-1.5, 0.72);
+		\node[above, fill=red2!20, align=center, text width=1.5cm, scale=1] at (axis cs: \N-1, 0.75) {\large Time aliasing};
+	\fi
+	
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x, \N) + triang(x-\Ns, \N) + triang(x+\Ns, \N)};
+	
+	\end{axis}
+}
+\onslide<2-|handout:1>{
+	\begin{axis}[
+	name=plot2b,
+	at= (plot2a.east), anchor=west, xshift=1cm,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.5\textwidth,
+	ymin=0, ymax=1.1,
+	xmin=0, xmax=6.28,
+	axis line style={->,>=stealth},
+	xlabel={\large $\omega$},
+	ylabel={\large $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.7cm,
+	},
+	ytick=1,
+	yticklabels={},
+	xtick={0, 3.14, 6.28},
+	xticklabels={$0$, $\pi$, $2\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, black!20, smooth, line width=1pt, domain=0.01:2*pi+0.01, samples=51] {(1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))^2};
+	\addplot[ycomb, black, mark=*, fill=white, line width=1.5pt, mark options={scale=1.5, fill=white}, domain=0.01:2*pi-0.01, samples=\Ns+1] {(1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))^2};
+	\node[fill=black!20, align=center, text width=3cm, scale=1, inner sep=1mm] at (axis cs: 3.14, 0.5) {\large Sampled with period \pgfmathparse{\Ns} $2\pi/\pgfmathprintnumber{\pgfmathresult}$}; 
+	\end{axis}
+}
+
+\onslide<3-|handout:1>{
+	\draw[<-, ultra thick, shorten >= 0.2cm, shorten <= -0.4cm] (plot2a.east) to (plot2b.west);
+	\node[above=0.25cm]  at ($(plot2a.east)!0.15!(plot2b.west)$) {\Large IDFT};
+}
+\end{tikzpicture}

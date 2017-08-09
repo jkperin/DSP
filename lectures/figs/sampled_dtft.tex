@@ -1,0 +1,39 @@
+\begin{tikzpicture}
+\def\N{10}
+\begin{axis}[
+	axis lines*=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=0.8\textwidth,
+	height=0.6\textwidth,
+	ymin=-0.25, ymax=1,
+	xmin=-6.28, xmax=6.28,
+	axis line style={->,>=stealth},
+	xlabel={\large $\omega$},
+	ylabel={\large $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.7cm,
+	},
+	yticklabels={},
+	xtick={-6.28, -3.14, 0, 3.14, 6.28},
+	xticklabels={$-2\pi$, $-\pi$, $0$, $\pi$, $2\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\only<1|handout:0>{
+		\addplot[solid, black, smooth, line width=1pt, domain=-2*pi+0.01:2*pi-0.01, samples=201] {1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))};
+	}
+	\only<2|handout:1>{
+		\addplot[solid, black!20, smooth, line width=1pt, domain=-2*pi+0.01:2*pi-0.01, samples=201] {1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))};
+		\addplot[dirac, mark options={scale=0.7, fill=black}, line width=1.5pt, domain=-2*pi+0.01:2*pi-0.01, samples=31] {1/(2*\N+1)*sin(deg(x*(2*\N+1)/2))/sin(deg(x/2)))};
+		\node[align=center, text width=2cm, fill=black!20] at (axis cs: -3.14, 0.5) {Sampled with period $2\pi/N$};
+	}
+\end{axis}
+\end{tikzpicture}

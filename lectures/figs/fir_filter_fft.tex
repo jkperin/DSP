@@ -1,0 +1,29 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+
+	\node[node] (xc) at (0, 0) {};
+    \node[block, right=1cm of xc] (fft) {FFT};
+    \node[adder, right of=fft] (mult) {\Large $\times$};
+    \node[block, right of=mult] (ifft) {IFFT};
+    \node[node, below=1cm of mult] (h) {};
+	\coordinate[right=1cm of ifft] (yc) {};
+	
+	\coordinate (mid1) at ($(fft.east)!0.5!(mult.west)$) {};
+	\coordinate (mid2) at ($(mult.east)!0.5!(ifft.west)$) {};
+		
+    \path (xc) edge (fft);
+    \path (fft) edge (mult);
+    \path (mult) edge (ifft);
+    \path (h) edge (mult.south);
+    \path (ifft) edge (yc);
+    
+    \node[above = 0.5mm of mid1] {$X[k]$};
+    \node[above = 0.5mm of mid2] {$Y[k]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+    \node[right = 0mm of h, text width = 3cm, align=center] {$H[k] = \mathrm{DFT}\{h[n]\}$};
+    
+
+\end{tikzpicture}

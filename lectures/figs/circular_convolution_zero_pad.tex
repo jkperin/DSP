@@ -1,0 +1,207 @@
+% \N and \Ns must be defined before calling this picture.
+\def\N{5}
+\def\Ns{14}
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={0}, xmax={15},
+	axis line style={->,>=stealth},
+	%y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 9, 13},
+	xticklabels={0, $L-1$, $L+P-2$},
+	%xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	%\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x+2*\Ns-\N, \N) + triang(x-\N, \N) + triang(x-\N-\Ns, \N) + triang(x-\N+\Ns, \N)};
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:\Ns-1, samples=\Ns] {triang(x-\N, \N)};
+	\node[fill=black!20, text width=1.5cm, align=center, inner sep=2mm, anchor=south west] at (axis cs: 9, 0.5) {Length $L$};
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,	ymax=1.1,
+	%y axis line style={draw=none},
+	xmin={0}, xmax={15},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $y[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 4, 9, 13},
+	xticklabels={0, $P-1$, $L-1$, $L+P-2$},
+	%xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+		
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:\Ns-1, samples=\Ns] {rect(x, \N)};
+	\node[fill=black!20, text width=1.5cm, align=center, inner sep=2mm, anchor=south west] at (axis cs: 9, 0.5) {Length $P$};
+\end{axis}
+
+\onslide<2-|handout:1->{
+\begin{axis}[
+name=plot3,
+at=(plot2.below south east), anchor=above north east,
+axis y line=middle, axis x line=bottom,
+enlargelimits = upper, clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0,	ymax=4,
+%y axis line style={draw=none},
+xmin={0}, xmax={15},
+axis line style={->,>=stealth},
+x axis line style={shorten >= -0.25cm}, 
+xlabel={\large $n$},
+ylabel={\large $x[n]\ast y[n]$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.25cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+	xshift=0.6cm,
+},
+xtick={0, 9, 13},
+xticklabels={0, $L-1$, $L+P-2$},
+%xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+ytick={3.8},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+table[row sep=crcr]{
+	%-5 0\\
+	%-4 0\\
+	%-3 0\\
+	%-2 0\\
+	%-1 0\\
+	0 0 \\ 
+	1 0.2 \\
+	2 0.6 \\
+	3 1.2 \\
+	4 2 \\
+	5 3 \\
+	6 3.6 \\
+	7 3.8 \\
+	8 3.6 \\
+	9 3 \\
+	10 2 \\
+	11 1.2 \\
+	12 0.6 \\
+	13 0.2 \\
+	%14 0 \\
+	%15 0 \\
+	%16 0 \\
+	%17 0 \\
+	%18 0 \\
+	%19 0 \\
+	%20 0 \\
+};
+\node[align=center, text width=2cm, inner sep=2mm, fill=black!20, anchor=south west] at (axis cs: 10, 2.5) {Linear convolution};
+\end{axis}
+}
+
+
+\onslide<3-|handout:1->{
+	\begin{axis}[
+	name=plot4,
+	at=(plot3.below south east), anchor=above north east,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,	ymax=4,
+	%y axis line style={draw=none},
+	xmin={0}, xmax={15},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[n]~\encircle{N}~y[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 9, 13},
+	xticklabels={0, $L-1$, $L+P-2$},
+	%xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick={3.8},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+	table[row sep=crcr]{
+		0 0 \\ 
+		1 0.2 \\
+		2 0.6 \\
+		3 1.2 \\
+		4 2 \\
+		5 3 \\
+		6 3.6 \\
+		7 3.8 \\
+		8 3.6 \\
+		9 3 \\
+	};
+
+	\addplot[ycomb, black, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
+	table[row sep=crcr]{
+		10 2 \\
+		11 1.2 \\
+		12 0.6 \\
+		13 0.2 \\
+	};
+
+
+	\node[align=center, text width=3cm, inner sep=2mm, fill=black!20, anchor=south west] at (axis cs: 11, 1.5) {$N$-point circular convolution \\
+	$N = L+P-1$};
+\end{axis}
+}
+\end{tikzpicture}	

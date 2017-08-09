@@ -13,6 +13,11 @@
 }
 %%%
 
+% For circular convolution
+\newcommand\encircle[1]{%
+	\tikz[baseline=(X.base)] 
+	\node (X) [anchor=south, draw, shape=circle, inner sep=0mm, align=center] {\scriptsize\strut #1};}
+
 \definecolor{matlabcomment}{RGB}{34,139,34}
 
 \pgfmathdeclarefunction{gauss}{1}{%
@@ -103,6 +108,15 @@ terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
 \pgfmathdeclarefunction{invgauss}{2}{%
 	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
 }
+
+\pgfmathdeclarefunction{triang}{2}{%
+	\pgfmathparse{(1/#2)*(#1 + #2)*and(#1 <= 0, #1 >= -#2) + (1/#2)*(-#1 + #2)*and(#1 > 0, #1 <= #2)}%
+}
+
+\pgfmathdeclarefunction{rect}{2}{%
+	\pgfmathparse{and(#1 >= 0, #1 < #2)}%
+}
+
 
 \tikzset{
 	declare function={

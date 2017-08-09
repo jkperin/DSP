@@ -1,0 +1,92 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1a,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+%	width=0.6\textwidth,
+	%height=0.5\textwidth,
+	ymin=-1.1,	ymax=1.1,
+	xmin={-1}, xmax={22},
+	axis line style={->,>=stealth},
+	xlabel={\large $n$},
+	ylabel={\large $x_N[n] = x[n]w[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=-0.2cm,
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=1.8cm,
+	},
+	ytick={1},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\addplot[smooth, black!20, line width=1.5pt, domain=-5:25, samples=61] {cos(deg(0.5*pi*x))};
+	
+	\only<1|handout:1>{
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:19, samples=20] {cos(deg(0.5*pi*x))};	
+	
+	\draw[<->, blue2, very thick] (axis cs: 0, 0.15) to (axis cs: 19, 0.15);
+	\node[above, align=center, anchor=south west] at (axis cs: 16, 0.15) {$20$ samples};
+	}
+
+	\only<2|handout:2>{
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:20, samples=21] {cos(deg(0.5*pi*x))};	
+	
+	\draw[<->, blue2, very thick] (axis cs: 0, 0.15) to (axis cs: 20, 0.15);
+	\node[above, align=center, anchor=south west] at (axis cs: 16, 0.15) {$21$ samples};
+}
+
+\end{axis}
+\begin{axis}[
+	name=plot1b,
+	at= (plot1a.south east), anchor=south west, xshift=1cm,
+	axis lines*=middle,
+	enlargelimits = upper, clip=false,
+	scale only axis,
+	%width=0.6\textwidth,
+	%height=0.5\textwidth,
+	ymin=0, ymax=12,
+	xmin=0, xmax=2,
+	axis line style={->,>=stealth},
+	xlabel={\large $\omega$},
+	ylabel={\large $|X_N(e^{j\omega})|$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=-0.2cm,
+		anchor=south,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.9cm,
+	},
+	ytick=10,
+	yticklabels={},
+	xtick={0, 0.5, 1, 1.5, 2},
+	xticklabels={$0$, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left, anchor=south, at={(axis cs: 1, 11)}}]
+	
+	\only<1|handout:1>{
+		\addplot [smooth, black!50, solid, line width=2pt] table[x index=0,y index=1] {figs/data/dft_cosine_DTFT.dat}; \addlegendentry{DTFT of $x_N[n]$};
+		\addplot [ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] table[x index=0,y index=1] {figs/data/dft_cosine_DFT.dat}; \addlegendentry{DFT of $x_N[n]$};
+		\node[fill=black!20, align=center, text width=2cm, inner sep=2mm, anchor=south] at (axis cs: 1, 5) {Sampled with period $2\pi/20$};
+	}
+
+	\only<2|handout:2>{
+		\addplot [smooth, black!50, solid, line width=2pt] table[x index=0,y index=1] {figs/data/dft_cosine_N=21_DTFT.dat}; \addlegendentry{DTFT of $x_N[n]$};
+		\addplot [ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] table[x index=0,y index=1] {figs/data/dft_cosine_N=21_DFT.dat}; \addlegendentry{DFT of $x_N[n]$};
+		\node[fill=black!20, align=center, text width=2cm, inner sep=2mm, anchor=south] at (axis cs: 1, 5) {Sampled with period $2\pi/21$};
+	}	
+\end{axis}
+
+
+
+\end{tikzpicture}

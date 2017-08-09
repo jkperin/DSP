@@ -1,0 +1,82 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1a,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+%	width=0.6\textwidth,
+	%height=0.5\textwidth,
+	ymin=-0.15,	ymax=0.6,
+	xmin={-1}, xmax={22},
+	axis line style={->,>=stealth},
+	xlabel={\large $n$},
+	ylabel={\large $x_N[n] = x[n]w[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=west,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=1.8cm,
+	},
+	ytick={0.5},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\addplot[smooth, black!20, line width=1.5pt, domain=-5:\Ns+5, samples=51] {0.5*sinc(x/2-\N/2)};
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:\Ns-1, samples=\Ns] {0.5*sinc(x/2-\N/2)};	
+	
+	\draw[<->, blue2, very thick] (axis cs: 0, 0.15) to (axis cs: \Ns-1, 0.15);
+	\node[above, align=center] at (axis cs: 1.75*\Ns/2, 0.15) {\pgfmathparse{\Ns} $\pgfmathprintnumber{\pgfmathresult}$ samples};
+	%\node[fill=black!20, align=center, text width=2cm] at (axis cs: -\Ns, 0.85) {\large Length \pgfmathparse{2*(\N-1)+1} $\pgfmathprintnumber{\pgfmathresult}$};
+\end{axis}
+\begin{axis}[
+	name=plot1b,
+	at= (plot1a.south east), anchor=south west, xshift=1cm,
+	axis lines*=middle,
+	enlargelimits = upper, clip=false,
+	scale only axis,
+	%width=0.6\textwidth,
+	%height=0.5\textwidth,
+	ymin=0, ymax=1.2,
+	xmin=0, xmax=2,
+	axis line style={->,>=stealth},
+	xlabel={\large $\omega$},
+	ylabel={\large $|X_N(e^{j\omega})|$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=-0.2cm,
+		anchor=south,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.9cm,
+	},
+	ytick=1,
+	yticklabels={},
+	xtick={0, 1, 2},
+	xticklabels={$0$, $\pi$, $2\pi$},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left, anchor=south, at={(axis cs: 1, 1)}}]
+	
+	\only<1|handout:1>{
+		\addplot [smooth, black!50, solid, line width=2pt] table[x index=0,y index=1] {figs/data/dft_truncated_sinc_DTFT.dat}; \addlegendentry{DTFT of $x_N[n]$};
+		\addplot [ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] table[x index=0,y index=1] {figs/data/dft_truncated_sinc_DFT.dat}; \addlegendentry{DFT of $x_N[n]$};
+	}
+
+	\only<2|handout:2>{
+	\addplot [smooth, black!50, solid, line width=2pt] table[x index=0,y index=1] {figs/data/dft_truncated_sinc_hamming_DTFT.dat}; \addlegendentry{DTFT of $x_N[n]$};
+	\addplot [ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] table[x index=0,y index=1] {figs/data/dft_truncated_sinc_hamming_DFT.dat}; \addlegendentry{DFT of $x_N[n]$};
+	}
+
+	\node[fill=black!20, align=center, text width=2cm, inner sep=2mm, anchor=south] at (axis cs: 1, 0.5) {Sampled with period $2\pi/\Ns$};
+\end{axis}
+
+
+
+\end{tikzpicture}

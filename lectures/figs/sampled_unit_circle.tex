@@ -34,6 +34,9 @@ legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \draw[black, line width=2pt] (axis cs:0,0) circle [radius=1];
 \draw [black, mark=*, mark size=3pt, only marks, thick,  domain=0:360, samples=9] plot ({cos(\x)}, {sin(\x)} );
 %\draw[latex'-latex', double] (1.25,0) arc (0:45:1.25);
-\node (z) at (axis cs: 1.4, 0.6) {\huge $\frac{2\pi}{N}$};
+\coordinate (orig) at (axis cs: 0, 0); 
+\coordinate (axis) at (axis cs: 1, 0);
+\coordinate (eval) at (axis cs:{1.5*cos(45)}, {1.5*sin(45)});
+\pic [thick, draw, <->, "\huge $\frac{2\pi}{N}$", angle eccentricity=1.25,  angle radius=2.5cm] {angle = axis--orig--eval};
 \end{axis}
 \end{tikzpicture}

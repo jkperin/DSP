@@ -1,0 +1,159 @@
+% \N and \Ns must be defined before calling this picture.
+\def\N{5}
+\def\Ns{10}
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1a,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.3\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={-5}, xmax={15},
+	axis line style={->,>=stealth},
+	y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $\tilde{x}[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 9},
+	xticklabels={0, $N-1$},
+	xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x+2*\Ns-\N, \N) + triang(x-\N, \N) + triang(x-\N-\Ns, \N) + triang(x-\N+\Ns, \N)};
+\end{axis}
+
+\begin{axis}[
+	name=plot1b,
+	at= (plot1a.east), anchor=west, xshift=3cm,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.3\textwidth,
+	ymin=0,	ymax=1.1,
+	y axis line style={draw=none},
+	xmin={-5}, xmax={15},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $\tilde{x}[n-m]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=1cm,
+	},
+	xtick={0, 4, 9},
+	xticklabels={0, $m$, $N-1$},
+	xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+		
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x-4+2*\Ns-\N, \N) + triang(x-4-\N, \N) + triang(x-4-\Ns-\N, \N) + triang(x-4+\Ns-\N, \N)};
+\end{axis}
+
+\draw[->, ultra thick, shorten >= 0.2cm, shorten <= 0.2cm] (plot1a.east) to (plot1b.west);
+\node[above=0.25cm, align=center, text width=3.5cm]  at ($(plot1a.east)!0.55!(plot1b.west)$) {\Large Time-shift by $m$};
+
+\begin{axis}[
+	name=plot2a,
+	at=(plot1a.below south east), anchor=above north east,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.3\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={-5}, xmax={15},
+	axis line style={->,>=stealth},
+	y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={0, 9},
+	xticklabels={0, $N-1$},
+	xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns-\N:\Ns+\N, samples=2*(\Ns+\N)+1] {triang(x-\N, \N)};
+\end{axis}
+
+\begin{axis}[
+	name=plot2b,
+	at= (plot2a.east), anchor=west, xshift=3cm,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=0.7\textwidth,
+	height=0.3\textwidth,
+	ymin=0,	ymax=1.1,
+	xmin={-5}, xmax={15},
+	axis line style={->,>=stealth},
+	y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $x[((n-m))_N]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.95)},
+		anchor=south,
+		xshift=1.5cm,
+	},
+	xtick={0, 4, 9},
+	xticklabels={0, $m$, $N-1$},
+	xticklabel style={xshift=-0.15cm, yshift=-0.1cm},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:\Ns-1, samples=\Ns] {triang(x-4-\N, \N) + triang(x-4-\N+\Ns, \N) };
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=-\Ns:-1, samples=\Ns-1] {0};
+	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=\Ns:2*\Ns-1, samples=\Ns] {0};
+\end{axis}
+
+\draw[->, ultra thick, shorten >= 0.2cm, shorten <= -0.4cm] (plot2a.east) to (plot2b.west);
+\node[above=0.25cm, , align=center, text width=4cm]  at ($(plot2a.east)!0.5!(plot2b.west)$) {\Large Circular-shift by $m$};
+
+\draw[red2, dashed, very thick] ($(plot1a.north)-(1.9cm, -0.75cm)$) to ($(plot2a.south)-(1.9cm, 0.75cm)$);
+\draw[red2, dashed, very thick] ($(plot1a.north)+(1.5cm, 0.75cm)$) to ($(plot2a.south)+(1.5cm, -0.75cm)$);
+\draw[red2, dashed, very thick] ($(plot1b.north)-(1.9cm, -0.75cm)$) to ($(plot2b.south)-(1.9cm, 0.75cm)$);
+\draw[red2, dashed, very thick] ($(plot1b.north)+(1.5cm, 0.75cm)$) to ($(plot2b.south)+(1.5cm, -0.75cm)$);
+
+\end{tikzpicture}
