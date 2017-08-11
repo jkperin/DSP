@@ -1,0 +1,488 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+\usetikzlibrary{spy}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+%\usepgfplotslibrary{external} 
+%\tikzexternalize[prefix=external/]
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%
+\input{header.tex} % some definitions
+
+%% 
+\title[EE 264]{Spectrum Analysis Using the DFT}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{August 10, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Announcements}
+\begin{itemize}
+	\item Homework \# 5 due today
+	\item Homework \# 6 will be released today and it is due next Thursday. Start early!
+	\item Review session for final exam will be on last lecture (Thursday, August 17)
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item Sampling the DTFT in frequency domain results in signal replicas in time domain
+	\item The $N$-point DFT of $x[n]$ is equal to the DTFT of $x[n]$ sampled with period $2\pi/N$, only if $x[n]$ is time-limited with duration $\leq N$
+	\item For sequences longer than $N$, the $N$-point DFT is equal to the samples of the windowed DTFT
+	\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log N)$
+	\item We can use DFT to perform linear convolution (filtering) efficiently using block convolution
+	\item In the overlap and add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
+	\item In the overlap and save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Outline}
+	\tableofcontents
+\end{frame}
+
+%
+\section{Spectrum Analysis Using the DFT}
+\begin{frame}{Discrete Fourier analysis of analog signals}
+
+Block diagram of the spectrum analyzer of an oscilloscope
+\begin{center}
+	\resizebox{\textwidth}{!}{\input{figs/dft_analog_signals.tex}}
+\end{center}
+
+\begin{itemize}
+	\item Anti-aliasing filter band-limits the analog signal 
+	\item Continuous-to-discrete time conversion
+	\begin{equation*}
+		x[n] = x_c(nT) \Longleftrightarrow X(e^{j\omega}) = \frac{1}{T}X_c(j\omega/T) \quad |\omega| \leq \pi \tag{no aliasing}
+	\end{equation*}
+	\item Windowing time-limits the signal to $N$ samples before FFT: 
+	\begin{equation*}
+		v[n] = x[n]w[n] \Longleftrightarrow V(e^{j\omega}) = \frac{1}{2\pi} X(e^{j\omega}) \ast W(e^{j\omega})
+	\end{equation*}
+	\item DFT is a sampled version of the windowed DTFT:
+	\begin{equation*}
+		V[k] = V(e^{j2\pi/Nk}), \quad k = 0, \ldots, N-1
+	\end{equation*}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Example}
+\centering
+\resizebox{!}{0.87\textheight}{\includegraphics{figs/fft_of_analog_signals_pt1.png}}
+\end{frame}
+
+%
+\begin{frame}{Example}
+\centering
+\resizebox{!}{0.85\textheight}{\includegraphics{figs/fft_of_analog_signals_pt2.png}}
+\end{frame}
+
+\begin{frame}{Discrete Fourier analysis of analog signals}
+	\begin{itemize}
+		\item The goal is to estimate $S_c(j\Omega)$ by computing $V(e^{j\omega})$ 
+		\begin{equation*}
+			S_c(j\Omega) = V(e^{j\Omega T}), \quad |\Omega| \leq \Omega_s/2  \tag{ideally}
+		\end{equation*}
+		\item However, anti-aliasing filtering and windowing cause disagreement between $S_c(j\Omega)$ and $V(e^{j\Omega T})$
+		\item In particular, windowing limits the resolution. As a result, the peaks in $V(e^{j\omega})$ look broader than they actually are in $S_c(j\Omega)$
+		\item Choosing good windows is crucial for spectrum analysis using the DFT
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{DFT analysis of sinusoidal signals}
+As another example, let's consider the sinusoidal signal
+
+\begin{equation*}
+	s_c(t) = \cos(\Omega_0t) + 0.5\cos(\Omega_1t).
+\end{equation*}
+
+Assuming ideal sampling with no aliasing, we obtain the discrete-time signal
+\begin{equation*}
+ 	x[n] = \cos(\omega_0n) + 0.5\cos(\omega_1t),
+\end{equation*}
+where $\omega_0 = \Omega_0 T$ and $\omega_1 = \Omega_1 T$.
+
+After windowing
+\begin{align*}
+	v[n] &= x[n]w[n] \\
+	V(e^{j\omega}) &= 0.5W(e^{j(\omega-\omega_0)}) + 0.25W(e^{j(\omega-\omega_1)}) \\
+	& + 0.5W(e^{j(\omega+\omega_0)}) + 0.25W(e^{j(\omega+\omega_1)}), \quad |\omega|\leq\pi
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Rectangular window}
+Rectangular window of length $L = 64$
+
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/sinusoid_windowing.tex}}
+\end{center}
+
+\onslide<3|handout:3>{
+\textbf{Problems:}
+\begin{itemize}
+	\item Significant \textbf{leakage} caused by large sidelobes of rectangular window
+	\item Poor \textbf{resolution}. We could not resolve the two separate frequencies when $\omega_1 - \omega_0 = 0.05\frac{\pi}{3}$
+\end{itemize}
+}
+\end{frame}
+
+\begin{frame}{Window characteristics}
+Main characteristics of rectangular window
+	\begin{itemize}
+		\item The main-lobe width is $4\pi/L$. This determines the resolution.
+		\item The first side lobe is $-13$ dB below the main lobe.
+		\item The higher the energy (area) under the side lobes compared to the main lobe, the greater the leakage will be. 
+	\end{itemize}
+
+Desired window characteristics:
+\begin{itemize}
+		\item Small side-lobe energy (area) to reduce leakage
+		\item Small main-lobe width to improve resolution
+\end{itemize}
+These are conflicting requirements.
+\end{frame}
+
+%
+\begin{frame}{Revisiting the Kaiser window}
+	The \textbf{Kaiser window} offers a nearly optimal trade-off between main-lobe width and side-lobe area.
+	\begin{equation*}
+	w[n] = \begin{cases}
+	\displaystyle\frac{I_0\Big(\beta\sqrt{1- (n-\alpha)^2/\alpha^2}\Big)}{I_0(\beta)}, & 0 \leq n \leq L-1 \\
+	0, & \text{otherwise}
+	\end{cases},
+	\end{equation*}
+	where $\alpha = (L-1)/2$, $\beta$ is a design parameter, and $I_0(\cdot)$ is the \textbf{modified Bessel function of first kind and order 0}.
+\end{frame}
+
+%
+\begin{frame}{Kaiser window}
+\begin{columns}[t]
+	\begin{column}{0.5\textwidth}
+		\textbf{Time domain}
+		\begin{center}
+			\resizebox{\textwidth}{!}{\input{figs/kaiser_time.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\textbf{Frequency domain}
+		\begin{center}
+			\resizebox{\textwidth}{!}{\input{figs/kaiser_spectrum.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+For fixed window length $L$, $\beta$ controls the trade-off between main-lobe width and side-lobe area.
+\end{frame}
+
+%
+\begin{frame}{Kaiser window}
+Define
+\begin{itemize}
+	\item $\Delta_{ml}$ one-sided main-lobe width
+	\item $A_{sl}$ relative side-lobe level (in dB)
+	\begin{equation*}
+		A_{sl} = \frac{\text{amplitude of main lobe}}{\text{amplitude of largest side lobe}}\quad\text{dB}
+	\end{equation*} 
+	$A_{sl}$ \textit{approximately} only depends on $\beta$. See section 10.2.2 in textbook for analytical equation.
+\end{itemize}
+
+The following approximation was derived by Kaiser and Schafer:
+\begin{equation*}
+	L - 1 \approx \frac{24\pi(A_{sl}+12)}{155\Delta_{ml}}
+\end{equation*}
+
+\textbf{Conclusions:}
+\begin{itemize}
+	\item $\beta$ controls the side-lobe area $A_{sl}$ (leakage)
+	\item Main-lobe width $\Delta_{ml}$ is directly proportional to $L-1$ i.e., increasing the window length $L$ improves resolution
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Kaiser window}
+Spectrum of Kaiser window for fixed $\beta = 6$.
+
+Amplitude of largest side-lobe $A_{sl}$ remains approximately constant (fixed $\beta$), while main-lobe width $\Delta_{ml}$ is inversely proportional to $L-1$
+
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{figs/kaiser_spectrum_fixed_beta.tex}}
+\end{center}
+
+\end{frame}
+
+%
+\begin{frame}{Kaiser windowing of sinusoidal signals}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{center}
+			\def\BETA{1}
+			\resizebox{\textwidth}{!}{\input{figs/sinusoid_windowing_kaiser.tex}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{center}
+			\resizebox{\textwidth}{!}{\input{figs/sinusoid_windowing_kaiser.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+
+See script Canvas/Files/Matlab/\texttt{spectrum\_analysis\_of\_sinusoid.m}
+
+\textbf{Main conclusions}
+\begin{itemize}
+	\item $\beta$ controls the side-lobe area $A_{sl}$ (leakage)
+	\item Increasing the window length $L$ improves resolution
+	\item Increasing the FFT size does not improve resolution
+\end{itemize}
+
+\end{frame}
+
+%
+\section{Time-Dependent Fourier Transform}
+\begin{frame}{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+
+%
+\begin{frame}{DFT of a long signal}
+	The DFT of the speech signal Canvas/Files/Matlab/\texttt{dft\_speech.wav}
+	
+	\begin{center}
+		\includegraphics[scale=0.5]{figs/speech_dft_spectrum.png}
+	\end{center}
+	
+	\begin{itemize}
+		\item It has duration of about 4 seconds
+		\item 110033 samples
+		\item Not very informative. What are the main frequency components at the beginning of the third second?
+	\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Time-dependent Fourier transform (TDFT)}
+\textbf{Time-dependent Fourier transform (TDFT)} or \textbf{short-time Fourier transform (STFT)} is defined as
+\begin{equation*}
+	X[n, \lambda) = \sum_{m = -\infty}^{\infty}x[n+m]w[m]e^{-j\lambda m}
+\end{equation*}
+
+\textbf{Notation:} $n$ is discrete, while $\lambda$ is continuous. This is why $n$ appears with a square bracket $[$ and $\lambda$ appears with parenthesis $)$.
+\vspace{0.25cm}
+
+If the window $w[n]$ has finite length $L$
+\begin{equation*}
+X[n, \lambda) = \sum_{m = 0}^{L-1}x[n+m]w[m]e^{-j\lambda m}
+\end{equation*}
+
+\end{frame}
+
+%
+\begin{frame}{Time-dependent Fourier transform (TDFT)}
+
+Two interpretations for $X[n, \lambda)$:
+
+\begin{enumerate}
+	\item For fixed $n$, $X[n, \lambda)$ is the DTFT of $x[n+m]w[m]$. 
+	\begin{equation}
+		X[n, \lambda) = \mathcal{F}_\lambda\{x[n+m]w[m]\} \tag{fixed $n$}
+	\end{equation}
+	
+	Hence, at fixed $n$, $X[n, \lambda)$ has all the properties of the DTFT.
+	\vspace{0.25cm}
+	\item For fixed $\lambda$, $X[n, \lambda)$ is the result of band-pass filtering the signal $x[n]$ by the time-reversed window $W(e^{-j\omega})$ centered at frequency $\lambda$
+	
+	\begin{align*}
+		X[n, \lambda) &= \sum_{m = -\infty}^{\infty}x[n+m]w[m]e^{-j\lambda m} \tag{definition} \\
+		&= \sum_{l = -\infty}^{\infty}x[l]w[-(n-l)]e^{j\lambda(n-l)} \tag{change of variables $l = n+m$} \\
+		&=x[n]\ast h_\lambda[n] \tag{fixed $\lambda$}
+	\end{align*}
+	where 
+	\begin{equation*}
+		h_\lambda[n] = w[-n]e^{j\lambda n} \Longleftrightarrow H_\lambda(e^{j\omega}) = W(e^{-j(\omega-\lambda)}) 
+	\end{equation*}
+	
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Sampling and displaying the TDFT: spectrograms}
+	\textbf{Spectrogram} is a useful way of visualizing the TDFT
+	
+	Sampling both in time and frequency.
+	We sample with period $R$ in time and with period $2\pi/N$ in frequency. $R$ is the block spacing and $N$ is the DFT length
+	
+	\begin{align}
+		X[rR, k] &= X[rR, 2\pi k/N), \quad k = 0, \ldots, N-1 \tag{sample in time and frequency} \\
+		&= \sum_{m = 0}^{L-1}x[rR+m]w[m]e^{-j(2\pi/N)km} \tag{finite-length window}
+	\end{align}
+			
+	For fixed $r$, $X[rR, k]$ is the $N$-point DFT of $x[rR+m]w[m]$
+	
+\end{frame}
+
+%
+\begin{frame}{Sampling and displaying the TDFT: spectrograms}
+Example using Kaiser window of length $L = 700$, FFT size $N = 700$, and $R = 550$.
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/speech_spectrogram_demo.tex}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Spectrogram in Matlab}
+	To produce spectrogram plot
+	\begin{align*}
+		\texttt{>> spectrogram(x, window,noverlap,nfft)} \tag{Matlab notation}
+	\end{align*}
+	
+	Using notation of this lecture notes:
+	\begin{align*}
+	\texttt{>> spectrogram(x, kaiser(L, beta), L-R, N)} \tag{this lecture's notation}
+	\end{align*}
+	The time blocks overlap by $L-R$ samples. Kaiser window was just as an example, any other window would work.
+	
+	\vspace{0.25cm}
+	
+	We can also use:
+	\begin{align*}
+		\texttt{>> [s,f,t] = spectrogram(x, kaiser(L, beta), L-R, N, fs)}
+	\end{align*}
+	This will not produce the plot, but it'll return the magnitude \texttt{s} in dB, the frequency vector \texttt{f} in Hz, and the time vector \texttt{t} in s.
+\end{frame}
+
+\begin{frame}{Spectrogram example}
+	Spectrogram Canvas/Files/Matlab/\texttt{dft\_speech.wav}
+	
+	\begin{align*}
+	&\texttt{>> spectrogram(x, kaiser(L=441, beta=6), R=220,...}\\
+	&\texttt{ N = 441, Fs=22050, `yaxis')} 
+	\end{align*}
+	
+	\begin{center}
+		\includegraphics[scale=0.6]{figs/speech_spectogram_kaiser.eps}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Importance of window length}
+Consider the following signal
+\begin{align*}
+	x[n] = \begin{cases}
+	0, & n < 0 \\
+	\cos(\alpha_0n^2), & 0 \leq n \leq 20000 \\
+	\cos(0.2\pi n), & 20000 < n \leq 25000 \\
+	\cos(0.2\pi n) + \cos(0.23\pi n), & n > 25000
+	\end{cases}
+\end{align*}
+
+This signal has three sections
+\begin{enumerate}
+	\item linear chirp section. Frequency increases linearly
+	\item Single tone at frequency $0.2\pi$
+	\item Two tones: one at frequency $0.2\pi$ and another at $0.23\pi$
+\end{enumerate}
+
+\end{frame}
+
+
+\begin{frame}{Importance of window length}
+Spectrogram of $x[n]$ using the Hamming window of length 401 and 101.
+\begin{center}
+	\includegraphics[scale=0.7]{figs/spectrogram_window_length.png}
+\end{center}
+
+\textbf{Important:} window length determines the resolution.
+
+\end{frame}
+
+\begin{frame}{Inverting the TDFT}
+We want to reconstruct $x[n]$ from its TDFT $X[n, \lambda)$:
+\begin{equation*}
+	x_r[n] = x[rR+n]w[n] = \frac{1}{N}\sum_{k = 0}^{N-1}X[rR, k]e^{j(2\pi/N)kn} \quad 0 \leq n \leq L-1
+\end{equation*}
+
+If the window is non-zero, we can divide it out to recover the signal $x[rR+n]$ over the window interval. If the windows overlap, we can recover all the original samples. This requires
+\begin{equation*}
+	R \leq L \leq N
+\end{equation*}
+
+The particular case when $R = L \leq N$ is called \textbf{maximally decimated condition}.
+
+\end{frame}
+
+\begin{frame}{Summary}
+	\begin{itemize}
+		\item Leakage and resolution are important considerations in spectrum analysis
+		\item By choosing proper windows we can minimize these issues
+		\item Kaiser window is a nearly optimal choice. Must choose correct $\beta$ and window length $L$
+		\item $\beta$ controls the ratio between the amplitudes of the main-lobe and the largest side-lobe i.e., $\beta$ controls the amount of leakage.
+		\item The larger the main-lobe width, the smaller the resolution
+		\item By increasing the window length we reduce the main-lobe width and consequently improve the resolution
+		\item Time-dependent Fourier transform or short-time Fourier transform allows us to keep track of frequency variation in time
+		\item Spectrogram is a commonly used way to display the TDFT
+		\item In the spectrogram the TDFT is sampled both in time and in frequency
+		\item The window length determines the resolution of the spectrogram
+	\end{itemize}
+\end{frame}
+
+\end{document}

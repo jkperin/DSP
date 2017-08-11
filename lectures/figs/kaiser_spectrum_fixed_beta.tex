@@ -1,0 +1,40 @@
+\begin{tikzpicture}
+\begin{axis}[
+axis x line = bottom, axis y line=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={$\omega$},
+ylabel={dB},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=1,
+ymin=-100, ymax=0,
+xtick={0, 0.25, 0.5, 0.75, 1},
+xticklabels ={$0$, $\pi/4$, $\pi/2$, $3\pi/4$, $\pi$},
+ymajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -5)}}]
+
+\addplot [smooth, color=blue2, solid, line width=2pt] table[x index=0,y index=3] {figs/data/kaiser_spectrum_fixed_beta.dat}; \addlegendentry{$L = 11$};
+\addplot [smooth, color=red2, solid, line width=2pt] table[x index=0,y index=2] {figs/data/kaiser_spectrum_fixed_beta.dat}; \addlegendentry{$L = 21$};
+\addplot [smooth, color=green2, solid, line width=2pt] table[x index=0,y index=1] {figs/data/kaiser_spectrum_fixed_beta.dat}; \addlegendentry{$L = 41$};
+
+\draw[<->, black, thick] (axis cs: 0.48, 0) to (axis cs: 0.48, -43.59);
+\node [right] at ($(axis cs: 0.48, 0)!0.5!(axis cs: 0.48, -43.59)$) {\large $A_{sl}$};
+\draw[<->, black, thick] (axis cs: 0, -50) to (axis cs: 0.433, -50);
+\node [above] at ($(axis cs: 0, -50)!0.8!(axis cs: 0.433, -50)$) {\large $\Delta_{ml}$};
+
+\end{axis}
+\end{tikzpicture}

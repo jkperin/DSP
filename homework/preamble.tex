@@ -23,8 +23,14 @@
 	}
 }
 
-\def\thickness{very thick}
 
+
+% For circular convolution
+\newcommand\encircle[1]{%
+	\tikz[baseline=(X.base)] 
+	\node (X) [anchor=south, draw, shape=circle, inner sep=0mm, align=center] {\scriptsize\strut #1};}
+
+\def\thickness{very thick}
 \tikzset{
 amark/.style 2 args={
 	decoration={             

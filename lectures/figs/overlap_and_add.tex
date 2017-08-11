@@ -69,7 +69,7 @@
 	every y tick label/.append style={font=\color{white!15!black}},
 	legend style={draw=white!15!black,fill=white,legend cell align=left}]
 	
-	\only<1|handout:0>{	
+	\only<1|handout:1>{	
 	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
 	table[row sep=crcr]{
 		0 0.10491 \\
@@ -120,7 +120,7 @@
 	};
 	}
 
-	\only<2-4|handout:1>{	
+	\only<2-4|handout:2-4>{	
 	\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
 	table[row sep=crcr]{
 		0 0.10491 \\
@@ -143,7 +143,7 @@
 	\node[below, blue2] at (axis cs: 7, 0.1) {$L$ samples};
 	}
 
-	\only<3-4|handout:1>{	
+	\only<3-4|handout:3-4>{	
 	\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
 	table[row sep=crcr]{
 		15 -0.57977 \\
@@ -166,7 +166,7 @@
 	\node[below, red2] at (axis cs: 23, 0.1) {$L$ samples};
 	}
 
-	\only<4|handout:1>{	
+	\only<4|handout:4>{	
 	\addplot[ycomb, green2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
 	table[row sep=crcr]{
 		30 0.30779 \\
@@ -221,7 +221,7 @@ every outer y axis line/.append style={white!15!black},
 every y tick label/.append style={font=\color{white!15!black}},
 legend style={draw=white!15!black,fill=white,legend cell align=left}]
 
-\only<2-4|handout:1>{
+\only<2-4|handout:2-4>{
 \addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
 	0 0 \\
@@ -252,7 +252,7 @@ table[row sep=crcr]{
 \node[anchor=south west, blue2] at (axis cs: 1, -8) {\large $y_1 = h[n]~\encircle{N}~x_1[n]$};
 }
 
-\only<3-4|handout:1>{
+\only<3-4|handout:3-4>{
 \addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
 	15 0 \\
@@ -283,7 +283,7 @@ table[row sep=crcr]{
 \node[anchor=south west, red2] at (axis cs: 18, -8) {\large $y_2 = h[n]~\encircle{N}~x_2[n]$};
 }
 
-\only<4-|handout:1>{
+\only<4-|handout:4->{
 \addplot[ycomb, green2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
 	30 0 \\
@@ -344,7 +344,7 @@ table[row sep=crcr]{
 	every y tick label/.append style={font=\color{white!15!black}},
 	legend style={draw=white!15!black,fill=white,legend cell align=left}]
 	
-	\only<2|handout:0>{
+	\only<2|handout:2>{
 		\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 		table[row sep=crcr]{
 			0 0 \\
@@ -374,7 +374,7 @@ table[row sep=crcr]{
 		}; % y1
 	}	
 
-	\only<3|handout:0>{
+	\only<3|handout:3>{
 		\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 		table[row sep=crcr]{
 			0 0 \\
@@ -420,7 +420,7 @@ table[row sep=crcr]{
 		};
 	}
 
-	\only<4|handout:1>{
+	\only<4|handout:4>{
 	\addplot[ycomb, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 	table[row sep=crcr]{
 		0 0 \\

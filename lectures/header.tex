@@ -117,6 +117,9 @@ terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
 	\pgfmathparse{and(#1 >= 0, #1 < #2)}%
 }
 
+\pgfmathdeclarefunction{dsinc}{2}{%
+	\pgfmathparse{(and(#1 != 0, 1)*(sin(deg(#1*#2/2))/sin(deg(#1/2))) + and(#1 == 0, 1) * (#2)}%
+}
 
 \tikzset{
 	declare function={

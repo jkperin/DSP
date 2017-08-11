@@ -1,0 +1,35 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+	\node[block, right=1cm of xc, text width=2cm, inner sep=2mm, align=center] (Haa) {Anti-aliasing filter};
+    \node[block, right=1.5cm of Haa] (ADC) {C-to-D};
+    \node[adder, right of=ADC] (mult) {\Large $\times$};
+    \node[node, below=1cm of mult] (w) {};
+    \node[block, right of=mult] (fft) {FFT};
+	\coordinate[right=1cm of fft] (yc) {};
+	
+	\coordinate (mid1) at ($(Haa.east)!0.5!(ADC.west)$) {};
+	\coordinate (mid2) at ($(ADC.east)!0.5!(mult.west)$) {};
+	\coordinate (mid3) at ($(mult.east)!0.5!(fft.west)$) {};
+		
+    \path (xc) edge (Haa);
+    \path (Haa) edge (ADC);
+    \path (ADC) edge (mult);
+    \path (mult) edge (fft);
+    \path (fft) edge (yc);
+    \path (w) edge (mult);
+    
+    \node[right = 0.5mm of w] {$w[n]$};
+    \node[above = 0.5mm of mid2] {$x[n]$};
+    \node[above = 0.5mm of mid3] {$v[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$s_c(t)$};
+    \node[below = 0mm of xc, text width = 1cm, align=center] {$S_c(j\Omega)$};
+    \node[above = 0mm of mid1, text width = 1cm, align=center] {$x_c(t)$};
+    \node[below = 0mm of mid1, text width = 1cm, align=center] {$X_c(j\Omega)$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$V[k]$}; 
+    \node at ($(Haa.south)-(0, 0.25cm)$) {$H_{aa}(j\Omega)$};
+    \node[below, align=center, text width=2cm] at ($(ADC.south)$) {$\Omega_s = \frac{2\pi}{T}$};
+\end{tikzpicture}

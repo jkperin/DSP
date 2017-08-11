@@ -1,0 +1,38 @@
+\begin{tikzpicture}
+\begin{axis}[
+	axis x line=bottom, axis y line=middle,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	%width=\textwidth, height=0.2\textwidth,
+	ymin=0, %	ymax=32,
+	xmin=0.25, xmax=0.5,
+	axis line style={->,>=stealth},
+	xlabel={\small $\omega$},
+	ylabel={\small $|V(e^{j\omega})|$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.9)},
+		anchor=south,
+		xshift=0.7cm,
+	},
+	ytick=\empty,
+	xtick={-1, -0.5, -0.3333, 0, 0.3333, 0.5, 1},
+	xticklabels={\small $-\pi$, \small $-\frac{\pi}{2}$, \small $-\frac{\pi}{3}$, \small $0$, $\frac{\pi}{3}$, \small $\frac{\pi}{2}$, \small $\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\ifdefined\BETA
+		\addplot [smooth, color=blue2, solid, line width=1.5pt] table[x index=0,y index=5] {figs/data/sinusoid_windowing_kaiser1.dat}; \addlegendentry{$L = 64, \beta = 0$};
+		\addplot [smooth, color=red2, solid, line width=1.5pt] table[x index=0,y index=4] {figs/data/sinusoid_windowing_kaiser1.dat}; \addlegendentry{$L = 64, \beta = 6$};
+	\else
+		\addplot [smooth, color=red2, solid, line width=1.5pt] table[x index=0,y index=4] {figs/data/sinusoid_windowing_kaiser1.dat}; \addlegendentry{$L = 64, \beta = 6$};
+		\addplot [smooth, color=green2, solid, line width=1.5pt] table[x index=0,y index=2] {figs/data/sinusoid_windowing_kaiser1.dat}; \addlegendentry{$L = 256, \beta = 6$};
+	\fi
+	
+	\node[fill=black!20, align=center, anchor=south west, text width=1.75cm] at (axis cs: 3/4-0.15, 20) {\small $\omega_0 = \frac{\pi}{3}$ \\ $\omega_1 = 1.1\omega_0$};
+\end{axis}
+\end{tikzpicture}

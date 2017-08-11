@@ -221,6 +221,7 @@ TSWLatexianTemp*
 
 other/
 outgoing/
+lectures/external/
 *.pdf
 *.asv
 lectures/m/*.tex
