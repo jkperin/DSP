@@ -1,3 +1,29 @@
+%%% Externalizing
+\usepgfplotslibrary{external} 
+\ifdefined\EXTERNALIZE
+	\makeatletter	
+	\newcommand*{\overlaynumber}{\number\beamer@slideinframe}
+	\tikzset{
+		beamer externalizing/.style={%
+			execute at end picture={%
+				\tikzifexternalizing{%
+					\ifbeamer@anotherslide
+					\pgfexternalstorecommand{\string\global\string\beamer@anotherslidetrue}%
+					\fi
+				}{}%
+			}%
+		},
+		external/optimize=false
+	}
+	\let\orig@tikzsetnextfilename=\tikzsetnextfilename
+	\renewcommand\tikzsetnextfilename[1]{\orig@tikzsetnextfilename{#1-\overlaynumber}}
+	\makeatother
+	
+	\tikzset{every picture/.style={beamer externalizing}}
+	
+	\tikzexternalize[prefix=external/]
+\fi
+
 %%% Page numbering
 \usepackage{etoolbox} % necessary for excluding beamer-only frames from page numbering
 
