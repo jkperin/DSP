@@ -9,7 +9,7 @@ N = 51;
 n = 0:N-1;
 M = 10;
 M2 = M/2;
-L = 30;
+L = 27;
 
 h = triang(-M2:M2, M2);
 
@@ -57,10 +57,10 @@ subplot(615)
 figure, hold on, box on
 plot(0:N-1, x, 'DisplayName', 'x')
 plot(0:length(y1)-1, y1, 'DisplayName', 'y1')
-plot(L-M+(0:L-1), y2, 'DisplayName', 'y2')
+plot(L-M+1+(0:L-1), y2, 'DisplayName', 'y2')
 % plot(0:length(y1)-1, y1+y2, 'DisplayName', 'y1+y2')
 % plot(2*L-M+(0:L-1), y3, 'DisplayName', 'y3')
 % plot(0:length(ytot1)-1, ytot1, 'DisplayName', 'ytot')
 
 m = matlab2tikz(gca);
-m.write('overlap_add_save.tex')
+m.write('overlap_and_save.tex')

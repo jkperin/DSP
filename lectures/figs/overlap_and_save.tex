@@ -1,6 +1,7 @@
 % \N and \Ns must be defined before calling this picture.
 \def\N{5}
 \def\Ns{10}
+\def\M{9}
 \begin{tikzpicture}
 \begin{axis}[
 	name=plot1,
@@ -150,18 +151,20 @@
 		24 1.4125 \\
 		25 1.6667 \\
 		26 1.7249 \\
-		27 1.4084 \\
-		28 1.1416 \\
-		29 0.60004 \\
+		%27 1.4084 \\
+		%28 1.1416 \\
+		%29 0.60004 \\
 	};
 
-	\node[anchor=south west, blue2] at (axis cs: 8, 0.8) {\Large $x_1[n]$};
+	\node[anchor=south west, blue2] at (axis cs: 8, 0.8) {\Large $x_0[n]$};
 	\node[below, blue2] at (axis cs: 7, 0.1) {$L$ samples};
 	}
 
 	\only<3|handout:3>{	
 	\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt]
 	table[row sep=crcr]{
+		18 -0.051949 \\
+		19 0.22502 \\
 		20 0.70008 \\
 		21 0.69747 \\
 		22 0.94023 \\
@@ -188,7 +191,7 @@
 		43 0.90842 \\
 		44 1.0804 \\
 	};
-	\node[anchor=south west, red2] at (axis cs: 33, 0.8) {\Large $x_2[n]$};
+	\node[anchor=south west, red2] at (axis cs: 33, 0.8) {\Large $x_1[n]$};
 	\node[below, red2] at (axis cs: 27, 0.1) {$L$ samples};
 	}
 \end{axis}
@@ -197,26 +200,20 @@
 name=plot3,
 at=(plot2.below south east), anchor=above north east,
 axis y line=middle, axis x line=center,
-enlargelimits = false, clip=false,
+enlargelimits = false, clip=true,
 scale only axis,
 width=\textwidth,
 height=0.2\textwidth,
-ymin=-11,	ymax=11,
+ymin=-11,	ymax=15.75,
 %y axis line style={draw=none},
 xmin={0}, xmax={44},
 axis line style={->,>=stealth},
 x axis line style={shorten >= -0.25cm}, 
 xlabel={\large $n$},
-ylabel={},
 every axis x label/.style={
 	at={(ticklabel* cs:1)},
 	xshift=0.25cm,
 	anchor=north,
-},
-every axis y label/.style={
-	at={(ticklabel* cs:1)},
-	anchor=south,
-	xshift=0.6cm,
 },
 xtick=\empty,
 ytick=\empty,
@@ -227,20 +224,20 @@ legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \only<2-3|handout:2-3>{
 \addplot[ycomb, blue2!20, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
-	0 6.9006 \\
-	1 6.6909 \\
-	2 6.0407 \\
-	3 5.1558 \\
-	4 4.2891 \\
-	5 3.7146 \\
-	6 3.6642 \\
-	7 3.9472 \\
-	8 4.4134 \\
-	9 4.852 \\
+	0 4.9059 \\
+	1 5.6477 \\
+	2 5.9646 \\
+	3 5.9022 \\
+	4 5.5257 \\
+	5 4.8484 \\
+	6 4.55 \\
+	7 4.5022 \\
+	8 4.6384 \\
 }; % y1 unsable
 
 \addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
+	9 4.852 \\
 	10 5.0554 \\
 	11 4.8532 \\
 	12 4.3257 \\
@@ -258,50 +255,49 @@ table[row sep=crcr]{
 	24 1.3603 \\
 	25 2.5941 \\
 	26 3.7653 \\
-	27 4.9059 \\
-	28 5.9084 \\
-	29 6.6045 \\
 }; % y1 usable
 
-\node[anchor=south west, blue2] at (axis cs: 1, -8) {\large $y_1 = h[n]~\encircle{L}~x_1[n]$};
-\node[above, blue2!60, anchor=south west, align=center, text width=4cm] at (axis cs: -3, 5) {$M-1$ unusable \\ samples};
+\node[anchor=south west, blue2] at (axis cs: 1, -8) {\large $y_0 = h[n]~\encircle{L}~x_0[n]$};
+\node[above, blue2!60, anchor=south west, align=center, text width=4cm] at (axis cs: -3, 5) {$M$ unusable \\ samples};
 }
 
 \only<3|handout:3>{
 \addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
-	30 6.9006 \\
-	31 6.7315 \\
-	32 6.0115 \\
-	33 4.8217 \\
-	34 3.2397 \\
-	35 1.4352 \\
-	36 -0.42955 \\
-	37 -2.2122 \\
-	38 -3.7647 \\
-	39 -4.8699 \\
-	40 -5.4549 \\
-	41 -5.5235 \\
-	42 -5.0656 \\
-	43 -4.1338 \\
-	44 -2.865 \\
+	27 3.7653 \\
+	28 4.9059 \\
+	29 5.9084 \\
+	30 6.6045 \\
+	31 6.9006 \\
+	32 6.7315 \\
+	33 6.0115 \\
+	34 4.8217 \\
+	35 3.2397 \\
+	36 1.4352 \\
+	37 -0.42955 \\
+	38 -2.2122 \\
+	39 -3.7647 \\
+	40 -4.8699 \\
+	41 -5.4549 \\
+	42 -5.5235 \\
+	43 -5.0656 \\
+	44 -4.1338 \\
 };%y2 usable
 
 \addplot[ycomb, red2!20, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 table[row sep=crcr]{
-	20 4.1463 \\
-	21 4.1594 \\
-	22 3.9567 \\
-	23 3.6881 \\
-	24 3.6425 \\
-	25 3.89 \\
-	26 4.3944 \\
-	27 5.1421 \\
-	28 5.9661 \\
-	29 6.6045 \\
+	18 -2.865 \\
+	19 -1.6449 \\
+	20 -0.53382 \\
+	21 0.36008 \\
+	22 0.97853 \\
+	23 1.1965 \\
+	24 1.5599 \\
+	25 2.1203 \\
+	26 2.8724 \\
 };%y2 unusable
-\node[anchor=south west, red2] at (axis cs: 22, -8) {\large $y_2 = h[n]~\encircle{L}~x_2[n]$};
-\node[above, red2!60, anchor=south west, align=center, text width=4cm] at (axis cs: 16, 5) {$M-1$ unusable \\ samples};
+\node[anchor=south west, red2] at (axis cs: 22, -8) {\large $y_1 = h[n]~\encircle{L}~x_1[n]$};
+\node[above, red2!60, anchor=south west, align=center, text width=4cm] at (axis cs: 13, 5) {$M$ unusable \\ samples};
 }
 \end{axis}
 
@@ -337,10 +333,11 @@ table[row sep=crcr]{
 	legend style={draw=white!15!black,fill=white,legend cell align=left}]
 	
 	\only<2-|handout:2->{
-		\addplot[ycomb, black, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:9, samples=10] {0};
+		\addplot[ycomb, black, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt, domain=0:8, samples=9] {0};
 		
 		\addplot[ycomb, blue2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 		table[row sep=crcr]{
+			9 4.852 \\
 			10 5.0554 \\
 			11 4.8532 \\
 			12 4.3257 \\
@@ -358,35 +355,30 @@ table[row sep=crcr]{
 			24 1.3603 \\
 			25 2.5941 \\
 			26 3.7653 \\
-			27 4.9059 \\
-			28 5.9084 \\
-			29 6.6045 \\
 		}; % y1 usable
 	}	
 
 	\only<3|handout:3>{
 		\addplot[ycomb, red2, mark=*, fill=white, mark options={scale=1.5, fill=white}, line width=1.5pt] 
 		table[row sep=crcr]{
-			30 6.9006 \\
-			31 6.7315 \\
-			32 6.0115 \\
-			33 4.8217 \\
-			34 3.2397 \\
-			35 1.4352 \\
-			36 -0.42955 \\
-			37 -2.2122 \\
-			38 -3.7647 \\
-			39 -4.8699 \\
-			40 -5.4549 \\
-			41 -5.5235 \\
-			42 -5.0656 \\
-			43 -4.1338 \\
-			44 -2.865 \\
-			45 -1.3852 \\
-			46 0.19957 \\
-			47 1.6994 \\
-			48 2.9545 \\
-			49 3.7801 \\
+			27 3.7653 \\
+			28 4.9059 \\
+			29 5.9084 \\
+			30 6.6045 \\
+			31 6.9006 \\
+			32 6.7315 \\
+			33 6.0115 \\
+			34 4.8217 \\
+			35 3.2397 \\
+			36 1.4352 \\
+			37 -0.42955 \\
+			38 -2.2122 \\
+			39 -3.7647 \\
+			40 -4.8699 \\
+			41 -5.4549 \\
+			42 -5.5235 \\
+			43 -5.0656 \\
+			44 -4.1338 \\
 		};%y2 usable
 	}
 \end{axis}

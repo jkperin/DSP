@@ -29,7 +29,7 @@
 	every y tick label/.append style={font=\color{white!15!black}},
 	legend style={draw=white!15!black,fill=white,legend cell align=left}]
 	\addplot[smooth, solid, line width=1pt, domain=-pi:pi, samples=300] {abs(dsinc(x, \L))};
-	\node[align=center, text width=5cm, anchor=south west] at (axis cs: pi/4, 30) {$W(e^{j\omega}) = \frac{\sin(\omega L/2)}{\sin(\omega/2)}e^{-j\omega(L-1)/2}$};
+	\node[align=center, text width=5cm, anchor=south west] at (axis cs: pi/5, 30) {$W(e^{j\omega}) = \frac{\sin(\omega L/2)}{\sin(\omega/2)}e^{-j\omega\frac{L-1}{2}}$};
 \end{axis}
 
 \begin{axis}[
@@ -68,12 +68,12 @@
 	
 	\only<2|handout:2>{
 	\addplot [smooth, color=black, solid, line width=1pt] table[x index=0,y index=2] {figs/data/sinusoid_windowing.dat};
-	\node[fill=black!20, align=center, anchor=south west, text width=1.75cm] at (axis cs: 3/4-0.15, 10) {\small $\omega_0 = \frac{\pi}{3}$ \\ $\omega_1 = 1.1\omega_0$};
+	\node[fill=black!20, align=center, anchor=south west, text width=1.75cm] at (axis cs: 3/4-0.15, 20) {\small $\omega_0 = \frac{\pi}{3}$ \\ $\omega_1 = 1.1\omega_0$};
 	}
 
 	\only<3|handout:3>{
 		\addplot [smooth, color=black, solid, line width=1pt] table[x index=0,y index=1] {figs/data/sinusoid_windowing.dat};
-		\node[fill=black!20, align=center, anchor=south west, text width=1.75cm] at (axis cs: 3/4-0.15, 10) {\small $\omega_0 = \frac{\pi}{3}$ \\ $\omega_1 = 1.05\omega_0$};
+		\node[fill=black!20, align=center, anchor=south west, text width=1.75cm] at (axis cs: 3/4-0.15, 20) {\small $\omega_0 = \frac{\pi}{3}$ \\ $\omega_1 = 1.05\omega_0$};
 	}
 \end{axis}
 \end{tikzpicture}

@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -55,6 +55,7 @@
 }
 
 %
+%\def\EXTERNALIZE{1}
 \input{header.tex} % some definitions
 
 %% 
@@ -507,19 +508,20 @@ OFDM is used in
 		W_N^{k(N-n)} &= W_N^{-kn} = (W_N^{kn})^* \tag{complex conjugate symmetry} \\
 		W_N^{kn} &= W_N^{k(n+N)} = W_N^{(k+N)n}  \tag{periodicity in $n$ and $k$}
 		\end{align*}
-		\item By decomposing the computation into successively smaller DFTs. 
+		\item Decomposing the computation into successively smaller DFTs. 
 		\begin{itemize}
 			\item Decomposition of $x[n]$ into successively smaller subsequences is called \textbf{decimation in time}.
-			\item Decomposition of $X[k]$ into successively smaller subsequences is called \textbf{decimation in frequency}.
+			\item Decomposition of $X[k]$ into successively smaller subsequences is called \textbf{decimation in frequency}. 
+			\item The flow graph of decimation-in-frequency decomposition can be obtained by \textbf{transposing} the flow graph of decimation-in-time decomposition, and vice-versa. 
 		\end{itemize}
 	\end{enumerate}
 \end{frame}
 
 % 
-\begin{frame}{Decimation-in-time algorithm}
-8-point DFT calculation using decimation in time.
+\begin{frame}{Decimation-in-time decomposition}
+Flow graph of complete decimation-in-time decomposition of an 8-point DFT computation.
 
-The red rectangle represents a 2-point DFT, which requires only one multiplication by using the periodicity and symmetry of $W_N^{kn}$.
+The red rectangle represents a 2-point DFT.
 \begin{center}
 	\begin{tikzpicture}
 		\node (img) {\includegraphics[scale=0.7]{figs/decimation_in_time.png}};
@@ -529,10 +531,10 @@ The red rectangle represents a 2-point DFT, which requires only one multiplicati
 \end{frame}
 
 % 
-\begin{frame}{Decimation-in-frequency algorithm}
-8-point DFT calculation using decimation in frequency.
+\begin{frame}{Decimation-in-time decomposition}
+Flow graph of complete decimation-in-time decomposition of an 8-point DFT computation.
 
-The red rectangle represents a 2-point DFT, which requires only one multiplication by using the periodicity and symmetry of $W_N^{kn}$. 
+The red rectangle represents a 2-point DFT, now computed with just one multiplication by exploiting the periodicity and symmetry of $W_N^{kn}$. 
 \begin{center}
 	\begin{tikzpicture}
 		\node (img) {\includegraphics[scale=0.7]{figs/decimation_in_frequency.png}};
@@ -626,7 +628,7 @@ For open-source implementation of FFT, see \href{http://www.fftw.org/}{the Faste
 	x[((n-m))_N] \Longleftrightarrow W_N^{km}X[k] \tag{circular time shift}
 \end{equation*}
 
-To understand circular time shift and other properties of the DTF, it is useful to work with the periodic extension of $x[n]$, $\tilde{x}[n]$
+To understand circular time shift and other properties of the DFT, it is useful to work with the periodic extension of $x[n]$, $\tilde{x}[n]$
 
 \begin{center}
 	\resizebox{\textwidth}{!}{\input{figs/circular_time_shift.tex}}
@@ -659,7 +661,7 @@ In this first example
 \begin{itemize}
 	\item $x[n]$ has length $L$, while $y[n]$ has length $P$
 	\item The result of linear convolution $x[n]\ast [y]$ has length $L+P-1$
-	\item For the $N$-point circular convolution, the {\color{blue2} samples that fall beyond $N-1$} are added to the begining of the sequence
+	\item For the $N$-point circular convolution, the {\color{blue2} $P-1$ samples that fall beyond $N-1$} are added to the beginning of the sequence
 	\item Note that the $N$-point circular convolution and the linear convolution produce different results
 	\item We can make the circular convolution equal to the linear convolution by zero-padding the sequences and performing the $(L+P-1)$-point circular convolution
 \end{itemize}
@@ -673,7 +675,7 @@ In this first example
 \end{frame}
 
 \begin{frame}{Linear convolution using circular convolution}
-By zero-padding and performing the $(L+P-1)$-point circular convolution, we can calculate the linear convolution using the DTFT
+By zero-padding and performing the $(L+P-1)$-point circular convolution, we can calculate the linear convolution using the DFT
 
 \vspace{0.25cm}
 In Matlab:\\
@@ -694,6 +696,7 @@ The parameter \texttt{N} tells Matlab to zero-pad vectors \texttt{x} and \texttt
 \textbf{Conclusion:} for $N$ large, it is more efficient to compute the linear convolution through the DFT using FFT algorithm.
 \end{frame}
 
+\section{Block convolution}
 \begin{frame}{Linear convolution using circular convolution}
 
 	Recall that for FIR filters, filtering is essentially a linear convolution between the input and the filter coefficients:
@@ -710,14 +713,14 @@ The parameter \texttt{N} tells Matlab to zero-pad vectors \texttt{x} and \texttt
 
 	By using \textbf{block convolution} we process the samples in batches.
 	\begin{enumerate}
-		\item Overlap and add
-		\item Overlap and save
+		\item Overlap-add method
+		\item Overlap-save method
 	\end{enumerate}
 \end{frame}
 
 
-\begin{frame}{Overlap and add}
-In the overlap and add method the incoming signal $x[n]$ is broken down into several \underline{non-overlapping} segments $x_r[n]$, each of length $L$:
+\begin{frame}{Overlap-add method}
+In the \textbf{overlap-add method} the incoming signal $x[n]$ is broken down into several \underline{non-overlapping} segments $x_r[n]$, each of length $L$:
 \begin{equation*}
 	x_r[n] = \begin{cases}
 	x[n + rL], & 0 \leq n \leq L-1\\
@@ -730,30 +733,32 @@ For each segment, we compute the $N$-point circular convolution of $x_r[n]$ and 
 \begin{equation*}
 	y_r[n] = h[n]~\encircle{N}~x_r[n] = h[n]\ast x_r[n]
 \end{equation*}
-where $N \geq L + M$ so that $y_r[n]$ is equivalent to the linear convolution of $x_r[n]$ and $h[n]$. Note that $M$ is the filter order. Hence, the filter has $M+1$ coefficients.
+where $N \geq L + M$ so that $y_r[n]$ is equivalent to the linear convolution of $x_r[n]$ and $h[n]$. Note that $M$ is the filter order. Hence, the filter has \underline{$M+1$ coefficients}.
 
 Finally, the output is computed by adding the filtered segments
 \begin{equation*}
 	y_r[n] = \sum_{r = 0}^{\infty} y_r[n - rL]
 \end{equation*}
+The sequences $y_r[n-rL]$ overlap by $M$ samples.
 \end{frame}
 
 %
-\begin{frame}{Overlap and add}
+\begin{frame}{Overlap-add method}
 \begin{center}
 	\resizebox{0.85\textwidth}{!}{\input{figs/overlap_and_add.tex}}
 \end{center}	
 \end{frame}
 
 %
-\begin{frame}{Overlap and save}
-In the \textbf{overlap and save method} the incoming signal $x[n]$ is decomposed into several \underline{overlapping} segments $x_r[n]$, each of length $L$:
+\begin{frame}{Overlap-save method}
+In the \textbf{overlap-save method} the incoming signal $x[n]$ is decomposed into several \underline{overlapping} segments $x_r[n]$, each of length $L$:
 \begin{equation*}
 x_r[n] = \begin{cases}
-x[n + r(L-M) - M], & 0 \leq n \leq L-1\\
+x[n + r(L-M)-M], & 0 \leq n \leq L-1\\
 0, & \text{otherwise}
 \end{cases}
 \end{equation*}
+The sequences $x_r[n]$ overlap by $M$ samples.
 
 Then, we compute the $L$-point circular convolution of $h[n]$ and $x_r[n]$:
 
@@ -761,7 +766,7 @@ Then, we compute the $L$-point circular convolution of $h[n]$ and $x_r[n]$:
 y_r[n] = h[n]~\encircle{L}~x_r[n]
 \end{equation*}
 
-The first $M-1$ samples of $y_r[n]$ are \underline{unusable}, since they are not equal to the linear convolution  $h[n]\ast x_r[n]$. Hence, we define the \underline{usable} part of $y_r[n]$:
+The \underline{first $M$ samples} of $y_r[n]$ are \underline{unusable}, since they are not equal to the linear convolution  $h[n]\ast x_r[n]$. Hence, we define the \underline{usable} part of $y_r[n]$:
 
 \begin{equation*}
 y_{r,u}[n] = \begin{cases}
@@ -772,12 +777,12 @@ y_r[n], & M \leq n \leq L-1 \\
 
 Finally, the output is computed by adding the \underline{usable} parts of the filtered segments
 \begin{equation*}
-y_r[n] = \sum_{r = 0}^{\infty} y_{r, u}[n + r(L-M) - M]
+y_r[n] = \sum_{r = 0}^{\infty} y_{r, u}[n - r(L - M) + M]
 \end{equation*}
 \end{frame}
 
 %
-\begin{frame}{Overlap and save}
+\begin{frame}{Overlap-save method}
 \begin{center}
 	\resizebox{0.85\textwidth}{!}{\input{figs/overlap_and_save.tex}}
 \end{center}	
@@ -792,8 +797,8 @@ y_r[n] = \sum_{r = 0}^{\infty} y_{r, u}[n + r(L-M) - M]
 		\item For sequences longer than $N$, the $N$-point DFT is equal to the samples of the windowed DTFT
 		\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log N)$
 		\item We can use DFT to perform linear convolution (filtering) efficiently using block convolution
-		\item In the overlap and add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
-		\item In the overlap and save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points
+		\item In the overlap-add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
+		\item In the overlap-save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points
 	\end{itemize}
 \end{frame}
 \end{document}

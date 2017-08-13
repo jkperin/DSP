@@ -1,0 +1,137 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+\usetikzlibrary{spy}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%
+%\def\EXTERNALIZE{1}
+\input{header.tex} % some definitions
+
+%% 
+\title[EE 264]{Power Spectrum Density Estimation}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{August 15, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Announcements}
+\begin{itemize}
+	\item Homework \# 6 due Thursday by noon.
+	\item Last lecture on Thursday will be a review
+	\item Try the practice final exam questions
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item Leakage and resolution are important considerations in spectrum analysis
+	\item By choosing proper windows we can minimize these issues
+	\item Kaiser window is a nearly optimal choice. Must choose correct $\beta$ and window length $L$
+	\item $\beta$ controls the ratio between the amplitudes of the main-lobe and the largest side-lobe i.e., $\beta$ controls the amount of leakage.
+	\item The larger the main-lobe width, the smaller the resolution
+	\item By increasing the window length we reduce the main-lobe width and consequently improve the resolution
+	\item Time-dependent Fourier transform or short-time Fourier transform allows us to keep track of frequency variation in time
+	\item Spectrogram is a commonly used way to display the TDFT
+	\item In the spectrogram the TDFT is sampled both in time and in frequency
+	\item The window length determines the resolution of the spectrogram
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Today's lecture}
+	How to estimate the power spectrum density (PSD) of stationary signals.
+	\tableofcontents
+\end{frame}
+
+\begin{frame}{Stationarity random signals}
+	\begin{itemize}
+		\item Stationarity refers to time-invariance of some or all statistics of a random process
+		\item In practice, we typically work with wide-sense stationary random processes (WSS)
+		\item The mean of a WSS process is constant, while the autocorrelation function depends only on the time deference $m$, and not on the absolute time $n$.
+		\begin{align}
+			\E(x[n]) &=\mu \tag{constant mean} \\
+			\E(x[m+n]x^*[n]) &= \phi_{xx}[m] \tag{autocorrelation function depends only on time difference $m$}
+		\end{align}
+		\item The power spectrum density (PSD) of a WSS process is the Fourier transform of the autocorrelation function:
+		\begin{equation*}
+			\Phi_{xx}(e^{j\omega}) = \mathcal{F}\{\phi_{xx}[m]\}
+		\end{equation*}
+		
+		The PSD is purely real, even symmetric, and non-negative. 
+		
+		\begin{equation}
+			\E(|x[n]|^2) = \phi_{xx}[0] = \frac{1}{2\pi}\int_{-\pi}^{\pi} \Phi_{xx}(e^{j\omega}) d\omega \tag{average power}
+		\end{equation}
+	\end{itemize}
+\end{frame}
+
+\section{Periodogram}
+\section{Welch method}
+\section{Blackman-Tukey method}
+
+%
+\begin{frame}{Summary}
+	\begin{itemize}
+		\item a
+	\end{itemize}
+\end{frame}
+
+\end{document}
