@@ -1,0 +1,471 @@
+\documentclass{article}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage[numbered]{bookmark}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{figs/}}
+
+
+\DeclareMathOperator{\E}{\mathbb{E}}
+\newcommand{\Conv}{\mathop{\scalebox{1.5}{\raisebox{-0.2ex}{$\ast$}}}}%
+
+
+% rect results in 1 if a < x < b, and 0 otherwise
+\pgfmathdeclarefunction{rect}{3}{%
+	\pgfmathparse{(and(#1 >= #2, #1 <= #3) * 1.0}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.2} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkTitle} % Top center head
+\rhead{\hmwkClass} % Top right header
+\lfoot{} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{Perl} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=Perl, % Use Perl in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=5, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\perlscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.pl}
+\end{itemize}
+}
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hmwkTitle}{Homework \#03} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkAuthorName}{Solutions} % Your name
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+\section{Problem 1}
+\subsection{(a)}
+\resizebox{\linewidth}{!}{\input{figs/hw03_q1a.tex}}
+
+\subsection{(b)}
+We want to obtain $y_c(t) = f_c(t-0.1)$. In the frequency domain,
+
+\begin{align}
+Y_c(j\Omega) &= F_c(j\Omega)e^{-j0.1\Omega} \tag{Delay property of the Fourier transform} \\
+Y(e^{j\omega}) &= F_c(j\omega/T)e^{-j0.1\omega/T} \tag{Since $\Omega = \omega/T$ and there is no aliasing} \\
+Y(e^{j\omega}) &= F_c(j\omega/T)e^{-j80\omega} \tag{$T = 1/800$}
+\end{align}
+
+\resizebox{\linewidth}{!}{\input{figs/hw03_q1b.tex}}
+
+Now we need to find $H_1(e^{j\omega})$ such that $Y(e^{j\omega}) = H_1(e^{j\omega})X(e^{j\omega})$. By inspecting the plots of the figure above, it is clear that the filter $H_1(e^{j\omega})$ needs to flatten the part of the spectrum between $|\omega| <\pi/2$, and it needs to be zero for $|\omega| \leq \pi/2 < \pi$. Therefore, we can write:
+
+\begin{equation}
+H_1(e^{j\omega}) = \begin{cases}
+\displaystyle\frac{1}{1 - |\omega|/\pi}e^{-j80\omega}, & |\omega|\leq\pi/2 \\
+0, & \pi/2 < |\omega|\leq\pi/2
+\end{cases}
+\end{equation}
+Note that the factor $e^{-j80\omega}$ appears from the delay requirement and not from inspecting the magnitude plots.
+
+\subsection{(c)}
+\resizebox{\linewidth}{!}{\input{figs/hw03_q1c.tex}}
+
+The filter $H_1(e^{j\omega})$ only needs to flatten the frequency response of $X(e^{j\omega})$ over the interval $\omega < 2\pi/3$. Therefore,
+\begin{equation}
+H_1(e^{j\omega}) = \begin{cases}
+\frac{1}{1 - \displaystyle\frac{3|\omega|}{4\pi}}, & |\omega|\leq \frac{2\pi}{3} \\
+0, & \frac{2\pi}{3} < |\omega|\leq \pi
+\end{cases}
+\end{equation}
+		
+\subsection{(d)}
+
+\resizebox{\linewidth}{!}{\input{figs/hw03_q1d.tex}}
+
+The filter $H_2(e^{j\omega})$ only needs to flatten the frequency response of $V(e^{j\omega})$ over the interval $\omega < \pi/6$. Therefore,
+\begin{equation}
+H_2(e^{j\omega}) = \begin{cases}
+\frac{3}{1 - \displaystyle\frac{3|\omega|}{\pi}}, & |\omega|\leq \frac{\pi}{6} \\
+0, & \frac{\pi}{6} < |\omega|\leq \pi
+\end{cases}
+\end{equation}
+
+\section{Problem 2}
+\subsection{(a)}
+
+To maintain a constant time scale we need
+\begin{equation}
+T_2 = \frac{2}{3}T_1
+\end{equation}
+
+\subsection{(b)}
+
+To avoid aliasing in the sampling of the input
+\begin{align}
+\Omega_s &= \frac{2\pi}{T_1} > 2\Omega_N = 8000\pi \\
+T_1 &< 1/4000
+\end{align}
+
+To perfectly reconstruct the input, we should preserve the same time scale between input and output. Hence, using the result from part (a):
+
+\begin{equation}
+T_2 = \frac{2}{3}T_1 \implies T_2 > 1/6000
+\end{equation}
+
+\subsection{(c)}
+\begin{center}
+	\resizebox{0.8\linewidth}{!}{\input{figs/hw03_q2c.tex}}
+\end{center}
+
+For perfect reconstruction we need: 
+\begin{equation}
+\frac{AKT_2}{2T} = A \implies K = \frac{2T_1}{T_2} = 3
+\end{equation}
+
+Therefore,
+
+\begin{equation}
+H(e^{j\omega}) = \begin{cases}
+3, &|\omega|\leq \pi/3 \\
+0, &\pi/3 < |\omega| \leq \pi
+\end{cases}
+\end{equation}
+
+\subsection{(d)}
+
+\begin{equation}
+y_c(t) = 2x_c(t-4T_1) \Longleftrightarrow Y_c(j\Omega) = 2e^{-j4T_1\Omega}X_c(j\Omega)
+\end{equation}
+
+Similarly to previous items, the shape of the spectrum will not be changed, so we can focus on the amplitude at $\Omega = 0$ in order to determine the amplitude of $H(e^{j\omega})$. 
+
+\begin{align*}
+Y_c(j\Omega = 0) &= 2Ae^{-j4T_1\Omega} \\
+Y_d(e^{j\omega} = 1) &= \frac{2A}{T_2}e^{-j4T_1\omega/T_2} = \frac{2A}{T_2}e^{-j6\omega} \tag{since we can interpret $y_d[n] = y_c(nT_2)$} \\
+Y_e(e^{j\omega} = 1) &= \frac{4A}{T_2}e^{-j16\omega} \tag{upsampling by 2 with filter scaling 2} \\
+\end{align*}
+
+By comparing $Y_e(e^{j\omega} = 1)$ and $X_e(j\Omega)$, we can write
+
+\begin{align} \nonumber
+H(e^{j\omega}) &= \begin{cases}
+4\frac{T_1}{T_2}e^{-j12\omega}, & |\omega|\leq \pi/3 \\
+0, &\pi/3 < |\omega| \leq \pi
+\end{cases} \\
+&= \begin{cases}
+6e^{-j12\omega}, & |\omega|\leq \pi/3 \\
+0, &\pi/3 < |\omega| \leq \pi
+\end{cases}
+\end{align}
+
+\subsection{(e)}
+
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/hw03_q2e.tex}}
+\end{center}
+
+Therefore, to obtain $Y_e(e^{j\omega})$ from $X(e^{j\omega})$, the filter $H(e^{j\omega})$ must satisfy
+\begin{align} \nonumber
+H(e^{j\omega}) &= \begin{cases}
+0, & |\omega| \leq \pi/12\\
+\frac{2T_1}{T_2}, & \pi/12 < |\omega| \leq \pi/4\\
+0, & \pi/4 < |\omega| \leq \pi
+\end{cases} \\
+&= \begin{cases}
+0, & |\omega| \leq \pi/12\\
+3, & \pi/12 < |\omega| \leq \pi/4\\
+0, & \pi/4 < |\omega| \leq \pi
+\end{cases},
+\end{align}
+which is a band-pass filter.
+
+\subsection{(f)}
+\begin{equation}
+y_c(t) = \dfrac{d}{dt}x_c(t) \Longleftrightarrow Y_c(j\Omega) = j\Omega X_c(j\Omega)
+\end{equation}
+
+\begin{center}
+	\resizebox{\linewidth}{!}{\input{figs/hw03_q2f.tex}}
+\end{center}
+
+Since for $|\omega|\leq \pi/3$, $X_c(j2\omega/T_2) = X_c(j3\omega/T_1) = T_1X_e(e^{j\omega})$. Thus,
+\begin{align} \nonumber
+Y_e(e^{j\omega}) &= 4j\frac{\omega}{T_2}X_c(j2\frac{\omega}{T_2}) \\ \nonumber
+&= 4j\frac{\omega}{T_2^2}T_1X_e(e^{j\omega}) \\ 
+&= 4j\frac{T_1}{T_2^2}\omega X_e(e^{j\omega}), |\omega|\leq\pi/3 
+\end{align}
+
+Therefore,
+
+\begin{align}
+H(e^{j\omega}) &= \begin{cases}
+4j\frac{T_1}{T_2^2}\omega, & |\omega|\leq \pi/3 \\
+0, &\pi/3 < |\omega| \leq \pi
+\end{cases}
+\end{align}
+
+\section{Problem 3}
+
+\subsection{(a)}
+For the original system
+\begin{align} \nonumber
+\mathcal{F}\{\phi_1[m]\} &= |X_1(e^{j\omega})|^2 \\ \nonumber
+&= |X_e(e^{j\omega L})H_1(e^{j\omega})|^2 \\ 
+& = \begin{cases}
+L^2|X_e(e^{j\omega L})|^2, & |\omega| \leq \pi/L \\
+0, & \pi/L < |\omega| \leq \pi
+\end{cases} 
+\end{align}
+
+For the system proposed by the student
+\begin{align} \nonumber
+\mathcal{F}\{\phi_3[m]\} &= \mathcal{F}\{\phi_{2e}[m]\} H_2(e^{j\omega}) \\
+&= |X(e^{j\omega L})|^2H_2(e^{j\omega})
+\end{align}
+
+The two systems will be equivalent if
+\begin{equation}
+H_2(e^{j\omega}) = \begin{cases}
+L^2, & |\omega| \leq \pi/L \\
+0, & \pi/L < |\omega| \leq \pi
+\end{cases}
+\end{equation}
+
+\subsection{(b)}
+
+\begin{align} \nonumber
+\mathcal{F}\{\phi_5[m]\} &= |X(e^{j\omega L})|^2 H_3(e^{j\omega})
+\end{align}
+
+This is exactly the same condition of part (a). Therefore, 
+
+\begin{equation}
+H_3(e^{j\omega}) = \begin{cases}
+L^2, & |\omega| \leq \pi/L \\
+0, & \pi/L < |\omega| \leq \pi
+\end{cases}
+\end{equation}
+
+\section{Problem 4}
+
+\noindent\textbf{Part 1: Implementing a quantizer}
+\subsection{(a)}
+
+The quantizer function implemented is shown below. Many other implementations are possible and will be accepted.
+
+\input{tex/quantizer.tex}
+
+\subsection{(b)}
+
+The code for part (b) is included on the next page. The empirical autocorrelation function is shown below. As we can see, the assumption that the noise is white is more accurate for finer quantization.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw03_q4_empir_xcorr.eps}
+	\caption{Empirical autocorrelation functions for $B = 4$ and $B = 10$ bits.}
+\end{figure}
+
+The average power is simply the autocorrelation function evaluated at 0. Therefore, we have:
+
+\begin{align*}
+\hat{\sigma}_e^2 = \begin{cases}
+0.001, & B = 4~\text{bits} \\
+3.1841\times 10^{-7}, & B = 10~\text{bits} \\
+\end{cases}
+\end{align*}
+
+Recall that as discussed in class, by assuming quantization noise as an uniformly distributed noise: $\sigma_e^2 = \Delta^2/12$. For each case,
+\begin{align*}
+\sigma_e^2 = \begin{cases}
+0.0013, & B = 4~\text{bits} \\
+3.1789\times 10^{-7}, & B = 10~\text{bits} \\
+\end{cases}
+\end{align*}
+
+Note that these estimates are very accurate even when quantization is coarse. 
+
+\noindent\textbf{Part 2: Noise shaping without oversampling}
+\subsection{(c)}
+
+The code for part (c) is included on the next page.
+
+\noindent\textbf{Part 3: Noise shaping with oversampling}
+\subsection{(d)}
+
+The code for part (d) is included on the next page.
+
+\subsection{(e)}
+
+The code for part (e) is included on the next page.
+
+The noise power after noise shaping and filtering is $\tilde{\sigma}_e^2 = 1.113\times 10^{-4}$. We can define the signal-to-noise ratio (SNR) improvement 
+\begin{equation}
+\text{SNR}_{\text{improvement}} = 10\log_{10}\Big(\frac{\tilde{\sigma}_e^2}{\sigma_e^2}\Big) = 9.6858~\text{dB (or 9.3021 in linear units)}.
+\end{equation}
+
+Since for every extra bit of resolution we have a 6.02 dB improvement of SNR. This improvement in SNR would be equivalent to increase the quantizer resolution by 1.6 bits. More significant improvements could be achieved either by using higher oversampling factor $M$ or higher-order noise shaping (different filter $H(z)$).
+
+\noindent\textbf{Another accepted solution:}
+
+Note that to achieve the correct noise power we must multiply the decimated noise by $M$ (oversampling factor) in order to account for the fact that the signal in the diagram of Figure 6a is also decimated. Since the question didn't explicitly instruct you to multiply by $M$, we'll also accept the solution without correcting for the noise power. In this case, the noise power after noise shaping and filtering is $\tilde{\sigma}_e^2 = 1.2367\times 10^{-5}$. We can define the signal-to-noise ratio (SNR) improvement 
+\begin{equation}
+\text{SNR}_{\text{improvement}} = 10\log_{10}\Big(\frac{\tilde{\sigma}_e^2}{\sigma_e^2}\Big) = 19.2283~\text{dB (or 83.72 in linear units)}.
+\end{equation}
+
+This improvement in SNR would be equivalent to increase the quantizer resolution by approximately 3 bits.
+
+\subsection{Matlab code for parts (b) through (e)}
+\input{tex/quantization_noise_shaping.tex}
+
+\section{Problem 5 (extra credit)}
+
+Referring to the diagram of lecture notes 5 slide 25, we see that the feedback loop filter $H(z) = \frac{1}{1-z^{-1}}$. This IIR system has the following difference equation:
+\begin{eqnarray}
+y[n] - y[n-1] = x[n]
+\end{eqnarray}
+
+Now we have everything to implement the code, which is shown below
+
+\input{tex/noise_shaping_feedback_loop.tex}
+
+The signal quality is similar to the one obtained in problem 4(d), when the noise power is corrected. The performance can be improved further by increasing the oversampling factor $M$.
+
+
+\end{document}

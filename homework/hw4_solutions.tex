@@ -1,0 +1,574 @@
+\documentclass{article}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage{array}
+\usepackage[numbered]{bookmark}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{figs/}}
+
+\input{preamble.tex}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.2} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkTitle} % Top center head
+\rhead{\hmwkClass} % Top right header
+\lfoot{} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{Perl} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=Perl, % Use Perl in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=5, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\perlscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.pl}
+\end{itemize}
+}
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hmwkTitle}{Homework \#04} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkAuthorName}{Solutions} % Your name
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+	
+\section{Problem 1}
+
+Matlab code for parts (a) through (c) is attached at the end of this question.
+
+\subsection{(a)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw4q1a_pole_zero.eps}
+	\caption{Zero-pole diagram}
+\end{figure}
+\FloatBarrier
+
+\subsection{(b)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw4q1b_mag_phase.eps}
+	\caption{Magnitude and phase plots}
+\end{figure}
+\FloatBarrier
+
+\subsection{(c)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw4q1b_grpdelay.eps}
+	\caption{Group delay}
+\end{figure}
+\FloatBarrier
+
+\subsection{(d)}
+
+\begin{enumerate}
+	\item True. All poles are inside the unit circle.
+	\item False. Since the system is stable its impulse response must be absolute summable. Therefore, it cannot converge to a non-zero value when $n\to\infty$.
+	\item False. The system also has a zero at that frequency, and that zero is actually on the unit circle, so it has a bigger influence on the frequency response. As a result, the magnitude response has a dip at $\omega = \pi/3$.
+	\item False. The system has zeros outside the unit circle.
+	\item False. Since the system has a zero outside the unit circle, its inverse is unstable.
+\end{enumerate}
+
+\newpage
+
+\section{Problem 2}
+\subsection{(a)}
+
+\begin{figure}[!h]
+	\resizebox{0.9\textwidth}{!}{\input{figs/hw03q2_min_phase_allpass_decomp.tex}}
+\end{figure}
+
+We must follow this algorithm:
+\begin{enumerate}
+	\item In the minimum phase system, reflect all zeros outside the unit circle to their reciprocal conjugate.
+	\item In the all-pass system, add poles at the reciprocal conjugate of the zeros outside the unit circle
+	\item (optional) Adjust gain of the minimum phase system to match the gain of the original system, so that the all-pass system has unit gain.
+\end{enumerate}
+
+Therefore,
+\begin{equation}
+H_{min}(z) = -9(1 + 1/3z^{-1})^2
+\end{equation}
+
+\begin{equation}
+H_{ap}(z) = -\frac{1}{9}\frac{(1 + 3z^{-1})(1 - 3z^{-1})}{(1 + 1/3z^{-1})(1 - 1/3z^{-1})}
+\end{equation}
+	
+This choice is unique up to a scale factor.
+	
+\subsection{(b)}
+Yes, it has all poles at the origin.
+
+\subsection{(c)}
+
+Since the filter has real coefficients, if $c$ is a zero, $c^*$ must also be a zero.
+
+Due to the symmetry conditions, causal generalized linear phase FIR systems must obey one of following relations:
+\begin{align*}
+H(z) = z^MH(z^{-1}) \tag{if even symmetric} \\
+H(z) = -z^MH(z^{-1}) \tag{if odd symmetric} \\
+\end{align*}
+
+Therefore, if $c$ is a zero, $1/c$ must also be a zero:
+
+\begin{align*}
+H(c) = 0 = \pm c^MH(c^{-1})
+\end{align*}
+
+Again, from the real coefficients condition, if $1/c$ is a zero, $1/c^*$ must also be a zero.
+
+Therefore, if $c$ is a zero, $c^*, 1/c, 1/c^*$ must also be zeros.
+
+\noindent\textbf{Note:} this result can also be extended to other systems with real coefficients and even/odd symmetry. First, if a system (FIR or not) has real coefficients, its poles and zeros will appear as complex conjugate pairs. This follows from algebra, since the roots of a polynomial with real coefficients are either real or appear in complex conjugate pairs. Second, if a system (FIR or not) has even or odd symmetry, the poles and zeros will appear as conjugate reciprocal pairs. This follows from the properties of the $z$-transform:
+\begin{align}
+h[n] = \pm h[-n] \tag{even or odd symmetry} \\
+H(z) = \pm H(z^{-1}) \tag{time reversal property of the $z$-transform}
+\end{align}
+Therefore, if $c$ is a zero of $H(z)$, $1/c$ must also be a zero of $H(z)$, since $H(z = 1/c) = H(z = c) = 0$. Analogously, if $p$ is a pole of $H(z)$, $1/p$ must also be a pole of $H(z)$, since $H(z = 1/p) = H(z = p) = \infty$.
+
+\subsection{(d)}
+
+Using the result from part (c), we can do the following decomposition:
+
+\begin{figure}[!h]
+	\resizebox{0.9\textwidth}{!}{\input{figs/hw03q2_lin_phase_allpass_decomp.tex}}
+\end{figure}
+
+Therefore,
+\begin{equation}
+H_{lin}(z) = (1 + 3z^{-1})(1 +1/3z^{-1})
+\end{equation}
+
+\begin{equation}
+H_{ap}(z) = -\frac{1 - 3z^{-1}}{1 - 1/3z^{-1}}
+\end{equation}
+
+\newpage
+\section{Problem 3}
+\begin{description}
+	\item[(a)] A, B, and E. All their poles are at the origin.
+	\item[(b)] All. All of them have all poles inside the unit circle.
+	\item[(c)] F. It's the only system that appears to have zeros located at the conjugate symmetric of its poles i.e., if $e_k$ is a pole, then $1/e_k^*$ must be a zero.
+	\item[(d)] E. All its zeros are inside the unit circle.
+	\item[(e)] A and B. Their zeros appear in conjugate pairs and conjugate reciprocal pairs.
+	\item[(f)] A and D. They have zeros at $z = -1$, which corresponds to $\omega = \pm\pi$.
+	\item[(g)] A and D. Their maximum frequency response appears at low frequencies. In A for the absence of zeros close to $\omega =0$, and in D the poles near  $\omega =0$ increase the magnitude response.
+	\item[(h)] E. It's the FIR system with the fewest number of zeros (poles).
+	\item[(i)] E. It's the only minimum phase system.
+	\item[(j)] 
+	\begin{align}\nonumber
+	H(z) &= \frac{(1 + 1.1z^{-1})(1 - 1.1z^{-1})}{(1 + 0.8z^{-1})(1 -0.8z^{-1})} \\
+	&=\underbrace{\frac{(1 + 1/1.1z^{-1})(1 - 1/1.1z^{-1})}{(1 + 0.8z^{-1})(1 -0.8z^{-1})}}_{H_{min}(z)}\cdot\underbrace{\frac{(1 + 1.1z^{-1})(1 - 1.1z^{-1})}{(1 + 1/1.1z^{-1})(1 -1.1z^{-1})}}_{H_{ap}(z)}
+	\end{align}
+	
+\end{description}	
+	
+\section{Problem 4: Kramers-Kronig relations in discrete time}
+\subsection{(a)}
+
+Using the time reversal property of real signals
+\begin{equation}
+x[-n] \Longleftrightarrow X^*(e^{j\omega}) \tag{time reversal of real signals}
+\end{equation}
+
+We can write:
+\begin{align}
+	X_e(e^{j\omega}) &= \frac{1}{2}\Big(X(e^{j\omega}) + X^*(e^{j\omega})\Big) = \mathrm{Re}\{X(e^{j\omega})\} \\
+	X_o(e^{j\omega}) &= \frac{1}{2}\Big(X(e^{j\omega}) - X^*(e^{j\omega})\Big) = j\mathrm{Im}\{X(e^{j\omega})\} 
+\end{align}
+
+These results indicate that for real-valued signals, even symmetry in time domain corresponds to purely real frequency component, whereas odd symmetry in time domain corresponds to purely imaginary frequency component. This relationship stems from the fact that $e^{j\omega} = \cos\omega + j\sin\omega$, cosine is a even function and sine is an odd function.
+
+This result is also valid for continuous-time signals.
+\subsection{(b)}
+
+Since $x[n] = x_e[n] + x_o[n]$, and since $x[n]$ is causal i.e., $x[n] = 0, n < 0$, we must have that
+
+\begin{equation}
+x_o[n] = -x_e[n], n < 0 \implies x[n] = 0, n < 0
+\end{equation}
+
+By definition $x_o[n]$ is odd symmetric: $x_o[n] = -x_o[-n]$. Therefore,
+\begin{align} \nonumber
+x_o[n] &= \begin{cases}
+x_e[n], &n > 0 \\
+0, & n = 0 \\
+-x_e[n], &n < 0
+\end{cases} \\
+&= \mathrm{sign}[n]x_e[n],
+\end{align}
+where the sign function is simply
+\begin{equation}
+\mathrm{sign}[n] = \begin{cases}
+1, &n > 0 \\
+0, & n = 0 \\
+-1, & n < 0
+\end{cases}
+\end{equation}
+
+Multiplication in time domain corresponds to convolution in frequency domain:
+\begin{align}
+X_o(e^{j\omega}) = \frac{1}{2\pi}\Big(\mathcal{F}\{\mathrm{sign}[n]\}\ast X_e(e^{j\omega})\Big),
+\end{align}
+Following the hint: $\mathcal{F}\{\mathrm{sign}[n]\} = -j\frac{\sin\omega}{1-\cos\omega}, |\omega| < \pi$. Thus, 
+\begin{align}
+X_o(e^{j\omega}) = \frac{1}{2\pi}\Big(-j\frac{\sin\omega}{1-\cos\omega}\ast X_e(e^{j\omega})\Big),
+\end{align}
+
+\subsection{(c)}
+
+Combining the results from parts (a) and (b):
+\begin{align}
+X_o(e^{j\omega}) &= \frac{1}{2\pi}\Big(-j\frac{\sin\omega}{1-\cos\omega}\ast X_e(e^{j\omega})\Big) \tag{from part (b)} \\
+j\mathrm{Im}\{X(e^{j\omega})\} &= \frac{1}{2\pi}\Big(-j\frac{\sin\omega}{1-\cos\omega}\ast \mathrm{Re}\{X(e^{j\omega})\}\Big) \tag{from part (a)} \\
+\mathrm{Im}\{X(e^{j\omega})\} &= -\frac{1}{2\pi}\Big(\frac{\sin\omega}{1-\cos\omega}\ast \mathrm{Re}\{X(e^{j\omega})\}\Big)
+\end{align}
+
+\section{Problem 5: ``Unknown'' plant identification by noise injection}
+
+The Matlab code for parts (a), (b), and (d) are included at the end of this question.
+
+\subsection{(a)}
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04_q3a_emp_xcorr.eps}
+	\caption{Empirical autocorrelation function of $y[n]$ for a white noise input with average power $\sigma_x^2$.}
+\end{figure}
+\FloatBarrier
+\subsection{(b)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04_q3b_emp_psd.eps}
+	\caption{Empirical power spectrum density of $y[n]$.}
+\end{figure}
+\FloatBarrier
+
+
+\subsection{(c)}
+Using the same strategy outlined in lecture notes 6, slide 41, we can write:
+\begin{equation}
+|H(e^{j\omega})|^2 = \frac{\Phi_{yy}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
+\end{equation}
+
+For this problem, $\Phi_{xx}(e^{j\omega}) = 1$, and we'll obtain $\Phi_{yy}(e^{j\omega})$ through measurements. 
+
+Once we calculate $|H(e^{j\omega})|$, we can write:
+\begin{align*}
+H(e^{j\omega}) &= |H(e^{j\omega})|\exp(j\angle H(e^{j\omega})) \\
+\ln H(e^{j\omega}) &= \underbrace{\ln |H(e^{j\omega})|}_{\text{real part}} + j\underbrace{\angle H(e^{j\omega})}_{\text{imaginary part}} \tag{taking the $\ln$ of both sides}
+\end{align*}
+
+We know that if $H(e^{j\omega})$ is minimum phase, $\ln H(e^{j\omega})$ will be causal. Therefore, we can apply the Kramers-Knronig relations to calculate the imaginary part (phase) from the real part (log magnitude):
+
+
+\begin{align} \nonumber
+\angle H(e^{j\omega}) &= -\frac{1}{2\pi}\bigg[\Big(\frac{\sin\omega}{1-\cos\omega}\Big)\ast \ln |H(e^{j\omega})|\bigg] \\
+ &=-\frac{1}{2\pi}\int_{-\pi}^{\pi}\bigg(\frac{\sin\theta}{1-\cos\theta}\bigg)\ln |H(e^{j(\omega- \theta)})|d\theta
+\end{align} 
+And we'll perform this integration numerically.
+
+\subsection{(d)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04_q3d_phase.eps}
+	\caption{Estimated phase of $H(e^{j\omega})$.}
+\end{figure}
+\FloatBarrier
+
+\subsection{(e)}
+
+The disagreement between estimated and theoretical phase responses appear because the numerical integration method doesn't account for the periodicity of the DTFT. 
+
+In the integral formula:
+\begin{align} \nonumber
+\frac{1}{2\pi}\int_{-\pi}^{\pi}\bigg(\frac{\sin(\omega-\theta)}{1-\cos(\omega-\theta)}\bigg)\mathrm{Re}\{X(e^{j(\omega)})\}d\theta,
+\end{align}
+to accurately estimate the value of this integral at say, $\omega= -\pi$, we would need to evaluate $\frac{\sin(\omega-\theta)}{1-\cos(\omega-\theta)}$ from $-2\pi$ to $0$. However, since the numerical integration assumes that the frequency vector is in the interval $[-\pi, \pi]$, \texttt{conv} assumes that the integrands are zero outside that interval. In other words, it doesn't account for the periodicity of the DTFT.
+
+That discrepancy is not a problem for modeling this plant, since the phase information is not important when the magnitude response is virtually zero.
+
+However, if we wish to obtain accurate phase estimates over the entire range of frequencies, we need to modify the integration slightly:
+
+\begin{equation}
+\frac{1}{2\pi}\int_{-\pi}^{\pi}x(u)y(\omega-u)du \approx \texttt{1/(2*pi)*conv(x, y, `same')*dw},
+\end{equation}
+where now either vector \texttt{x} or \texttt{y} is defined for \texttt{w} in the interval $]-2\pi, 2\pi[$ in steps of \texttt{dw}, while the other vector can still be defined for \texttt{w} in the interval $[-\pi, \pi]$ in steps of \texttt{dw}. 
+
+To illustrate this, consider the same example above by now the code for the phase calculation was modified in the following way
+\begin{align*}
+& \texttt{w2 = -2*pi+dw:dw:2*pi-dw;} \\
+& \texttt{hHT = sin(w2)./(1-cos(w2));} \\
+& \texttt{hHT(w2 == 0) = 0;}\\
+& \texttt{P = -1/(2*pi)*conv(logMag, hHT, 'same')*dw;}
+\end{align*}
+Note that the frequency vector \texttt{w2} is defined in the interval $]-2\pi, 2\pi[$ in steps of \texttt{dw}. The choice of making the interval open in $\pm 2\pi$ is solely to escape the discontinuity of $\frac{\sin\omega}{1-\cos\omega}$ at $0, \pm2\pi, \ldots$.
+
+The result is illustrated in the figure below:
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04_q3d_phase_correct.eps}
+	\caption{Estimated phase of $H(e^{j\omega})$, now with corrected convolution integral calculation.}
+\end{figure}
+\FloatBarrier
+
+\subsection{Matlab code}
+
+\input{tex/plant_id.tex}
+
+\section{Problem 6}
+
+\subsection{(a)}
+
+\begin{align} \nonumber
+H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
+&= 0.05634\frac{1+z^{-1}}{1-0.683z^{-1}}\cdot\frac{1 -1.0166z^{-1} + z^{-2}}{1 -1.4461z^{-1} + 0.7957z^{-2}}
+\end{align}
+
+To implement each subsystem you could choose whatever form. The picture below shows the implementation assuming a direct form II.
+
+\begin{figure}[!h]
+	\resizebox{0.9\textwidth}{!}{\input{figs/hw03q5_flow_graph_cascade.tex}}
+\end{figure}
+\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign, since the diagram assumes a transfer function of the form:
+
+\begin{equation}
+	H(z) = \frac{\sum_{k=0}^M b_kz^{-k}}{1-\sum_{k=1}^N a_kz^{-k}}
+\end{equation}
+
+\subsection{(b)}
+
+\begin{align} \nonumber
+H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
+&= \frac{0.0563 -0.0009z^{-1}   -0.0009z^{-2}   + 0.0563z^{-3}}{1.0000   -2.1291z^{-1}    +1.7834z^{-2}   -0.5435z^{-3}}
+\end{align}
+
+\FloatBarrier
+\begin{figure}[!h]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{figs/hw03q5_flow_graph_direct_form_II.tex}}
+\end{figure}
+\FloatBarrier
+
+\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign.
+\subsection{(c)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_zplane.eps}
+	\caption{Pole-zero diagram of $H(z)$.}
+\end{figure}
+\FloatBarrier
+
+\subsection{(d)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_zplane_quant.eps}
+	\caption{Comparison of pole-zero diagram of $H(z)$ before and after coefficient quantization.}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_mag.eps}
+	\caption{Comparison of magnitude response of $H(z)$ before and after coefficient quantization.}
+\end{figure}
+\FloatBarrier
+
+The pole-zero diagram shows that the poles and zeros did not change much, and consequently all other properties of the system should remain roughly the same.
+
+\section{Problem 7}
+
+\subsection{(a)}
+By inspection
+\begin{equation}
+	H(z) = \frac{z^{-1} - a}{1 - az^{-1}}
+\end{equation}
+
+\subsection{(b)}
+
+\begin{equation}
+\sigma_{15}^2 = \frac{\Delta^2}{12} = \frac{2^{-30}}{12}
+\end{equation}
+
+\begin{figure}[!h]
+	\centering
+	\input{figs/hw04q7_flow_graphs_midterm_2014.tex}
+\end{figure}
+
+\subsection{(c)}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(A)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(B)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(C)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2 + \sigma_{15}^2|H(e^{j\omega})|^2 = 2\sigma_{15}^2 \tag{(D)}
+\end{equation}
+
+\subsection{(d)}
+
+(A) and (B) will have the largest output noise average power.
+
+\begin{equation}
+	\sigma_{f}^2 = 2\sigma_{15}^2\sum_{k = 0}^\infty (a^2)^k = \frac{2\sigma_{15}^2}{1 - a^2}
+\end{equation}
+
+
+
+\end{document}

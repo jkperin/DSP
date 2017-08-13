@@ -1,0 +1,36 @@
+\def\fs{20}
+\begin{tikzpicture} 
+\begin{axis}[
+axis lines*=middle,
+enlargelimits = upper, clip=false,
+width=\textwidth,
+height=0.5\textwidth,
+ymin=0,
+ymax=1.2,
+xmin=-30,
+xmax=30,
+axis line style={->,>=stealth},
+xlabel={$\Omega$},
+ylabel={$Y_r(j\Omega)$},
+yticklabel style = {yshift=0.2cm},
+xticklabel style = {yshift=-0.1cm},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+ytick=1,
+yticklabels={$1$},
+xtick={-4, 4},
+xticklabels={$-40\pi$, $40\pi$},
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+%\addplot[black, line width=1.5pt] coordinates {(-30, 1) (30, 1)};
+\addplot[black, line width=1pt, domain=-30:30, samples=101] coordinates {(-30, 0) (-4, 0) (0, 1) (4, 0) (30, 0)};
+\end{axis}
+
+\end{tikzpicture}

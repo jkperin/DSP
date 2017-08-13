@@ -1,0 +1,164 @@
+\resizebox{0.5\textwidth}{!}{
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+
+\coordinate[below of=00] (10) {};
+\node[terminal={below}{}, below of=01] (11) {};
+\coordinate[below of=02] (12) {};
+
+%
+\draw[zpath={right}] (11) to (01);
+
+%
+\draw[solid, \thickness] (00) to (10);
+\draw[solid, \thickness] (02) to (12);
+%
+
+%
+\draw[amark={$-a$}{above}] (00) to (01);
+\draw[amark={$1$}{above}] (10) to (11);
+
+%
+\draw[amark={$1$}{above}] (01) to (02);
+\draw[amark={$a$}{above}] (12) to (11);
+
+\draw[amark] (x) to (00);
+\draw[amark] (02) to (y);
+\node[black, fill=black!10, below=1.5cm of y] {(A)}; 
+
+\node[node, above=0.5cm of 01] (e0) {}; \node[right, red2] at (e0) {$\sigma_{15}^2$};
+\draw[->, >=stealth, red2, \thickness] (e0) to (01);
+\node[node, below=0.5cm of 11] (e1) {}; \node[right, red2] at (e1) {$\sigma_{15}^2$};
+\draw[->, >=stealth, red2, \thickness] (e1) to (11);
+
+\end{tikzpicture}
+}
+
+\resizebox{0.5\textwidth}{!}{
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right=1cm of x] (00) {};
+\node[terminal={below}{}, right=1.25cm of 00] (01) {};
+\node[terminal={below}{}, right=1cm of 01] (02) {};
+\node[terminal={below}{}, right=1.25cm of 02] (03) {};
+\node[terminal={below}{$y[n]$}, right=1cm of 03] (y) {};
+
+\node[terminal={below}{}, below of=00] (10) {};
+\coordinate[below of=01] (11) {};
+\coordinate[below of=02] (12) {};
+\node[terminal={below}{}, below of=03] (13) {};
+
+%
+\draw[zpath={left}] (00) to (10);
+\draw[amark={$1$}{below}] (10) to (11);
+\draw[solid, \thickness] (11) to (01);
+
+%
+\draw[zpath={right}] (03) to (13);
+\draw[amark={$a$}{below}] (13) to (12);
+\draw[solid, \thickness] (12) to (02);
+
+%
+\draw[amark={}{right}] (x) to (00);
+\draw[amark={$-a$}{above}] (00) to (01);
+\draw[amark={}{right}] (01) to (02);
+\draw[amark={}{right}] (03) to (y);
+
+\draw[amark={$1$}{above}] (02) to (03);
+
+
+\node[black, fill=black!10, below=1.5cm of y] {(B)}; 
+
+\node[node, above=0.5cm of 01] (e0) {}; \node[right, red2] at (e0) {$\sigma_{15}^2$};
+\draw[->, >=stealth, red2, \thickness] (e0) to (01);
+\node[node, above=0.5cm of 02] (e1) {}; \node[right, red2] at (e1) {$\sigma_{15}^2$};
+\draw[->, >=stealth, red2, \thickness] (e1) to (02);
+
+\end{tikzpicture}
+}
+
+\resizebox{0.5\textwidth}{!}{
+	\begin{tikzpicture}[node distance=1.75cm]
+	\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+	\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+	\node[terminal={below}{}, right of=x] (00) {};
+	\node[terminal={below}{}, right of= 00] (01) {};
+	\node[terminal={below}{}, right of=01] (02) {};
+	\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+	
+	\coordinate[below of=00] (10) {};
+	\node[terminal={below}{}, below of=01] (11) {};
+	\coordinate[below of=02] (12) {};
+	
+	%
+	\draw[amark={$a$}{right}] (11) to (01);
+	
+	%
+	\draw[solid, \thickness] (00) to (10);
+	\draw[solid, \thickness] (02) to (12);
+	%
+	
+	%
+	\draw[amark={$z^{-1}$}{above}] (00) to (01);
+	\draw[amark={$-1$}{above}] (10) to (11);
+	
+	%
+	\draw[amark={$1$}{above}] (01) to (02);
+	\draw[amark={$z^{-1}$}{above}] (12) to (11);
+	
+	\draw[amark] (x) to (00);
+	\draw[amark] (02) to (y);
+	\node[black, fill=black!10, below=1.5cm of y] {(C)}; 
+	
+	\node[node, above=0.5cm of 01] (e0) {}; \node[right, red2] at (e0) {$\sigma_{15}^2$};
+	\draw[->, >=stealth, red2, \thickness] (e0) to (01);
+	\end{tikzpicture}
+}
+
+\resizebox{0.5\textwidth}{!}{
+	\begin{tikzpicture}[node distance=1.75cm]
+	\tikzstyle{node}=[red2, circle,fill=red2,minimum size=2pt,inner sep=0pt]
+	\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+	\node[terminal={below}{}, right of=x] (00) {};
+	\node[terminal={below}{}, right of= 00] (01) {};
+	\node[terminal={below}{}, right of=01] (02) {};
+	\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+	
+	\coordinate[below of=00] (10) {};
+	\node[terminal={below}{}, below of=01] (11) {};
+	\coordinate[below of=02] (12) {};
+	
+	%
+	\draw[amark={$z^{-1}$}{right}] (01) to (11);
+	
+	%
+	\draw[solid, \thickness] (00) to (10);
+	\draw[solid, \thickness] (02) to (12);
+	%
+	
+	%
+	\draw[amark={$1$}{above}] (00) to (01);
+	\draw[amark={$a$}{above}] (11) to (10);
+	
+	%
+	\draw[amark={$-a$}{above}] (01) to (02);
+	\draw[amark={$1$}{above}] (11) to (12);
+	
+	\draw[amark] (x) to (00);
+	\draw[amark] (02) to (y);
+	\node[black, fill=black!10, below=1.5cm of y] {(D)}; 
+	
+	\node[node, above=0.5cm of 00] (e0) {}; \node[right, red2] at (e0) {$\sigma_{15}^2$};
+	\draw[->, >=stealth, red2, \thickness] (e0) to (00);
+	\node[node, above=0.5cm of 02] (e1) {}; \node[right, red2] at (e1) {$\sigma_{15}^2$};
+	\draw[->, >=stealth, red2, \thickness] (e1) to (02);
+	\end{tikzpicture}
+}

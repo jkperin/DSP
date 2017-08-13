@@ -1,0 +1,515 @@
+\documentclass{article}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage{array}
+\usepackage[numbered]{bookmark}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{figs/}}
+
+\input{preamble.tex}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.2} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkTitle} % Top center head
+\rhead{\hmwkClass} % Top right header
+\lfoot{} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{Perl} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=Perl, % Use Perl in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=5, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\perlscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.pl}
+\end{itemize}
+}
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hmwkTitle}{Homework \#05} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkAuthorName}{Solutions} % Your name
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+	
+\section{Problem 1}
+
+Matlab code for this problem is attached at the end of this question.
+
+\subsection{(a)}
+
+The parameters of the filters are listed below
+\begin{itemize}
+	\item 3-dB bandwidth or cut-off frequency: 4 kHz, which for $1/T = 16$ kHz corresponds to $\omega_c = \pi/2$ 
+	\item Order: 8
+	\item Ripple (only used in Chebyshev I and elliptic filters): 1 dB, any other answer is acceptable. However, the ripple in the passband cannot be very large.
+	\item Stopband edge frequency (only used in Chebyshev II and elliptic filters): $1.1\omega_c$. This value led to a cutoff frequency of nearly 4 kHz. Other answer are accepted, as long as the cutoff frequency is close to 4 kHz
+	\item Stopband attenuation (only used in Chebyshev II and elliptic filters): 30 dB. Other answers are accepted.
+\end{itemize}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/classic_filters_mag.eps}
+		\caption{Magnitude}
+		\label{fig:mag}
+	\end{subfigure}%
+	~
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/classic_filters_phase.eps}
+		\caption{Phase}
+		\label{fig:phase}
+	\end{subfigure}
+	\caption{(a) Magnitude and (b) phase responses of the filters designed.}\label{fig:q81a}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{(b)}
+
+See Matlab code for solution to this question.
+
+To achieve the desired non-integer sampling rate change, we must upsample by 320 and decimate by 441.
+
+One comment regarding implementation is that the lowpass filter between the upsampling and downsampling stages must have gain $L$. However, the lowpass filter prior to downsampling in decimation (and in the \texttt{decimate} function) has gain 1. Therefore, we must scale the result by $L$. For more details, refer to slide 30 of lecture notes 4.
+
+\subsection{(c)}
+
+This problem is equivalent to interchanging decimation and filtering. Therefore, it follows that
+\begin{equation}
+	H_{32}(z) = H_{16}(z^2)
+\end{equation}
+
+\subsection{Matlab code for Problem 1}
+
+\input{tex/classic_filters.tex}
+
+\section{Problem 2}
+
+Matlab code for this problem is attached at the end of this question.
+
+\subsection{(a)}
+
+For $\lambda$ there's only one choice: $\lambda = 2\pi60 = 120\pi$.
+
+The parameter $b$ controls the sharpness of the notch (loosely the so-called $Q$ factor). We would like to make $b$ smaller as possible, but this would reduce the attenuation of the notch. A reasonable choice is $b = 2\pi 5 = 10\pi$. This allows reasonable sharpness with enough attenuation. Other reasonable answers are accepted.
+
+\subsection{(b)}
+
+For this we just can use the \texttt{bilinear} function from Matlab. The frequency pre-warping frequency must be $\Omega_p = \lambda$ so that the location of the notch is preserved when converting the filter to discrete time.
+\begin{align*}
+	&\texttt{>> [bzw, azw] = bilinear(bs, as, 1/T);} \tag{without frequency pre-warping} \\
+	&\texttt{>> [bz, az] = bilinear(bs, as, 1/T, lamb/(2*pi));} \tag{with frequency pre-warping}
+\end{align*}
+
+See code for context.
+
+\subsection{(c)}
+
+From Figure~\ref{fig:egc:bilinear-mag} we clearly see that we must use frequency pre-warping, otherwise the frequency of the notch would shift, and consequently the filter would no longer be suitable to remove the 60 Hz interference. 
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/bilinear_ecg.eps}
+	\caption{Magnitude response of digital filter obtained by bilinear transformation with and without frequency pre-warping.} \label{fig:egc:bilinear-mag}
+\end{figure}
+\FloatBarrier
+
+\subsection{(d)}
+
+From Figure~\ref{fig:egc:bilinear-mag} we see that $H(z)$ obtained with bilinear transformation has zeros at $e^{\pm j2\pi60T}$. These zeros are responsible for the notch in the magnitude response. The pole close to the zero guarantees that away from $60 Hz$ the magnitude response looks flat.  
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/zplane_bilinear_ecg.eps}
+	\caption{Pole-zero diagram of $H(z)$ obtained by bilinear transformation with frequency pre-warping.} \label{fig:egc:bilinear-zplane}
+\end{figure}
+\FloatBarrier
+
+\subsection{(e)}
+
+As shown in Figures~\ref{fig:egc:comparison1} and \ref{fig:egc:comparison2} the digital notch filter designed effectively eliminates the 60-Hz interference.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.9]{figs/ecg_comparison1.eps}
+	\caption{Comparison between digital notch filter input (ECG with 60 interference), and digital notch filter output.} \label{fig:egc:comparison1}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.9]{figs/ecg_comparison2.eps}
+	\caption{Comparison between digital ``clean'' ECG signal (ECG without 60 interference), and the digital notch filter output.} \label{fig:egc:comparison2}
+\end{figure}
+\FloatBarrier
+
+\subsection{(f)}
+
+Figure~\ref{fig:egc:fir_notch} shows the magnitude response of the designed FIR filter. The filter was optimized using the least-squares algorithm with the following design parameters:
+\begin{itemize}
+	\item Order: 52 the highest value allowed in the problem statement
+	\item $\omega_cT = 2\pi 60 = 120\pi$. So that the notch falls at 60 Hz.
+	\item $\Delta\omega_1 = 0.018\pi$. Other values are accepted.
+	\item $\Delta\omega_2 = 0.04\pi$. Other values are accepted.
+\end{itemize}
+	
+This filter has nice properties. It has a high attenuation of 55 dB in the notch, which is higher than the filter from part (c). Moreover, the notch is not too wide. Furthermore, the ripples in the passband are not significant.
+
+The filter from the \href{http://ieeexplore.ieee.org/document/1351410/}{2004 paper} has higher attenuation at the cost of a wider notch and more ripples in the passband. Moreover, their filter was designed for a higher oversampling rate, which facilitates filtering. Their sampling rate was 1 kHz, while the sample rate of our signal was $\sim 333$ Hz.
+	
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/ecg_fir_notch.eps}
+		\caption{Magnitude response of FIR notch filter.} \label{fig:egc:fir_notch}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/ecg_fir_notch_phase.eps}
+		\caption{Phase response of FIR notch filter.} \label{fig:egc:fir_notch_phase}
+	\end{subfigure}
+	\caption{(a) magnitude and (b) phase response of FIR notch filter.}
+\end{figure}
+\FloatBarrier
+
+Due to the linear phase property, the FIR filter introduces a delay of $M/2 = 26$ samples. The plots below show the comparison of the FIR filter with the ``clean'' ECG with delay and without delay.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.9]{figs/ecg_fir_comparison1.eps}
+	\caption{Comparison between digital ``clean'' ECG signal (ECG without 60 interference), and the digital notch FIR filter output. In this case the delay introduced by the filter was not removed. } \label{fig:egc:fir_comparison1}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.9]{figs/ecg_fir_comparison2.eps}
+	\caption{Comparison between digital ``clean'' ECG signal (ECG without 60 interference), and the digital notch FIR filter output. Delay introduced by the FIR filter was removed.} \label{fig:egc:fir_comparison2}
+\end{figure}
+\FloatBarrier
+
+\subsection{Matlab code for Problem 2}
+\input{tex/notch_filter_ecg.tex}
+
+\newpage
+\section{Problem 3}
+\subsection{(a)}
+
+For the window method we simply need to make
+\begin{equation}
+	h[n] = h_d[n-M/2]w[n] = \begin{cases}
+	w[n]\frac{2}{\pi}\frac{\sin^2((n-M/2)\pi/2)}{n}, & n = 0, \ldots, M-1 \\
+	0, & \text{otherwise}
+	\end{cases} 
+\end{equation}
+where $w[n]$ is any window of your choice, and the time shift by $M/2$ is necessary to make $h[n]$ causal.
+
+The magnitude response of the FIR Hilbert transformer using the window method with Hamming window is shown below. Other windows are also accepted.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_win_mag.eps}
+		\caption{Magnitude} 
+	\end{subfigure}%
+	~ 
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_win_phase.eps}
+		\caption{Phase}
+	\end{subfigure}
+	\caption{(a) magnitude and (b) phase response of Hilbert transformer designed by windowing with Hamming window.}
+\end{figure}
+\FloatBarrier
+
+See the code for details.
+
+\subsection{(b)}
+
+To design the Hilbert transformer by Parks-McClellan we can simply do
+\begin{equation*}
+	\texttt{>> hpm = firpm(M, [0.1 0.9], [1 1], `hilbert');}
+\end{equation*}
+This filter will have constant magnitude between $0.1\pi$ and $0.9\pi$. The parameter \texttt{`hilbert'} guarantees that the filter has odd symmetry.
+
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_pm_mag.eps}
+		\caption{Magnitude} 
+	\end{subfigure}%
+	~ 
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_pm_phase.eps}
+		\caption{Phase}
+	\end{subfigure}
+	\caption{(a) magnitude and (b) phase response of Hilbert transformer designed by Parks-McClellan method.}
+\end{figure}
+\FloatBarrier
+
+See the code for details.
+
+\subsection{(c)}
+
+Similarly to part (c), to design the Hilbert transformer by leasts-squares algorithm we can simply do
+\begin{equation*}
+\texttt{>> hls = firls(M, [0.1 0.9], [1 1], `hilbert');}
+\end{equation*}
+This filter will have constant magnitude between $0.1\pi$ and $0.9\pi$. The parameter \texttt{`hilbert'} guarantees that the filter has odd symmetry.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_ls_mag.eps}
+		\caption{Magnitude} 
+	\end{subfigure}%
+	~ 
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/hilbert_ls_phase.eps}
+		\caption{Phase}
+	\end{subfigure}
+	\caption{(a) magnitude and (b) phase response of Hilbert transformer designed by leasts-squares method.}
+\end{figure}
+\FloatBarrier
+
+See the code for details.
+
+\subsection{Matlab code for Problem 3}
+\input{tex/fir_hilbert_transformer.tex}
+
+\newpage
+\section{Problem 4}
+\subsection{(a)}
+
+For the window method we simply need to make
+\begin{equation}
+	h_{win}[n] = \begin{cases}
+	h[n], n = 0, \ldots, M-1 \\
+	0, \text{otherwise}
+	\end{cases}
+\end{equation}
+
+We can obtain $h[n]$ analytically or by using the \texttt{impz} function from Matlab. 
+
+The magnitude and phase plots of $H(z)$ and the filter designed by windowing $H_{win}(z)$ are shown below. The magnitude is plotted in linear units. Note that the phase is nonlinear.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{eq_rect_win_mag.eps}
+		\caption{Magnitude}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{eq_rect_win_phase.eps}
+		\caption{Phase}
+	\end{subfigure}
+	\caption{(a) Magnitude and (b) phase response of the filter designed by windowing compared to the desired $H(z)$.}
+\end{figure}
+\FloatBarrier
+
+\subsection{(b)}
+
+\begin{align}
+	&\texttt{>> BER = simple\_channel(1) = 0.2442} \tag{without equalization} \\
+	&\texttt{>> BER = simple\_channel(hwin) = 0} \tag{with equalization}
+\end{align}
+
+Different (but close) values are possible depending on the random number generator seed.
+
+\subsection{(c)}
+
+To design a non-linear phase FIR filter using the least-squares algorithm, we need to define the matrix $Q$ as done in lecture notes 9, slide 49. The code to generate this matrix was available on Canvas/Files/Matlab: \texttt{predicing\_bandlimited\_signals.m}.
+
+Once the matrix $Q$, we can use least-squares as usual:
+\begin{equation}
+h = Q^\dagger d
+\end{equation}
+since the weight matrix $W$ is equal to the identity.
+
+This results in the following magnitude and phase responses:
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{eq_ls_mag.eps}
+		\caption{Magnitude}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{eq_ls_phase.eps}
+		\caption{Phase}
+	\end{subfigure}
+	\caption{(a) Magnitude and (b) phase response of the filter designed by leasts-squares compared to the desired $H(z)$.}
+\end{figure}
+\FloatBarrier
+
+As expected, this is identical to the result obtained by windoing. This only happens because in this case the weight function was one everywhere i.e., the matrix $Q$ was the identity.
+
+\subsection{(d)}
+
+The noise is filtered by $H_{win}(z) = H_{ls}(z)$. Therefore, the noise PSD is shaped by
+\begin{align}
+	\Phi_{ff}(e^{j\omega}) = \sigma^2|H_{win}(e^{j\omega})|^2
+\end{align}
+
+Hence, the total power after filtering is
+\begin{align}
+	\sigma_f^2 &= \frac{\sigma^2}{2\pi}\int_{-\pi}^{\pi}|H_{win}(e^{j\omega})|^2d\omega \\
+	&= \sum_{m=0}^{M} |h_{win}[m]|^2 \\
+	&= 0.0144
+\end{align}
+
+This value is 14 times larger than $\sigma^2$.
+
+\subsection{Matlab code for problem 4}
+\input{tex/linear_equalization.tex}
+
+\end{document}

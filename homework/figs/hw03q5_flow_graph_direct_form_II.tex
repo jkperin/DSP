@@ -1,0 +1,48 @@
+\begin{tikzpicture}[node distance=1.75cm]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+
+\foreach \j in {1, 2, 3} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\node[terminal={below}{}, below of=\jn0] (\j0) {};
+	\node[terminal={below}{}, below of=\jn1] (\j1) {};
+	\node[terminal={below}{}, below of=\jn2] (\j2) {};
+}
+
+%
+\draw[zpath={right}] (01) to (11);
+\draw[zpath={right}] (11) to (21);
+\draw[zpath={right}] (21) to (31);
+
+%
+\draw[amark] (10) to (00);
+\draw[amark] (20) to (10);
+\draw[amark] (30) to (20);
+
+%
+\draw[amark] (12) to (02);
+\draw[amark] (22) to (12);
+\draw[amark] (32) to (22);
+
+
+%
+\draw[amark={$1$}{above}] (00) to (01);
+\draw[amark={$2.1291$}{above}] (11) to (10);
+\draw[amark={$-1.7834$}{above}] (21) to (20);
+\draw[amark={$0.5435$}{above}] (31) to (30);
+
+%
+\draw[amark={$0.0563$}{above}] (01) to (02);
+\draw[amark={$-0.0009$}{above}] (11) to (12);
+\draw[amark={$-0.0009$}{above}] (21) to (22);
+\draw[amark={$0.0563$}{above}] (31) to (32);
+
+
+\draw[amark] (x) to (00);
+\draw[amark] (02) to (y);
+
+\end{tikzpicture}

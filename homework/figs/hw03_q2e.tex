@@ -1,0 +1,146 @@
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+%at=(plot2.below south east), anchor=above north east,
+axis lines*=middle,
+enlargelimits = true,
+clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-8, xmax=8,
+axis line style={->,>=stealth},
+xlabel={\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\Omega$};}},
+ylabel={$Y_c(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	%xshift=0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},
+ytick={1},
+yticklabels={$A$},
+yticklabel style={yshift=0.15cm},
+xtick={-8, -6, -2, 2, 6, 8},
+xticklabels={$-4000\pi$, $-3000\pi$, $-1000\pi$, $1000\pi$, $3000\pi$, $4000\pi$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[dashed, line width=1pt] coordinates {(-8, 0) (0, 1) (8, 0)};	
+\addplot[solid, line width=1pt] coordinates {(-6, 0) (-6, 1/4) (-2, 3/4) (-2, 0) (2, 0) (2, 3/4) (6, 1/4) (6, 0)};	
+\end{axis}
+
+\begin{axis}[
+name=plot2,
+at=(plot1.below south east), anchor=above north east,
+axis lines*=middle,
+enlargelimits = true,
+clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-8, xmax=8,
+axis line style={->,>=stealth},
+xlabel={\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega =\Omega T$};}},
+ylabel={$Y_d(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	%xshift=0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},
+ytick={1},
+yticklabels={$\frac{A}{T_2}$},
+yticklabel style={yshift=0.15cm},
+xtick={-8, -6, -2, 2, 6, 8},
+xticklabels={$-2\pi/3$, $-\pi/2$, $-\pi/6$, $\pi/6$, $\pi/2$, $2\pi/3$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[dashed, line width=1pt] coordinates {(-8, 0) (0, 1) (8, 0)};	
+\addplot[solid, line width=1pt] coordinates {(-6, 0) (-6, 1/4) (-2, 3/4) (-2, 0) (2, 0) (2, 3/4) (6, 1/4) (6, 0)};	
+\end{axis}
+
+\begin{axis}[
+name=plot3,
+at=(plot2.below south east), anchor=above north east,
+axis lines*=middle,
+enlargelimits = true,
+clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-16, xmax=16,
+axis line style={->,>=stealth},
+xlabel={\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega =\Omega T/2$};}},
+ylabel={$Y_e(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	%xshift=0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},
+ytick={1},
+yticklabels={$2\frac{A}{T_2}$},
+yticklabel style={yshift=0.15cm},
+xtick={-8, -6, -2, 2, 6, 8},
+xticklabels={$-\pi/3$, $-\pi/4$, $-\pi/12$, $\pi/12$, $\pi/4$, $\pi/3$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[dashed, line width=1pt] coordinates {(-8, 0) (0, 1) (8, 0)};	
+\addplot[solid, line width=1pt] coordinates {(-6, 0) (-6, 1/4) (-2, 3/4) (-2, 0) (2, 0) (2, 3/4) (6, 1/4) (6, 0)};	
+\end{axis}
+
+\begin{axis}[
+name=plot4,
+at=(plot3.below south east), anchor=above north east,
+axis lines*=middle,
+enlargelimits = true,
+clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-16, xmax=16,
+axis line style={->,>=stealth},
+xlabel={\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega =\Omega T/2$};}},
+ylabel={$X_e(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	%xshift=0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},
+ytick={1},
+yticklabels={$\frac{A}{T_1}$},
+yticklabel style={yshift=0.15cm},
+xtick={-8, 8},
+xticklabels={$-\pi/3$, $\pi/3$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot[solid, line width=1pt] coordinates {(-8, 0) (0, 1) (8, 0)};	
+%\addplot[solid, line width=1pt] coordinates {(-6, 0) (-6, 1/4) (-2, 3/4) (-2, 0) (2, 0) (2, 3/4) (6, 1/4) (6, 0)};	
+\end{axis}
+
+\end{tikzpicture}

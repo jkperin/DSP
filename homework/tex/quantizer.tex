@@ -1,0 +1,28 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                \hspace*{-1.6em}{\scriptsize 1}$  $#function#$ [xq, e] = quantizer(x, B, range_lims)$\\ \hspace*{-1.6em}{\scriptsize 2}$  $\color{mgrey}#%% B-bit quantizer with range determined by range_lims#\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 3}$  $\\ \hspace*{-1.6em}{\scriptsize 4}$  DeltaX = range_lims(2) - range_lims(1); $\color{mgrey}$% dynamic range$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 5}$  Delta = DeltaX/(2^B); $\color{mgrey}$% step size$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 6}$  $\\ \hspace*{-1.6em}{\scriptsize 7}$  $\color{mgrey}$% Quantization levels start at range_lims(1) and go up to range_lims(2) in$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 8}$  $\color{mgrey}$% Delta increments. This is the codebook for the quantiz function$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 9}$  levels = range_lims(1):Delta:range_lims(2);$\\ \hspace*{-2em}{\scriptsize 10}$  [~, $\color{mdarkgrey}$xq] = quantiz(x, levels(1:end-1)+Delta/2, levels); $\color{black}$$\\ \hspace*{-2em}{\scriptsize 11}$  $\color{mgrey}$% The codebook is shifted by Delta/2 in order to obtain the partitions$\color{black}$$\\ \hspace*{-2em}{\scriptsize 12}$  $\\ \hspace*{-2em}{\scriptsize 13}$  xq = xq.'; $\color{mgrey}$% transpose to preserve same dimensionality as x$\color{black}$$\\ \hspace*{-2em}{\scriptsize 14}$  e = x - xq; $\color{mgrey}$% quantization error$\color{black}$$\\ \hspace*{-2em}{\scriptsize 15}$  $\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}
