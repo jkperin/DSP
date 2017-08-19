@@ -1,0 +1,151 @@
+% \fs and \fmax must be defined before calling this picture.
+\def\fs{5}
+\def\fmax{2.5}
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot2,
+	%at=(plot1.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=3,
+	xmin=-\fs-1,
+	xmax=\fs+1,
+	axis line style={->,>=stealth},
+	xlabel={\small \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \Omega T$};}},
+	ylabel={\small $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick=\empty,
+	ytick=2,
+	yticklabels={\small $\frac{1}{T}$},
+	yticklabel style={yshift=0.1cm},
+	xtick={-\fs, -2.5, 0, 2.5, \fs},
+	xticklabels={\small $-2\pi$, \small $-\pi$, \small 0, \small $\pi$, \small $2\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, line width=1pt] coordinates {(0, 2) (2.5, 0) (0, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(0, 2) (-2.5, 0) (0, 0)};
+	\addplot[solid, line width=1pt] coordinates {(\fs, 2) (\fs+2.5, 0) (\fs, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(\fs, 2) (\fs-2.5, 0) (\fs, 0)};
+	\addplot[solid, line width=1pt] coordinates {(-\fs, 2) (-\fs+2.5, 0) (-\fs, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-\fs, 2) (-\fs-2.5, 0) (-\fs, 0)};
+	\addplot[solid, line width=1pt] coordinates {(-2*\fs, 2) (-2*\fs+2.5, 0) (-2*\fs, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-2*\fs, 2) (-2*\fs-2.5, 0) (-2*\fs, 0)};]
+	\addplot[solid, line width=1pt] coordinates {(2*\fs, 2) (2*\fs+2.5, 0) (2*\fs, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(2*\fs, 2) (2*\fs-2.5, 0) (2*\fs, 0)};
+    \addplot[red2, line width=1.5pt, dashed] coordinates {(-3*\fs, 0) (-3*\fs, 0.7) (3*\fs, 0.7) (3*\fs, 0)} node[pos=0.57, black, pin={[pin edge={red, solid, thick}]30:{$\sigma_Q^2$}}, inner sep=0pt] {};
+\end{axis}
+
+\def\fsM{2.5}
+\def\fmaxM{1.25} % 
+\def\BWM{1.25} % WN * T_d = WN * 2 * T = 2 * (BW)
+\begin{axis}[
+	name=plot3,
+	at=(plot2.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true,
+	clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=3,
+	xmin=-\fs-1,
+	xmax=\fs+1,
+	axis line style={->,>=stealth},
+	xlabel={\small \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \frac{\Omega T}{2}$};}},
+	ylabel={\small $X_e(e^{j\omega}) = X(e^{j\omega L})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=1.5cm,
+	},
+	xtick=\empty,
+	ytick=2,
+	yticklabels={\small $\frac{1}{T}$},
+	xtick={-5, -3.75, ..., 5},
+	xticklabels={\small $-2\pi$, \small $-\frac{3\pi}{2}$, \small $-\pi$, \small $-\frac{\pi}{2}$, 0, \small $\frac{\pi}{2}$, \small $\pi$, \small $\frac{3\pi}{2}$, \small $2\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+    \if\SOLUTIONS1
+	\addplot[solid, line width=1pt] coordinates {(0, 2) (\BWM, 0) (0, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(0, 2) (-\BWM, 0) (0, 0)};
+	\addplot[solid, line width=1pt] coordinates {(\fsM, 2) (\fsM+\BWM, 0) (\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(\fsM, 2) (\fsM-\BWM, 0) (\fsM, 0)};
+	\addplot[solid, line width=1pt] coordinates {(-\fsM, 2) (-\fsM+\BWM, 0) (-\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-\fsM, 2) (-\fsM-\BWM, 0) (-\fsM, 0)};
+	\addplot[solid, line width=1pt] coordinates {(-2*\fsM, 2) (-2*\fsM+\BWM, 0) (-2*\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-2*\fsM, 2) (-2*\fsM-\BWM, 0) (-2*\fsM, 0)};]
+	\addplot[solid, line width=1pt] coordinates {(2*\fsM, 2) (2*\fsM+\BWM, 0) (2*\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(2*\fsM, 2) (2*\fsM-\BWM, 0) (2*\fsM, 0)};
+	\node[scale=1, fill=black!20] at (axis cs: 5, 2) {Upsampled by 2};
+    \addplot[red2, line width=1.5pt, dashed] coordinates {(-3*\fs, 0) (-3*\fs, 0.7) (3*\fs, 0.7) (3*\fs, 0)} node[pos=0.45, black, pin={[pin edge={red, solid, thick}]30:{$\sigma_Q^2$}}, inner sep=0pt] {};
+    \fi
+\end{axis}
+
+\def\fbw{1.25}
+\begin{axis}[
+	name=plot4,
+	at=(plot3.below south east), anchor=above north east,
+	axis lines*=middle,
+	enlargelimits = true, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,
+	ymax=3,
+	xmin=-\fs-1,
+	xmax=\fs+1,
+	axis line style={->,>=stealth},
+	xlabel={\small \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \frac{\Omega T}{2}$};}},
+	ylabel={\small $Y(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		%xshift=0.2cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick=\empty,
+    ytick=2,
+    yticklabels={\small $\frac{1}{T}$},
+	yticklabel style={yshift=0.2cm},
+	xtick={-5, -3.75, ..., 5},
+	xticklabels={\small $-2\pi$, \small $-\frac{3\pi}{2}$, \small $-\pi$, \small $-\frac{\pi}{2}$, 0, \small $\frac{\pi}{2}$, \small $\pi$, \small $\frac{3\pi}{2}$, \small $2\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+    \if\SOLUTIONS1
+	\addplot[solid, line width=1pt] coordinates {(0, 2) (\BWM, 0) (0, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(0, 2) (-\BWM, 0) (0, 0)};
+	\addplot[solid, line width=1pt] coordinates {(-2*\fsM, 2) (-2*\fsM+\BWM, 0) (-2*\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(-2*\fsM, 2) (-2*\fsM-\BWM, 0) (-2*\fsM, 0)};]
+	\addplot[solid, line width=1pt] coordinates {(2*\fsM, 2) (2*\fsM+\BWM, 0) (2*\fsM, 0)};
+	\addplot[solid, line width=1pt, fill=blue!50] coordinates {(2*\fsM, 2) (2*\fsM-\BWM, 0) (2*\fsM, 0)};
+    \addplot[red2, line width=1.5pt, dashed] coordinates {(-2*\fsM-\BWM, 0) (-2*\fsM-\BWM, 0.75) (-2*\fsM+\BWM, 0.75) (-2*\fsM+\BWM, 0) (-\BWM, 0) (-\BWM, 0.75) (\BWM, 0.75) (\BWM, 0) (2*\fsM-\BWM, 0) (2*\fsM-\BWM, 0.75) (2*\fsM-\BWM, 0.75) (2*\fsM+\BWM, 0.75) (2*\fsM+\BWM, 0)} node[pos=0.57, black, pin={[pin edge={red, solid, thick}]30:{$\sigma_Q^2$}}, inner sep=0pt] {};
+    \fi
+\end{axis}
+
+\end{tikzpicture}

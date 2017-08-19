@@ -1,0 +1,66 @@
+\def\M{10} % window length
+\begin{tikzpicture}
+\begin{axis}[
+name=plot1,
+axis lines*=middle,
+enlargelimits = upper, clip=true,
+scale only axis,
+width=\textwidth, height=0.5\textwidth,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={\Large $n$},
+ylabel={\Large $w[n]$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=-0.2cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.4cm,
+	anchor=south,
+},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=\M,
+ymin=0, ymax=1,
+xtick={0, 5, \M},
+xticklabels ={\Large $0$, \Large $\frac{M}{2}$, \Large $M$},
+ytick=1,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -5)}}]
+
+\addplot [color=black, solid, line width=1.5pt, domain=0:\M/2, samples=2] {2*x/\M};
+\addplot [color=black, solid, line width=1.5pt, domain=\M/2:\M, samples=2] {2-2*x/\M};
+\end{axis}
+
+\begin{axis}[
+name=plot2,
+at= (plot1.east), anchor=west,xshift=1cm,
+axis y line=middle, axis x line=middle,
+enlargelimits = upper, clip=true,
+axis on top,
+width=\textwidth, height=0.5\textwidth,
+scale only axis,
+xmin=-3.14, xmax=3.14,
+ymin=0, ymax=1,
+axis line style={->,>=stealth},
+xlabel={\Large $\omega$},
+ylabel={\Large $|W(e^{j\omega})|$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=south,
+},
+xtick={-3.14, 0, 3.14},
+xticklabels={\Large $-\pi$, 0, \Large $\pi$},
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+\addplot [smooth, black, line width=1.5pt, domain=-3.14:3.14, samples=51] {1/(\M^2)*dsinc(x, \M)^2};
+\end{axis}
+\end{tikzpicture}

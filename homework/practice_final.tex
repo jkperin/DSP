@@ -1,0 +1,141 @@
+\documentclass[12pt]{report}
+\setlength{\textwidth}{6.5 in}
+\setlength{\evensidemargin}{0 in}
+\setlength{\oddsidemargin}{0 in}
+\setlength{\textheight}{9.4 in }
+\setlength{\topmargin}{-0.7 in}
+\pagestyle{myheadings}
+\usepackage[pdftex]{graphicx} \usepackage{eso-pic}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{pdfpages}
+\usepackage{hyperref}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\DeclareGraphicsExtensions{.pdf,.eps,.png}
+
+\input{preamble.tex}
+
+\markboth{\em Practice final}{\em Practice final}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{centering}
+	{\large Stanford University}\\
+	{\large EE 264: Digital Signal Processing}\\
+	{\large Summer, 2017} \\
+	\mbox{}\\
+	{\large Practice final exam}\\
+	\mbox{}\\
+\end{centering}
+\noindent \rule{6.5 in}{0.5pt}
+%\mbox{}\\
+This is a sample question similar to the ones you will find in the final exam. I will go over this question during the review on the last lecture. The solutions will be available on Canvas after the class.
+
+\noindent This is not an assignment, so you do not need to turn in your solutions. However, it's recommended that you read and attempt all questions before the class.
+
+\noindent
+\rule{6.5 in}{0.5pt}
+
+\section*{Inverse control} 
+
+In many control problems, we wish to make a given plant track an input command. One way to achieve this is using an \textit{inverse control} system as illustrated in the figure below.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\input{figs/inverse_control.tex}}
+	\caption{Inverse control block diagram.}
+\end{figure}
+\FloatBarrier
+
+In this system, the controller is \textit{approximately} the inverse of the plant. As a result, if an input command $s[n]$ were applied to the controller, the output of the plant would follow that command and produce $y[n] \approx s[n]$. 
+
+For this problem, we will consider the particular case when the plant is \underline{non-minimum phase}. Thus, $H^{-1}(z)$ is unstable. In addition, we will assume that the plant transfer function is
+\begin{equation}
+	H(z) = \frac{(1 - 1.5e^{j3\pi/4}z^{-1})(1 - 1.5e^{-j3\pi/4}z^{-1})}{(1 - 0.75e^{j\pi/3}z^{-1})(1 - 0.75e^{-j\pi/3}z^{-1})}.
+\end{equation}
+
+However, in some parts of the problem, we will pretend that the plant is unknown and we need to estimate it. 
+
+\subsection*{Part 1: Preliminaries}
+\begin{description}
+	\item [(a)] Factor $H(z)$ as a product of a minimum phase and an all-pass system: $H(z) = H_{min}(z)H_{ap}(z)$. Plot the pole-zero diagram and the magnitude and phase responses of the minimum-phase and of the all-pass system. By convention, assume that the all-pass system has \underline{unit gain}. Hence, the gain of $H_{min}(z)$ must match $H(z)$.
+	\item [(b)] Suppose that $x[n]$ were a zero-mean white noise with unit average power, given an expression for the PSD of the output of the plant $y[n]$. Your answer can be in terms of $H(e^{j\omega})$ or $H_{min}(e^{j\omega})$.
+\end{description}
+
+\subsection*{Part 2: Plant identification}
+In this part we will assume that the plant is unknown. Hence, we must find ways to identify it i.e., to estimate $H(e^{j\omega})$. We will first identify the plant using the technique covered in HW4. Then, we will estimate $H(e^{j\omega})$ based on cross-correlation estimation.
+\begin{description}
+	\item [(a)] Assuming that $x[n]$ is a \underline{zero-mean} \underline{white noise} with \underline{unit average power}, use any of the PSD estimation techniques covered in class to estimate the PSD $\Phi_{yy}(e^{j\omega})$ of the plant output $y[n]$. Be sure to indicate all relevant parameters you used such as window type, window length, number of samples, etc. On the same graph, plot the theoretical PSD and your PSD estimate. Your plots should be in dB.
+	
+	\item [(b)] Use the Kramers-Kronig relation to obtain the estimated plant phase response $\angle \hat{H}(e^{j\omega})$ from its log-magnitude, as done in HW4. On the same graph, plot the \underline{unwrapped} phase of your estimate and the true \underline{unwrapped} phase of the plant. Explain any discrepancies.
+	
+	\textit{Note:} Differently from the HW4, be sure to account for the periodicity of the DTFT when computing the convolution integral. 
+	
+	\item [(c)] Now let's consider a different plant identification technique. Show that the cross-correlation between the output $y[n]$ and input $x[n]$ of a system $h[n]$ is given by
+	\begin{equation}
+		\phi_{yx}[m] = h[m]\ast \phi_{xx}[m]
+	\end{equation}
+		
+	\item [(d)] Explain how you could use the result from part (c) to obtain an estimate for $H(e^{j\omega})$.
+	
+	\item [(e)] Modify the Blackman-Tukey PSD estimation technique to estimate $\Phi_{yx}(e^{j\omega}) = \mathcal{F}\{\phi_{yx}[m]\}$. 
+	
+	\textit{Note:} The FFT indexing assumes that $\phi_{yx}[m]$ is indexed from $m = 0$ to $m = 2M-2$, where $M-1$ is the maximum lag in the cross-correlation estimation. However, we know that the cross-correlation is indexed from $m = -M+1$ to $m = M-1$. Thus, computing $\mathrm{DFT}\{\phi_{yx}[m]\}$ is actually equivalent to $\mathcal{F}\{\phi_{yx}[m-M]\}$. Hence, the $\mathrm{DFT}\{\phi_{yx}[m]\}$ must be phase shifted to produce the correct $\Phi_{yx}(e^{j\omega})$. Alternatively, you may use the command \texttt{ifftshift} before computing the DFT, so that $\phi_{yx}[m]$ is indexed correctly.
+	
+	\textit{Hint:} differently from the autocorrelation function, the cross-correlation function is not necessarily even symmetric.
+		
+	\item [(f)] Implement your method and obtain and estimate for $H(e^{j\omega})$. On the same graph, plot the magnitude of your estimate and the true magnitude of the plant. On a different graph, plot the \underline{unwrapped} phase of your estimate and the true \underline{unwrapped} phase of the plant. Explain any discrepancies.
+\end{description}
+
+\subsection*{Part 3: Controller design}
+Now we would like to design a controller for the plant $H(z)$. In inverse control, the controller should be such that $C(z) \approx H^{-1}(z)$. However, $H^{-1}(z)$ is unstable. Hence, we will design $C(z)$ such that $C(z) = H^{-1}_{min}(z)$.
+
+For the following questions, you may use the theoretical values of $H_{min}(e^{j\omega})$, as opposed to those you estimated in the previous part.
+
+\begin{description}
+	\item [(a)] Design a \underline{linear-phase} FIR system such that $|C(e^{j\omega})| \approx |H^{-1}_{min}(e^{j\omega})|$. Your filter should have \underline{at most} 21 coefficients. Specify all the choices you made. That is, what is $H_d(e^{j\omega})$, the weight function $W(\omega)$, and the algorithm you chose. 
+	\item [(b)] On the same graph, plot the magnitude of $C(e^{j\omega})$ and $H^{-1}_{min}(e^{j\omega})$. On a different graph, plot the phase of $C(e^{j\omega})$ and $H^{-1}_{min}(e^{j\omega})$. Discuss whether this filter would be a good inverse controller for the plant.
+	\item [(c)] Now use the leasts-squares method to design an FIR system such that $C(e^{j\omega}) \approx H^{-1}_{min}(e^{j\omega})$. Note that for this part, your filter \underline{does not} have to be linear phase, but it has to have \underline{real coefficients}. Additionally, your filter should have \underline{at most} 21 coefficients. Specify all the choices you make. 
+	
+	\textit{Note:} In designing this filter, make sure that the vector $d$ is Hermitian symmetric, so that you obtain a filter with real coefficients.
+	
+	\item [(d)] On the same graph, plot the magnitude of $C(e^{j\omega})$ and $H^{-1}_{min}(e^{j\omega})$. On a different graph, plot the phase of $C(e^{j\omega})$ and $H^{-1}_{min}(e^{j\omega})$. Discuss whether this filter would be a good inverse controller for the plant.
+\end{description}
+
+\subsection*{Part 4: Testing}
+Test how well your controller designed in Part 3(c) controls the plant. Plot the plant output $y[n]$ and the controller input $s[n]$, when $s[n]$ is each of the following signals.
+
+\begin{description}
+	\item[(a)] Unit step. Plot for $n = 0, \ldots, 40$.
+	\item[(b)] Sinusoid of frequency $0.1\pi$. Plot for $n = 0, \ldots, 100$.
+	\item[(b)] Sinusoid of frequency $0.9\pi$. Plot for $n = 0, \ldots, 100$.
+\end{description}
+
+For all cases, plot $s[n]$ and $y[n]$ on the same graph. But use a different graphs for each item. 
+
+For the sinusoidal inputs, you should see that although, we do not have $y[n] = s[n]$, we have $y[n] \approx s[n-\Delta]$, where $\Delta$ is the delay introduced by the all-pass filter, which was not included in the design of the controller. You can estimate $\Delta$ by measuring the group delay of the plant and controller at the sinusoids frequency.
+\end{document}

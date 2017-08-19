@@ -795,7 +795,7 @@ y_r[n] = \sum_{r = 0}^{\infty} y_{r, u}[n - r(L - M) + M]
 		\item Sampling the DTFT in frequency domain results in signal replicas in time domain
 		\item The $N$-point DFT of $x[n]$ is equal to the DTFT of $x[n]$ sampled with period $2\pi/N$, only if $x[n]$ is time-limited with duration $\leq N$
 		\item For sequences longer than $N$, the $N$-point DFT is equal to the samples of the windowed DTFT
-		\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log N)$
+		\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log_2 N)$
 		\item We can use DFT to perform linear convolution (filtering) efficiently using block convolution
 		\item In the overlap-add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
 		\item In the overlap-save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points

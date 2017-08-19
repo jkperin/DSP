@@ -1,0 +1,19 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+	
+    \node[block, right of=xc, text width = 1cm, align= center] (DSP) {$~~L$};
+    \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt]  ($(DSP.south)-(5pt, 0)$)  -- ($(DSP.north)-(5pt, 0)$) {};
+	\coordinate[right of=DSP] (yc) {};
+		
+    \path (xc) edge (DSP);
+    \path (DSP) edge (yc);
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+    \node[below = 0mm of xc, text width = 1cm, align=center] {$X(e^{j\omega})$};
+    \node[text width = 6cm, align=center, anchor=south west] at ($(yc)-(1.45cm, 0)$) {$x_e[n] = \begin{cases} x[n/L], &n/L = 0, \pm 1, \ldots \\ 0, &\text{otherwise}\end{cases}$}; 
+    \node[below = 0mm of yc, text width = 1cm, align=center] {$X_e(e^{j\omega})$};
+    \node[align=center] at ($(DSP.south) - (0, 0.3cm)$) {Upsampling};
+\end{tikzpicture}

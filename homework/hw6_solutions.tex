@@ -1,0 +1,456 @@
+\documentclass{article}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage{array}
+\usepackage[numbered]{bookmark}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{figs/}}
+
+\input{preamble.tex}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.2} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkTitle} % Top center head
+\rhead{\hmwkClass} % Top right header
+\lfoot{} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+%\setlength\parindent{0pt} % Removes all indentation from paragraphs
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{Perl} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=Perl, % Use Perl in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=5, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\perlscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.pl}
+\end{itemize}
+}
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hmwkTitle}{Homework \#06} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkAuthorName}{Solutions} % Your name
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{Due\ on\ \hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ \hmwkClassTime}}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+	
+\section{Problem 1}
+
+\begin{description}
+	\item[(a)] The DFT of a constant signal is an impulse scaled by the d.c. value: 
+	\begin{equation}
+		X[k] = \{8, 0, 0, 0, 0, 0, 0, 0\}
+	\end{equation}
+	
+	\item[(b)] This signal can be represented as  $x[n] = e^{j\pi n}, n = 0, \ldots, 7$. Start with the result from part (a) and use the circular time shift property of the DFT. Note that for $N = 8$, 
+	
+	\begin{equation}
+	(-1) = e^{j\pi n} = W_N^{-N/2n}
+	\end{equation}
+	Using the circular frequency shift property, the DFT is a shift of the DFT from part (a) by $N/2 = 4$: $X[k] = \{0, 0, 0, 0, 8, 0, 0, 0\}$
+	
+	\item[(c)] This is similar to part (b). Note that for $N = 8$
+	\begin{equation}
+	e^{j\pi/2n} = e^{j2\pi/N N/4n} = W_N^{-N/4n}.
+	\end{equation}
+	Using the circular frequency shift property, the DFT is a shift of the DFT from part (a) by $N/4 = 2$: $X[k] = \{0, 0, 8, 0, 0, 0, 0, 0\}$
+	
+	\item[(d)] Start withe the result of part (c). Note that $sin(\pi n/2) = -j/2(e^{j\pi n/2} - e^{-j\pi n/2})$. Using the circular frequency shift property, we find that $X[k] = \{0, 0, -4j, 0, 0, 0, 4j, 0\}$
+	
+	\item[(e)] The DFT of an impulse is constant in frequency: $X[k] = \{1, 1, 1, 1, 1, 1, 1, 1\}$.
+	
+	\item[(f)] Circularly shifting a signal in time corresponds to multiplication by a complex exponential in frequency. Using part (e), we find that: $X[k] = \{1, -j, -1, j, 1, -j, -1, j\}$.  
+\end{description}
+
+\section{Problem 2}	
+	\begin{center}
+		\begin{tabular}{c|c|p{10cm}}
+			Signal & DFT & Justification \\
+			\hline
+			1 & d & $x[n]$ is real and $x[n] = x[((-n))_N]$ ($\tilde{x}[n]$ is even), so $X[k]$ is purely real, thus $\angle X[k] \in \{0, \pi\}$. Also, $\sum_{n =0}^{N-1}x[n] = X[0] = 5$. \\
+			\hline
+			2 & a & $x[n]$ is real and $x[n] = x[((-n))_N]$ ($\tilde{x}[n]$ is even), so $X[k]$ is purely real, thus $\angle X[k] \in \{0, \pi\}$. Also, $\sum_{n =0}^{N-1}x[n] = X[0] = 1$. \\
+			\hline
+			3 & c & $x[n]$ is real and $x[n] = -x[((-n))_N]$ ($\tilde{x}[n]$ is odd), so $X[k]$ is purely imaginary, thus $\angle X[k] \in \{-\pi/2, \pi/2\}$. Also, $\sum_{n =0}^{N-1}x[n] = X[0] = 0$. \\
+			\hline
+			4 & f & $x[n]$ is delayed impulse, so $|X[k]| = 1~\forall~k$ \\
+			\hline
+			5 & b & Signal 5 is a delayed version of signal 1, so $|X[k]|$ same as for signal 1. But signal 5 lacks symmetry, so $\angle X[k]$ is more complicated than for signal 1.\\
+			\hline
+			6 & e & Signal 6 is a delayed version of signal 3, so $|X[k]|$ same as for signal 3. But signal 6 lacks symmetry, so $\angle X[k]$ is more complicated than for signal 3. \\
+			\hline
+		\end{tabular}
+	\end{center}
+
+
+\section{Problem 3: Linear convolution and circular convolution}	
+\subsection{(a)}
+We will have $x[n]\ast h[n] = x[n]~\encircle{N}~h[n]$ as long as
+\begin{equation}
+	N \geq L + P - 1
+\end{equation}
+\subsection{(b)}
+
+\begin{align*}
+	c_{xy}[m] &= x[m] \ast y^*[-m] \\
+	&= x[m]~\encircle{N}~y^*[-m] \tag{as long as $N \geq 2L - 1$} \\
+	&= \mathrm{IFFT}\{\mathrm{FFT}\{x[m]\}(\mathrm{FFT}\{y[m]\})^*\} ,
+\end{align*}
+where the last equality follows since circular convolution in time domain corresponds to product of DFTs in frequency domain. Moreover, we've used the conjugate and time reversal properties of the DFT i.e., $\mathrm{FFT}\{y^*[-m]\} = (\mathrm{FFT}\{y[m]\})^*$. The FFT/IFFT involved in this calculation are $N = 2L-1$.
+
+As mentioned in the hint, this computation will provide $c_{xy}[m]$ indexed from $0$ up to $N-1$. We would need to use the function \texttt{fftshfit}, for instance, to produce $c_{xy}[m]$ in the conventional representation from $-N/2+1$ up to $N/2-1$.
+
+\subsection{(c)}
+
+If $x[n] = y[n]$, then 
+
+\begin{align}
+c_{xx}[m] = \mathrm{IFFT}\{|\mathrm{FFT}\{x[m]\}|^2\}
+\end{align}
+Hence this computation requires one fewer FFT.
+
+\section{Problem 4: Overlap-add or overlap-save}	
+\subsection{(a)}
+
+The code for for part (a) is attached at the end of this question. The implementation assumes FFT length $N = 256$, and $M = 52$.
+
+The Figures below show the results of comparison for overlap-add and overlap-save methods. We obtain the same results as with direct implementation of the FIR filter. The disagreement at the end of the sequence is simply because we did not have an entire block to perform block convolution. 
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.8]{fir_notch_overlap_add.eps}
+	\caption{Result using the overlap-add method}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.8]{fir_notch_overlap_save.eps}
+	\caption{Result using the overlap-save method.}
+\end{figure}
+\FloatBarrier
+
+\subsection{(b)}
+
+Without any simplification, the block convolution requires 3 FFTs (including IFFT) are necessary to produce $N-M$ useful output samples. Therefore,
+
+\begin{equation}
+	C = \frac{(3\times (2N(\log_2(N)-1)) + N)}{N-M} = 53.4369 \tag{block convolution}
+\end{equation}
+for $N = 256$ and $M = 52$.
+
+The direct form implementation of a $M$th-order FIR filter (without any symmetry) requires $M+1$ multiplications per useful output. Thus,
+
+\begin{equation}
+C = M+1 = 53 \tag{FIR direct implementation}
+\end{equation}
+
+\noindent\textbf{Simplifications:}
+
+Note that the FFT to compute the filter coefficients may be computed in advance and stored in a memory since the filter is assumed constant. Thus, we could avoid 1 FFT:
+\begin{equation}
+C = \frac{(2\times (2N(\log_2(N)-1)) + N)}{N-M} = 36.038 \tag{block convolution}
+\end{equation}
+assuming $N = 256$ and $M = 52$.
+
+An linear phase FIR filter requires $\lfloor (M+1)/2 \rfloor$ multiplications per useful output, since equal coefficients can be combined. Therefore, 
+\begin{equation}
+C = \lfloor (M+1)/2 \rfloor =  26 \tag{linear phase FIR direct implementation}
+\end{equation}
+For $M = 52$.
+
+Solutions with or without these simplifications are accepted.
+
+\subsection{(c)}
+For both overlap-add and overlap-save methods, we need 3 FFTs (including IFFT), and an $N$-point multiplication. Moreover, for each block of length $L$ only $N - M$ outputs are useful. In the overlap-save method there are $M$ unusable outputs per block. In the overlap-add method the $M$ outputs will only be useful at the next block.
+
+\begin{align}
+C = \frac{3\times (2N(\log_2(N)-1)) + N}{N-M} \tag{block convolution}
+\end{align}
+
+Assuming that the DFT of the filter coefficients is computed in advance:
+\begin{equation}
+C = \frac{2\times (2N(\log_2(N)-1)) + N}{N-M} \tag{block convolution 2 FFTs}
+\end{equation}
+
+Both results for $C$ are accepted. The figure below assumes that $C$ was computed in accordance with the equation above, assuming that the DFT of the filter coefficients was computed in advance:
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.8]{block_conv_complexity.eps}
+	\caption{Complexity of overlap-save or overlap-add method as a function of the FFT length. These curves assumed that the DFT of the filter coefficients was computed in advance, hence saving one FFT in the complexity calculations.}
+\end{figure}
+\FloatBarrier
+
+Note that for each filter length there is an optimal FFT length. 
+
+Moreover, note that as the filter-order becomes large, the FFT implementation becomes more attractive even if we assume that there's symmetry in the impulse response of the filter. For $M = 100$, the block convolution method has complexity close to $C =40$, while a direct implementation assuming symmetry would have complexity $C = 50$.
+
+
+\noindent\textbf{Note:} the particular formula for the number of real multiplications of $N$-point FFT considered in this problem is only valid when $N$ is a power of 2. The actual number of multiplications in a FFT depend on whether the FFT is radix-2, radix-4, prime radix, etc. The actual values will vary slightly, but the main conclusions from this problem remain the same. 
+
+\subsection{(d) (optional)}
+
+See Matlab code below for solution. Plots are shown in part (a).
+
+\subsection{Matlab code for Problem 4}
+\input{tex/overlap_add_and_save.tex}
+
+
+\section{Problem 5: Spectrograms}
+\begin{description}
+	\item[(a)] Spectrograms (a) and (c) were computed with the rectangular window. This can be infered from the amount of leakage in the spectrogram. This is a result from the large sidelobes of the rectangular window.
+	\item[(b)] Spectrograms (a) \& (b) have approximately the same frequency resolution, as do spectrograms (c) \& (d). Note that the the lines in these spectrograms have approximately the same thickness
+	\item[(c)] Spectrogram (c) has the shortest time window. Although spectrograms (c) and (d) have virtually the same frequency resolution i.e., same main-lobe width, the Hamming window has to be longer to achieve the same main-lobe width of a rectangular window. This is the reason that, for instance, a filter designed by window using the Hamming window would have slower roll-off than a filter designed using a rectangular window of same length.
+	\item[(d)] 
+	The discrete-time signal has three frequency components
+	\begin{equation}
+		x[n] = \begin{cases}
+		A_1\cos(0.7\pi n + \phi_1) + A_2\cos(0.4\pi n + \phi_2), & 0 \leq n \leq 1000 \\
+		A_2\cos(0.4\pi n + \phi_2), & 1000 < n \leq 2000 \\
+		A_2\cos(0.4\pi n + \phi_2) + A_3\cos(0.5\pi n + \phi_3), & 2000 < n \leq 3000 \\
+		\end{cases}
+	\end{equation}
+	We cannot specify the amplitudes $\{A_1, A_2, A_3\}$ and the phases $\{\phi_1, \phi_2, \phi_3\}$.
+	
+	To obtain the continuous-time signal, we simply replace $n$ by $t/T$
+	\begin{equation}
+		x_c(t) = \begin{cases}
+		A_1\cos(7000\pi t + \phi_1) + A_2\cos(4000\pi t + \phi_2), & 0 \leq n \leq 1000 \\
+		A_2\cos(4000\pi t + \phi_2), & 1000 < n \leq 2000 \\
+		A_2\cos(4000\pi t + \phi_2) + A_3\cos(5000\pi t + \phi_3), & 2000 < n \leq 3000 \\
+		\end{cases}
+	\end{equation}
+	
+	Note that the anplitudes should be scaled by $T$, but we simply redefined the amplitudes for simplicity. 
+	
+\end{description}
+
+\section{Problem 6: Frequency modulation}
+
+\subsection{(a)}
+
+\begin{equation}
+	\Omega_i(t) = \dfrac{d\theta(t)}{dt} = \Omega_c + \beta\Omega_m\cos(\Omega_mt)
+\end{equation}
+
+Hence, the maximum frequency deviation from $\Omega_c$ is $\beta\Omega_m$.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.8]{hw6_fm_a.eps}
+	\caption{$\Omega_i(t)/(2\pi)$ for $\beta = 0.2$ (top) and $\beta = 500$ (bottom).}
+\end{figure}
+\FloatBarrier
+
+\subsection{(b)}
+
+\begin{align} \nonumber \label{xfmapprox}
+	x_{FM}(t) &= \cos(\Omega_ct + \beta\sin(\Omega_m t)) \\ \nonumber
+	&= \cos(\Omega_ct)\cos(\beta\sin(\Omega_m t)) - \sin(\Omega_ct)\sin(\beta\sin(\Omega_m t)) \\ 
+	& \approx \cos(\Omega_ct) - \beta\sin(\Omega_m t)\sin(\Omega_ct) \tag{small-angle approximation when $\beta << \pi/2$}
+\end{align}
+
+By inspecting the equation above, we can see that $\mathcal{F}\{x_{FM}(t)\}$ has impulses at frequencies $\pm\Omega_c$, $\pm\Omega_c + \Omega_m$, and $\pm\Omega_c - \Omega_m$.
+
+\subsection{(c)}
+
+We simply replace $t = nT$ in (3) of the assignment, 
+\begin{align} \nonumber
+	x_{FM}[n] &= x_{FM}(nT) = \cos(2\pi(1000) n/8000 + \beta\sin(2\pi n/8000)) \\
+	&\cos(\pi/4 n + \beta\sin(\pi n/4000))
+\end{align}
+
+\subsection{(d)}
+Code for this part is attached at the end of this problem
+
+\subsubsection{(i)}
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw6_fm_di.eps}
+	\caption{DFT of $x_{FM}(t)$ for $\beta = 0.2$.}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{(ii)}
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw6_fm_dii.eps}
+	\caption{Spectrogram of $x_{FM}(t)$ for $\beta = 0.2$.}
+\end{figure}
+\FloatBarrier
+
+The spectrogram does not show the frequency variation observed in part (a) because the window does not have enough resolution to resolve the frequency variation when $\beta = 0.2$.
+
+
+\subsection{(e)}
+Code for this part is attached at the end of this problem
+
+\subsubsection{(i)}
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw6_fm_ei.eps}
+	\caption{DFT of $x_{FM}(t)$ for $\beta = 500$.}
+\end{figure}
+\FloatBarrier
+
+\subsubsection{(ii)}
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw6_fm_eii.eps}
+	\caption{Spectrogram of $x_{FM}(t)$ for $\beta = 500$.}
+\end{figure}
+\FloatBarrier
+
+Now the frequency variation is large enough that we can observe it in the spectrogram. 
+
+\subsubsection{(iii)}
+
+Increasing the window length improves frequency resolution. However, by making the window length too large may lead to excessive leakage, since the sidelobes area may become significant.
+
+If $\Omega_m$ is small, we must make the window longer in order to improve the frequency resolution. 
+
+The window length does not depend on $\Omega_c$ provided that the frequency variations $\Omega_c + \beta\Omega_m$ does not cause aliasing. That is, $\Omega_c + \beta\Omega_m < \Omega_s/2$.
+
+\subsection{Code for Problem 6}
+\input{tex/hw6_fm.tex}
+
+
+\end{document}

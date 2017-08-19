@@ -1,0 +1,754 @@
+\documentclass[10pt]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+%\usepackage{mathtools}
+\usepackage[makeroom]{cancel}
+\usetikzlibrary{spy}
+%\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%
+%\def\EXTERNALIZE{1}
+\input{header.tex} % some definitions
+
+%% 
+\title[EE 264]{Review and Conclusions}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{August 17, 2017}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+%
+\begin{frame}{Announcements}
+\begin{itemize}
+	\item End-quarter teaching evaluations are available on Axess
+	\item Final exam logistics
+	\begin{itemize} \normalsize
+		\item You'll receive the final exam and accompanying files via email at the time you indicated in the sign up sheet.
+		\item You have 24 hours to turn in your solutions on Canvas
+		\item You may use any available references, but all the work must be done individually
+		\item Do not communicate with others about the exam even after you have taken it
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Outline}
+	\tableofcontents
+\end{frame}
+
+%
+\section{Review}
+\subsection{Random processes}
+\begin{frame}{Random processes}
+\begin{itemize}
+	\item We use random processes to model signals that cannot be easily described by simple equations
+	\item A random process is wide-sense stationary (WSS) if its mean is constant and if its autocorrelation function is only a function of the time difference. 
+	\item A random process is ergodic if its time averages are equal to its probability averages
+	\item Autocorrelation functions must be real, even symmetric, and must have non-negative Fourier transform.
+	\item The Fourier transform of the autocorrelation function is called the power spectrum density (PSD). The PSD has units of W/Hz or dBm/Hz.
+	\item Random processes that have PSD constant over all frequencies are called white noise
+	\begin{equation*}
+		\Phi_{xx}(e^{j\omega}) = \sigma_x^2 \Longleftrightarrow \phi_{xx}[m] = \sigma_x^2\delta[m] \tag{white noise}
+	\end{equation*}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Random processes}
+Effect of filtering random signals
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/LTI_system_random_input.tex}}
+\end{center}
+
+\begin{itemize}
+	\item The input autocorrelation function is \textit{filtered} by the LTI system defined by $h[n]\ast h^*[-n] \leftrightarrow |H(e^{j\omega})|^2$
+	\item $c_{hh}[n] = h[n]\ast h^*[-n]$ is called the deterministic autocorrelation function.
+	\item Average power after filter
+	\begin{equation*}
+		\sigma^2_y = \phi_{yy}[0] = \frac{1}{2\pi}\int_{-\pi}^{\pi} \phi_{yy}(e^{j\omega}) d\omega
+	\end{equation*}
+\end{itemize}
+\end{frame}
+
+
+\subsection{Sampling, reconstruction, and DT filtering}
+\begin{frame}{Sampling, reconstruction, and DT filtering}
+\begin{itemize}
+	\item Sampling a continuous-time signal results in replicas of the spectrum at multiples of the sampling frequency $\Omega_s$ (or $2\pi$ of the normalized frequency $\omega$)
+	\item A band-limited signal has highest frequency $\Omega_N$ ($X_c(j\Omega) = 0, |\Omega| > \Omega_N$)
+	\item If a band-limited signal is oversampled ($\Omega_s > 2\Omega_N$) there'll be gaps between the spectrum replicas
+	\item If the signal is undersampled ($\Omega_s < 2\Omega_N$) the spectrum replicas will overlap resulting in aliasing distortion
+	\item We can perfectly reconstruct a signal from its samples, provided that there is no aliasing and that we use the ideal lowpass filter as reconstruction filter
+	\item In practice, we use different reconstruction filters, since the ideal lowpass filter is unfeasible.
+	\item Oversampling relaxes the reconstruction filter specifications
+	\item In theory, we can perform any LTI continuous-time filtering in discrete-time (in DSP), provided that there is no aliasing and that we use the ideal reconstruction filter
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Discrete-time processing of continuous-time signals}
+\vspace{-0.5cm}
+\begin{center}
+	\def\Heff{1}
+	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+\end{center}
+
+\begin{equation*}
+H_{eq}(j\Omega) = H(e^{j\omega})|_{\omega = \Omega T}, |\omega| \leq \pi
+\end{equation*}
+
+The equation above only holds if two conditions are met:
+\begin{enumerate}
+	\item No aliasing
+	\item The reconstruction filter is the ideal lowpass filter
+\end{enumerate}
+\textbf{Conclusion:} in theory, any continuous-time LTI system can be realized in discrete-time (in DSP).\\
+\textbf{Important:} the equivalent continuous-time response $H_{eq}(j\Omega)$ depends on the sampling period $T$.
+\end{frame}
+
+\subsection{Changing the sampling rate in DSP}
+\begin{frame}{Changing the sampling rate in DSP: basic operations}
+\begin{columns}[t]
+	\begin{column}{0.5\textwidth}
+		\textbf{Donwsampling}
+		\begin{center}
+			\resizebox{!}{0.16\textheight}{\input{figs/downsampling_block.tex}}
+		\end{center}
+		\textbf{Decimation}
+		\begin{center}
+			\resizebox{!}{0.19\textheight}{\input{figs/decimation_block.tex}}
+		\end{center}
+		Anti-aliasing filtering followed by downsampling.
+	\end{column}
+	\begin{column}{0.5\textwidth}
+	\textbf{Upsampling}
+	\vspace{-0.7cm}
+	\begin{center}
+		\resizebox{1.2\textwidth}{!}{\input{figs/only_upsampling_block.tex}}
+	\end{center}
+	
+	\textbf{Interpolation}
+	\vspace{0.35cm}
+	\begin{center}
+	\resizebox{!}{0.14\textheight}{\input{figs/upsampling_block.tex}}
+	\end{center}
+	Upsampling followed by interpolation filter with gain $L$.
+	\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Interpolation/Decimation by a non-integer factor}
+
+\begin{block}{Cascading interpolation and decimation}
+	\vspace{-0.5cm}
+	\begin{center}
+		\resizebox{\linewidth}{!}{\input{figs/non-integer_rate_change_diagram.tex}}
+	\end{center}
+\end{block}
+\vspace{-0.5cm}
+\begin{block}{Equivalent diagram}
+	\begin{center}
+		\resizebox{0.8\linewidth}{!}{\input{figs/non-integer_rate_change_equivalent_diagram.tex}}
+	\end{center}
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Changing the sampling rate in DSP}
+\begin{itemize}
+	\item Downsampling by an integer factor $M$ stretches the discrete-time spectrum by a factor $M$ and causes replicas of the spectrum to appear at $2\pi/M$. The amplitude of the spectrum is attenuated by $M$
+	\item It's often easier to think of downsampling as sampling the original continuous-time signal with a sampling period $T_d = MT$
+	\item Anti-aliasing filtering followed by downsampling is called decimation
+	\item Upsampling by an integer factor $L$ compresses the discrete-time spectrum by a factor $L$. The interpolation filter is assumed to have gain $L$, so the spectrum amplitude is scaled by $L$
+	\item We can achieve non-integer sampling rate changes by cascading interpolation and decimation stages
+\end{itemize}
+\end{frame}
+
+%
+\subsection{Quantization}
+\begin{frame}{Quantization: linear noise model}
+Quantization is modeled as an additive \textbf{white noise uniformly distributed} that is independent of the input signal. 
+
+\begin{center}
+	\resizebox{0.75\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
+\end{center}
+\vspace{-0.3cm}
+
+$\Delta X$ is the quantizer dynamic range and $B$ is the resolution in bits.
+
+\begin{align*}
+\sigma_e^2 &= \frac{\Delta^2}{12} \tag{average power} \\
+\phi_{ee}[n] &= \sigma_e^2\delta[n] \tag{autocorrelation function} \\
+\Phi_{ee}(e^{j\omega}) &= \sigma_e^2, |\omega| \leq \pi \tag{PSD}
+\end{align*}
+\end{frame}
+
+%
+\begin{frame}{Quantization}
+\begin{itemize}
+	\item Quantization is unavoidable in DSP systems
+	\item Using the linear noise model, we simply replace quantizers by noise sources of average power $\sigma_e^2 = \Delta^2/12$
+	\item Quantization noise is assumed white (samples are uncorrelated)
+	\item Every extra bit of resolution in a quantizer improves the SNR by 6.02 dB
+	\item The signal amplitude must be matched to the dynamic range of the quantizer, otherwise there'll be excessive clipping or some bits won't be used
+	\item Noise shaping is a strategy that minimizes quantization noise in A-to-D and D-to-A converters. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
+	\item Noise shaping requires oversampling
+\end{itemize}
+\end{frame}
+
+%
+\subsection{Properties of LTI systems}
+\begin{frame}{Properties of LTI systems}
+\begin{itemize}
+	\item The frequency response of a system tell us how much each frequency was scaled (magnitude response), and delayed (phase response) by the system.
+	\item Poles increase magnitude and introduce phase lag (positive group delay)
+	\item Zeros decrease the magnitude and introduce phase lead (negative group delay)
+	\item All-pass systems have constant magnitude response. For each pole at $e_k$, there is  a zero at $1/e^*_k$ (conjugate reciprocal)
+	\item Minimum phase systems have all zeros inside the unit circle. Hence, its inverse is stable.
+	\item Any system can be decomposed into a cascade of a minimum phase system and an all-pass system
+	\item For minimum phase systems, the phase response is given by the Hilbert transform of the log-magnitude response. 
+	\item The unwrapped phase response of generalized linear phase systems is piece-wise linear
+	\item FIR systems are linear phase as long as their impulse response is even or odd symmetric
+	\item Linear phase rational IIR systems do not exist
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Example of minimum-phase/all-pass decomposition}
+Consider the non-minimum phase system
+\begin{equation*}
+H(z) = \frac{(1 + \frac{3}{2}e^{j\pi/4}z^{-1})(1 + \frac{3}{2}e^{-j\pi/4}z^{-1})}{1 - \frac{1}{3}z^{-1}}
+\end{equation*}
+
+\hspace*{-0.85cm}\resizebox{0.95\paperwidth}{!}{\input{figs/example_min_phase_allpass_decomp.tex}}
+\begin{itemize}
+	\item The zeros of $H(z)$ outside the unit circle are \textit{reflect} inside the unit circle (conjugate reciprocal) in $H_{min}(z)$
+	\item The zeros of $H(z)$ outside the unit circle are now in $H_{ap}(z)$. Consequently, $H_{ap}(z)$ has poles at the conjugate reciprocal
+	\item The poles of $H_{ap}(z)$ will cancel the new zeros of $H_{min}(z)$, yielding $H(z)$
+\end{itemize}
+\end{frame}
+
+
+%
+\subsection{Digital filter structures}
+\begin{frame}{Digital filter structures}
+\begin{itemize}
+	\item There are different forms of realizing IIR and FIR rational systems
+	\item All forms are based on the difference equation of a rational LTI system
+	\item Their difference becomes evident when considering finite arithmetic precision
+	\item Pipelining and parallel processing solve the problem of using a slow hardware to process a fast signal in two complementary ways. 
+	\item Pipelining adds memory (delays) to minimize the critical path. Consequently, pipelining increases latency
+	\item In parallel processing the hardware is replicated to allow processing of multiple input samples simultaneously
+	\item Pipelining and parallel processing can be realized together
+	\item Pipelining and parallel processing are more difficult in IIR systems due to their inherent feedback
+\end{itemize}
+\end{frame}
+
+%
+\subsection{Quantization in digital filter structures}
+\begin{frame}{Quantization in digital filter structures}
+\begin{itemize}
+	\item Two's complement is a fixed-point representation that allows fractions to be represented as integers
+	\item There's an inherent trade-off between roundoff noise and overflow/clipping
+	\item FIR systems remain stable after coefficient quantization
+	\item Linear phase FIR systems remain linear phase after coefficient quantization, since the impulse response remains symmetric
+	\item Coefficient quantization may lead to instability in IIR systems, as poles may move outside the unit circle
+	\item Similarly to quantization noise, roundoff noise is modeled by an additive white noise that is independent of the input signal (the linear noise model).
+	\item Roundoff noise is minimized by performing quantization only after accumulation, but this requires $(2B+1)$-bit adders
+	\item In FIR structures the equivalent roundoff noise at the output is white
+	\item IIR structures lead to roundoff noise shaping
+	\item Least noisy IIR structure depends on the system
+	\item Cascade and parallel forms are used to mitigate total roundoff noise
+\end{itemize}
+\end{frame}
+
+\begin{frame}<beamer:2>{Roundoff noise in FIR systems}
+\begin{enumerate}
+	\item Quantization immediately after each multiplication: $M+1$ noise sources are lumped  into one: $\E(e^2[n]) = (M+1)\frac{\Delta^2}{12}$, where $\Delta= \frac{X_m}{2^B}$.
+	
+	Note: in linear phase FIR filter, only $\lfloor M/2+1 \rfloor$ multiplications are required.
+ 	\begin{center}
+		\def\Quantiz{0}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
+	\end{center}
+	\item Quantization immediately after accumulation:
+	Only one noise source with average power $\E(e^2[n]) = \frac{\Delta^2}{12}$. 
+	\begin{center}
+		\def\Quantiz{0}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
+	\end{center}
+\end{enumerate}	
+\end{frame}
+
+%
+\begin{frame}{Roundoff noise in IIR systems}
+
+PSD of roundoff noise at the output
+~\\
+
+\begin{tabular}{c||c|c}
+	& I & II \\
+	\hline
+	Direct & $\displaystyle(M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ & $\displaystyle N\sigma_{B}^2|H(e^{j\omega})|^2 + (M+1)\sigma_{B}^2$ \\
+	Transposed & $\displaystyle N\sigma_B^2|H(e^{j\omega})|^2 + (M+1)\sigma_B^2$ & $\displaystyle (M+N+1)\sigma_B^2\frac{1}{|A(e^{j\omega})|^2}$ \\
+	\hline
+\end{tabular}
+~\\
+
+$M+1$ coefficients $\{b_0, b_1, \ldots, b_M\}$, assumed \underline{different from} zero and one ($b_i \neq 0, b_i \neq 1$).
+
+$N$ coefficients $\{a_1, \ldots, a_N\}$,  assumed \underline{different from} zero and one ($a_i \neq 0, a_i \neq 1$).
+
+$\sigma_B^2 = 2^{-2B}/12$ for a ($B+1$)-bit two's complement representation.
+
+\end{frame}
+
+\subsection{Filter design}
+\begin{frame}{Desigining digital filters from analog filter}
+	\textbf{Impulse invariance:}
+	
+	Design $h[n]$ by sampling $h_{eq}(t)$ with period $T$.
+	\begin{equation}
+	h[n] = Th_c(nT) \tag{impulse invariance}
+	\end{equation}
+	
+	\textbf{Bilinear transformation:}
+	
+	Bilinear transformation maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane
+	\begin{equation*}
+	s = \frac{2}{T}\bigg(\frac{1 - z^{-1}}{1 + z^{-1}}\bigg) \tag{Bilinear transformation}
+	\end{equation*}
+	
+	This nonlinear mapping causes frequency warping:
+	\begin{equation*}
+	\omega =2\arctan(\Omega T/2) \tag{frequency warping}
+	\end{equation*}
+	
+	Frequency warping can be mitigated by performing frequency pre-warping, so that $H(e^{j\Omega_p T}) = H_{eq}(j\Omega_p)$ at a specified frequency $\Omega_p$.
+	\begin{equation*}
+	H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \tikz[baseline]{\node[fill=blue2!20,anchor=base] {$\frac{\Omega_p}{\tan(\Omega_pT/2)}$};}\frac{1 - z^{-1}}{1 + z^{-1}}} \tag{bilinear transformation with frequency pre-warping}
+	\end{equation*}	
+\end{frame}
+
+%
+\begin{frame}{Digital FIR filter design from specifications}
+
+How to find FIR $H(z)$ such that $H(e^{j\omega})$ best approximates a desired frequency response $H_d(e^{j\omega})$? Essentially a polynomial curve fitting problem.
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
+\end{center}
+
+\textbf{Design techniques:}
+\begin{itemize}
+	\item Window method
+	\item Optimal filter design
+	\begin{itemize}
+		\item Parks-McClellan algorithm
+		\item Least squares
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Summary on FIR filter design by the window method}
+\begin{enumerate}
+	\item From the desired frequency response $H_d(e^{j\omega})$ calculate the desired impulse response $h_d[n]$.
+	\item Choose the filter order $M$ and the window $w[n]$. Then,
+	\begin{equation*}
+	h[n] = \begin{cases}
+	h_d[n]w[n], & n = 0, \ldots, M \\
+	0, &\text{otherwise}
+	\end{cases}
+	\end{equation*}
+	Kaiser window depends on parameters $\beta$ and $M$. Other windows only depend on $M$.
+	
+	\item Linear phase is guaranteed by selecting causal and symmetric window $w[n]$ and desired impulse response $h_d[n]$
+\end{enumerate}
+
+In Matlab: 
+
+\texttt{fir1} uses Hamming window by default. Other windows can be passed as parameters:
+\begin{equation*}
+\texttt{>> fir1(M, wc/pi, `lowpass', kaiser(M+1, beta))}
+\end{equation*} 
+designs a lowpass FIR filter of order $M$ and cutoff frequency $\omega_c$ using the window method with Kaiser window with parameter $\beta$
+\end{frame}
+
+%
+\begin{frame}{Optimal FIR filter design}
+
+\textbf{Two algorithms:}
+\begin{enumerate}
+	\item Parks-McClellan algorithm: minimizes the maximum weighted error 
+	\begin{align*}
+	\min_{h[n]} &\max_\omega E(\omega) \tag{min-max problem} \\
+	\min_{h} &\max_i |e_i| \tag{in matrix notation}
+	\end{align*}
+	\texttt{firpm} in Matlab.
+	\item Least squares: minimizes the mean-square weighted error 
+	\begin{align*}
+	\min_{h[n]} &\frac{1}{2\pi}\int_{-\pi}^{\pi} |E(\omega)|^2d\omega \tag{least squares}\\
+	\min_{h} &||e||_2^2 \tag{in matrix notation}
+	\end{align*}
+	\texttt{firls} in Matlab.
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Non-linear phase FIR filter design using least squares}
+\begin{align*}
+h &= A^{\dagger}b \tag{least-squares solution} \\
+\text{where } & A = WQ \text{ and } b = Wd. 
+\end{align*}
+
+\begin{equation*}
+Q = \begin{bmatrix}
+1 & e^{-j\omega_1} & e^{-j2\omega_1} & \ldots & e^{-jM\omega_1} \\
+1 & e^{-j\omega_2} & e^{-j2\omega_2} & \ldots & e^{-jM\omega_2} \\
+\vdots & \vdots &  \vdots & \ddots & \vdots \\
+1 & e^{-j\omega_N} & e^{-j2\omega_N} & \ldots & e^{-jM\omega_N}
+\end{bmatrix}_{N\times M+1}
+\end{equation*}
+
+\textbf{Important:} $d$ and $W$ have to be defined for the same frequencies used in calculating $Q$.
+
+If $H_d(e^{j\omega})$ is \textbf{Hermitian symmetric} i.e., $H_d(e^{j\omega}) = H_d^*(e^{-j\omega})$, then $h$ is purely real.
+\end{frame}
+
+\subsection{The discrete Fourier transform}
+\begin{frame}{The discrete Fourier transform}
+\begin{itemize}
+	\item Sampling the DTFT in frequency domain results in signal replicas in time domain
+	\item The $N$-point DFT of $x[n]$ is equal to the DTFT of $x[n]$ sampled with period $2\pi/N$, only if $x[n]$ is time-limited with duration $\leq N$
+	\item For sequences longer than $N$, the $N$-point DFT is equal to the samples of the windowed DTFT
+	\item Fast Fourier transform (FFT) algorithms compute the DFT with complexity $\mathcal{O}(N\log_2 N)$
+	\item We can use the DFT/FFT to perform linear convolution (filtering) efficiently using block convolution
+	\item In the overlap-add method, blocks are non-overlapping and the result of circular convolution of each block is added to produce the output signal
+	\item In the overlap-save method, blocks do overlap and we have to discard samples that are unusable due to the circular convolution not being equal to the linear convolution at all points
+\end{itemize}
+\end{frame}
+
+\subsection{Spectrum analysis using the DFT}
+\begin{frame}{Spectrum analysis using the DFT}
+\begin{itemize}
+	\item Leakage and resolution are important considerations in spectrum analysis
+	\item By choosing proper windows we can minimize these issues
+	\item Kaiser window is a nearly optimal choice. Must choose correct $\beta$ and window length $L$
+	\item $\beta$ controls the ratio between the amplitudes of the main-lobe and the largest side-lobe i.e., $\beta$ controls the amount of leakage.
+	\item The larger the main-lobe width, the smaller the resolution
+	\item By increasing the window length we reduce the main-lobe width and consequently improve the resolution
+	\item Time-dependent Fourier transform or short-time Fourier transform allows us to keep track of frequency variation in time
+	\item Spectrogram is a commonly used way to display the TDFT
+	\item In the spectrogram the TDFT is sampled both in time and in frequency
+	\item The window length determines the resolution of the spectrogram
+\end{itemize}
+\end{frame}
+
+\subsection{Power spectrum density estimation}
+\begin{frame}{Power spectrum density estimation}
+\begin{itemize}
+	\item The PSD is the DTFT of the autocorrelation function
+	\item The PSD may be two-sided or one-sided. Careful with conventions!
+	\item The periodogram method estimates the PSD directly from the magnitude squared of the DFT of the windowed signal
+	\item The periodogram is an biased estimator of the PSD, and it has large variance. Hence, the periodogram must be averaged to produce useful estimates
+	\item The Welch method is a time-averaged periodogram
+	\item The Welch method breaks the data into overalapping segments, each of length $L$. Usually, the segments overlap by $L/2$.
+	\item Differently from the periodogram and Welch method, the Blackman-Tukey method estimates the PSD by computing the DFT of the estimated autocorrelation function
+	\item Although the estimated autocorrelation function may be an unbiased estimator, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
+	\item Increasing the sequence length $Q$ improves accuracy. Reducing the window length $L$ improves accuracy at the expense of poorer frequency resolution.
+\end{itemize}
+\end{frame}
+
+\section{Practice question}
+\begin{frame}{Inverse control}
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{../homework/figs/inverse_control.tex}}
+\end{center}
+
+The plant is non-minimum phase
+
+\begin{equation*}
+H(z) = \frac{(1 - 1.5e^{j3\pi/4}z^{-1})(1 - 1.5e^{-j3\pi/4}z^{-1})}{(1 - 0.75e^{j\pi/3}z^{-1})(1 - 0.75e^{-j\pi/3}z^{-1})}.
+\end{equation*}
+
+We cannot make $C(z) = H^{-1}(z)$, since $H^{-1}(z)$ is unstable.
+
+\vspace{0.5cm}
+See script Canvas/Files/Matlab/Final/\texttt{inverse\_control.m} for solutions.
+\end{frame}
+
+
+\begin{frame}{Minimum-phase all pass decomposition}
+
+\hspace*{-0.85cm}\resizebox{0.95\paperwidth}{!}{\input{../homework/figs/inverse_control_min_phase_allpass_decomp.tex}}
+\begin{itemize}
+	\item The zeros of $H(z)$ outside the unit circle are \textit{reflect} inside the unit circle (conjugate reciprocal) in $H_{min}(z)$
+	\item The zeros of $H(z)$ outside the unit circle are now in $H_{ap}(z)$. Consequently, $H_{ap}(z)$ has poles at the conjugate reciprocal
+	\item The poles of $H_{ap}(z)$ will cancel the new zeros of $H_{min}(z)$, yielding $H(z)$
+	\item The gain of $H_{ap}(z)$ is set to 1, leaving $H_{min}(z)$ with gain 2.25
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Plant identification}
+\begin{enumerate}
+	\item Estimate PSD $\Phi_{yy}(e^{j\omega})$ e.g., using Blackman-Tukey method
+	\item Use PSD to compute $|H(e^{j\omega})| = \sqrt{\Phi_{yy}(e^{j\omega})}$
+	\item Use Kramers-Kronig relations to compute $\angle H(e^{j\omega}) = -\mathcal{H}\{\log|H(e^{j\omega})|\}$
+\end{enumerate}
+
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Magnitude:}	
+		\begin{center}
+			\includegraphics[width=\textwidth]{../homework/figs/inverse_control_kramers_kronig_id_mag.eps}
+		\end{center}
+	\end{column}
+
+	\begin{column}{0.5\textwidth}
+	\textbf{Phase:}	
+	\begin{center}
+		\includegraphics[width=\textwidth]{../homework/figs/inverse_control_kramers_kronig_id_phase.eps}
+	\end{center}
+	\end{column}
+\end{columns}
+
+As expected, we can only estimate the phase of the minimum phase system.
+\end{frame}
+
+%
+\begin{frame}{Plant identification}
+Applying the definition of cross-correlation:
+\begin{align*}
+\phi_{yx}[m] &= \E(y[m]\ast x^*[-m]) \\
+&= \E(h[m]\ast x[n] \ast x^*[-m]) \tag{since $y[n] = h[n]\ast x[n]$} \\
+& = h[m]\ast \E(x[n] \ast x^*[-m]) \tag{since $h[n]$ is deterministic} \\
+& = h[m]\ast \phi_{xx}[m] \\
+\end{align*}
+
+If we have estimates for both $\phi_{yx}[m]$ and $\phi_{xx}[m]$ (easy using \texttt{xcorr}), we can compute
+\begin{equation*}
+H(e^{j\omega} = \frac{\Phi_{yx}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
+\end{equation*}
+
+We know how to estimate $\Phi_{xx}(e^{j\omega})$ e.g., Welch's method, Blackman-Tukey method. But how do we estimate $\Phi_{yx}(e^{j\omega})$
+\end{frame}
+
+
+
+%
+\begin{frame}{Modified Blackman-Tukey method}
+\begin{enumerate}
+	\item Estimate the cross-correlation function from $Q$ samples of $x[n]$ and $y[n]$
+	\begin{equation*}
+	\hat{\phi}_{yx}[m] = \frac{1}{Q-|m|}\sum_{n = 0}^{Q-1-|m|} y[m+n]x^*[n], \quad |m|\leq Q-1
+	\end{equation*}
+	\item Multiply cross-correlation by window $w[m]$
+	\begin{equation*}
+	s[m] = \begin{cases}
+	\hat{\phi}_{yx}[m]w[m], & -(M-1)\leq m \leq (M-1) \\
+	0, & \text{otherwise}
+	\end{cases}
+	\end{equation*}
+	window is centered around $m = 0$ and it has length $L = 2M-1$.
+	\item Compute DFT
+	\begin{equation*}
+	S[k] = \sum_{m = 0}^{N-1}s[m]e^{-j(2\pi/N)k}, \quad k = 0, \ldots, N-1
+	\end{equation*}
+	Because of the indexing of the DFT $S[k] = \hat{\Phi}_{yx}(e^{j(2\pi/N)k})e^{j(2\pi/N)M}$. We must remove the phase shift $e^{j(2\pi/N)M}$.
+\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Modified Blackman-Tukey method}
+Equivalent code:
+
+\begin{align*}
+&\texttt{phi\_yx\_hat = xcorr(y, x, M-1, 'unbiased')} \\
+&\texttt{s = phi\_yx\_hat.*window} \\
+&\texttt{S = fftshift(fft(ifftshift(s)))}
+\end{align*}
+
+Instead of correcting the phase shift $e^{j(2\pi/N)M}$ by multiplying \texttt{S} by $e^{-j(2\pi/N)M}$, we can use the command \texttt{ifftshift(s)} to correct the indexing.
+
+\end{frame}
+	
+%
+\begin{frame}{Plant identification}
+This time we could also estimate the correct phase response.
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\textbf{Magnitude:}	
+			\begin{center}
+				\includegraphics[width=\textwidth]{../homework/figs/inverse_control_xcorr_id_mag.eps}
+			\end{center}
+		\end{column}
+		
+		\begin{column}{0.5\textwidth}
+			\textbf{Phase:}	
+			\begin{center}
+				\includegraphics[width=\textwidth]{../homework/figs/inverse_control_xcorr_id_phase.eps}
+			\end{center}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Controller design: linear phase FIR filter}
+	The desired response is 
+	\begin{equation*}
+		H_d(e^{j\omega}) = H_{min}^{-1}(e^{-j\omega})
+	\end{equation*}
+	
+	Since, $H_{min}^{-1}(e^{-j\omega})$ does not have any discontinuities, we can use $W(\omega) = 1~\forall\omega$.
+	
+	\begin{center}
+		\includegraphics[width=0.6\textwidth]{../homework/figs/inverse_control_controller_linear_phase.eps}
+	\end{center}
+	
+	Although, the magnitude is matched almost perfectly the minimum phase system does not have linear phase. 
+\end{frame}
+
+%
+\begin{frame}{Controller design: non-linear phase FIR filter}
+\begin{enumerate}
+\item Calculate matrix $Q$, as usual
+\item Calculate vector $d$ by sampling $H_d(e^{j\omega})$, as usual
+\item $h = Q^{\dagger}d$.
+\end{enumerate}
+
+Make sure that $h$ is real. In numerical computations, the imaginary part of $h$ will be small. Hence, we can discard the imaginary part
+\begin{equation*}
+	\texttt{>> hls = real(pinv(Q)*d)}
+\end{equation*}
+
+\begin{columns}
+	\begin{column}{0.45\textwidth}
+		\textbf{Magnitude:}	
+		\begin{center}
+			\includegraphics[width=\textwidth]{../homework/figs/inverse_control_controller_nonlinear_phase_mag.eps}
+		\end{center}
+	\end{column}
+	
+	\begin{column}{0.45\textwidth}
+		\textbf{Phase:}	
+		\begin{center}
+			\includegraphics[width=\textwidth]{../homework/figs/inverse_control_controller_nonlinear_phase_phase.eps}
+		\end{center}
+	\end{column}
+\end{columns}
+
+This will be a good controller because it matches both the magnitude and phase of the desired response.
+
+\end{frame}
+
+%
+\begin{frame}{Testing the controller}
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{../homework/figs/inverse_control.tex}}
+\end{center}
+
+The input $s[n]$ will be:
+\begin{description}
+	\item[(a)] Unit step. 
+	\item[(b)] Sinusoid of frequency $0.1\pi$.
+	\item[(b)] Sinusoid of frequency $0.9\pi$. 
+\end{description}
+
+\end{frame}
+
+
+%
+\begin{frame}{Testing the controller: unit step}
+The plant does not respond immediately to the command.
+\begin{center}
+	\includegraphics[width=0.8\textwidth]{../homework/figs/inverse_control_unit_step.eps}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Testing the controller: sinusoid input}
+Input is $s[n] = \sin(0.1\pi n)$
+\begin{center}
+\includegraphics[width=0.8\textwidth]{../homework/figs/inverse_control_sin1.eps}
+\end{center}
+
+Group delay of controller + plant is small at $\omega = 0.1\pi$.
+\end{frame}
+
+%
+\begin{frame}{Testing the controller: sinusoid input}
+Input is $s[n] = \sin(0.9\pi n)$
+\begin{center}
+\includegraphics[width=0.8\textwidth]{../homework/figs/inverse_control_sin2.eps}
+\end{center}
+
+Group delay of controller + plant is noticeable at $\omega = 0.9\pi$.
+\end{frame}
+
+%
+\begin{frame}{What's next?}
+There's a lot more to learn
+\begin{itemize}
+\item EE 373A: Adaptive signal processing
+\item EE 278: Introduction to statistical signal processing
+\item EE 378A: Statistical signal processing
+\item EE 378B: Inference, estimation, and information processing
+\item EE 368: Image signal processing	
+\end{itemize}
+\end{frame}
+
+
+
+\end{document}

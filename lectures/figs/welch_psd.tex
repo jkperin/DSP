@@ -1,0 +1,130 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis y line=middle, axis x line=bottom,
+	enlargelimits = upper, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=-6,	ymax=6,
+	xmin=0, xmax=512,
+	axis line style={->,>=stealth},
+	%y axis line style={draw=none},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $n$},
+	ylabel={\large $y[n] = x[n] \ast h[n]$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=1.75cm,
+	},
+	ytick=\empty,
+	xtick={0, 128,...,512},
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[black, line width=1pt] table[x index=0,y index=1, each nth point={2}] {figs/data/welch_filter_output.dat};
+	
+	\only<2-|handout:2->{
+		\addplot[blue2, line width=1pt] table[x index=0,y index=1, each nth point={2}, restrict x to domain=0:255] {figs/data/welch_filter_output.dat};
+	}
+	
+	\only<3-|handout:3->{
+		\addplot[red2, line width=1pt] table[x index=0,y index=1, each nth point={2}, restrict x to domain=128:383] {figs/data/welch_filter_output.dat};
+	}
+
+	\only<4-|handout:4->{
+	\addplot[green2, line width=1pt] table[x index=0,y index=1, each nth point={2}, restrict x to domain=256:512] {figs/data/welch_filter_output.dat};
+	}
+	
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+	at=(plot1.below south east), anchor=above north east,
+	axis y line=middle, axis x line=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0,	ymax=14,
+	xmin={0}, xmax={1},
+	axis line style={->,>=stealth},
+	x axis line style={shorten >= -0.25cm}, 
+	xlabel={\large $\omega$},
+	ylabel={\large PSD},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		xshift=0.25cm,
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.6cm,
+	},
+	xtick={-1, -0.5, 0.5, 1},
+	xticklabels={$-\pi$, $-\frac{\pi}{2}$, $\frac{\pi}{2}$, $\pi$},
+	ytick=\empty,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\only<2-|handout:2->{
+		\addplot[smooth, black!50, line width=2pt, domain=0:1] {4*(sin(deg(pi*x)))^2}; \addlegendentry{$\Phi_{yy}(\omega)$};
+		
+		\addplot[blue2, line width=1pt] table[x index=0,y index=3] {figs/data/welch_partial_periodograms.dat}; \addlegendentry{$P_0(\omega)$};
+	}
+
+	\only<3-|handout:3->{	
+		\addplot[red2, line width=1pt] table[x index=0,y index=2] {figs/data/welch_partial_periodograms.dat}; \addlegendentry{$P_1(\omega)$};
+	}
+
+	\only<4-|handout:4->{	
+	\addplot[green2, line width=1pt] table[x index=0,y index=1] {figs/data/welch_partial_periodograms.dat}; \addlegendentry{$P_2(\omega)$};
+	}
+\end{axis}
+
+\begin{axis}[
+name=plot3,
+at=(plot2.below south east), anchor=above north east,
+	axis y line=middle, axis x line=middle,
+enlargelimits = false, clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0,	ymax=14,
+xmin={0}, xmax={1},
+axis line style={->,>=stealth},
+x axis line style={shorten >= -0.25cm}, 
+xlabel={\large $\omega$},
+ylabel={\large PSD},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	xshift=0.25cm,
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.6cm,
+},
+xtick={-1, -0.5, 0.5, 1},
+xticklabels={$-\pi$, $-\frac{\pi}{2}$, $\frac{\pi}{2}$, $\pi$},
+ytick=\empty,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\only<3-|handout:3->{
+	\addplot[smooth, black!50, line width=2pt, domain=0:1, forget plot] {4*(sin(deg(pi*x)))^2};
+	
+	\addplot[black, line width=1pt] table[x index=0,y index=4] {figs/data/welch_psd.dat}; \addlegendentry{$\bar{P}(\omega) = \frac{P_0(\omega) + P_1(\omega) + P_2(\omega)}{3}$};
+}
+
+\end{axis}
+\end{tikzpicture}	

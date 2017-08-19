@@ -1,0 +1,21 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+    \node[block, right=1cm of xc] (C) {$C(z)$};
+    \node[block, right of=C] (P) {$H(z)$};
+	\coordinate[right=1cm of P] (yc) {};
+	
+	\coordinate (mid1) at ($(P.east)!0.5!(C.west)$) {};
+		
+    \path (xc) edge (C);
+    \path (C) edge (P);
+    \path (P) edge (yc);
+    
+    \node[above = 0.5mm of mid1] {$x[n]$};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$s[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$}; 
+    \node[below] at ($(C.south)$) {Controller};
+    \node[below] at ($(P.south)$) {Plant};
+\end{tikzpicture}
