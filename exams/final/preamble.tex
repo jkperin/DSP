@@ -1,48 +1,4 @@
-%%% Externalizing
-\usepgfplotslibrary{external} 
-\ifdefined\EXTERNALIZE
-	\makeatletter	
-	\newcommand*{\overlaynumber}{\number\beamer@slideinframe}
-	\tikzset{
-		beamer externalizing/.style={%
-			execute at end picture={%
-				\tikzifexternalizing{%
-					\ifbeamer@anotherslide
-					\pgfexternalstorecommand{\string\global\string\beamer@anotherslidetrue}%
-					\fi
-				}{}%
-			}%
-		},
-		external/optimize=false
-	}
-	\let\orig@tikzsetnextfilename=\tikzsetnextfilename
-	\renewcommand\tikzsetnextfilename[1]{\orig@tikzsetnextfilename{#1-\overlaynumber}}
-	\makeatother
-	
-	\tikzset{every picture/.style={beamer externalizing}}
-	
-	\tikzexternalize[prefix=external/]
-\fi
-
-%%% Page numbering
-\usepackage{etoolbox} % necessary for excluding beamer-only frames from page numbering
-
-\makeatletter
-\pretocmd{\beamer@@@@frame}{\alt<#1>{}{\beamer@noframenumberingtrue}}{}{}
-\makeatother
-
-\addtobeamertemplate{navigation symbols}{}{%
-	\usebeamerfont{footline}%
-	\usebeamercolor[fg]{footline}%
-	\hspace{1em}%
-	\scriptsize\insertframenumber/\inserttotalframenumber
-}
-%%%
-
-% For circular convolution
-\newcommand\encircle[1]{%
-	\tikz[baseline=(X.base)] 
-	\node (X) [anchor=south, draw, shape=circle, inner sep=0mm, align=center] {\scriptsize\strut #1};}
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
 
 \definecolor{matlabcomment}{RGB}{34,139,34}
 
@@ -135,18 +91,6 @@ terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
 	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
 }
 
-\pgfmathdeclarefunction{triang}{2}{%
-	\pgfmathparse{(1/#2)*(#1 + #2)*and(#1 <= 0, #1 >= -#2) + (1/#2)*(-#1 + #2)*and(#1 > 0, #1 <= #2)}%
-}
-
-\pgfmathdeclarefunction{rect}{2}{%
-	\pgfmathparse{and(#1 >= 0, #1 < #2)}%
-}
-
-\pgfmathdeclarefunction{dsinc}{2}{%
-	\pgfmathparse{(and(#1 != 0, 1)*(sin(deg(#1*#2/2))/sin(deg(#1/2))) + and(#1 == 0, 1) * (#2)}%
-}
-
 \tikzset{
 	declare function={
 		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
@@ -154,31 +98,11 @@ terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
 	}
 }
 
-\DeclareMathOperator{\E}{\mathbb{E}} % expectation
-
-\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
-
-\input{figs/color_pallete.tex}
+%\DeclareMathOperator{\E}{\mathbb{E}} % expectation
 
 \newcommand\SimpleSys[4]{%
 	\def\xin{#2}%
 	\def\Hz{#3}%
 	\def\yout{#4}
-	\input{#1}%
-}
-
-\newcommand\PlotExp[5]{%
-	\def\A{#2}%
-	\def\Legend{#3}%
-	\def\ymin{#4}
-	\def\ymax{#5}
-	\input{#1}%
-}
-
-\newcommand\PlotSinc[5]{%
-	\def\xmin{#2}%
-	\def\xmax{#3}%
-	\def\samples{#4}
-	\def\w{#5}
 	\input{#1}%
 }
