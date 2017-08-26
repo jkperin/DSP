@@ -164,7 +164,7 @@ More about filter design on lecture 9
 \vspace{1cm}
 \begin{tikzpicture}[draw=black!50, node distance=1cm]
 	\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
-	\node[block] (C1) {\resizebox{0.7\textwidth}{!}{\includegraphics[trim={2cm 2cm 2cm 2cm}]{figs/speech_spectogram.eps}}};
+	\node[block] (C1) {\resizebox{0.8\textwidth}{!}{\includegraphics[trim={2cm 2cm 2cm 2cm}]{figs/speech_spectogram.eps}}};
 	
 	\node (the) at (-3.6, 1.2) {\tiny The};
 	\node (discrete) at ($(the.east) + (0.43,0)$) {\tiny discrete};
@@ -198,7 +198,7 @@ Spectrogram of the same speech signal, now recorded with sampling rate of 44.1 k
 \resizebox{0.7\textwidth}{!}{\includegraphics{figs/speech_spectogram_44k.eps}}
 \end{center}
 
-More on spectrograms and short-time Fourier transform on lecture 12.
+More on spectrograms and short-time Fourier transform on lecture 11.
 
 \end{frame}
 
@@ -406,7 +406,7 @@ $x[n]$ is only defined for $n\in\mathbb{Z}$
 %
 \begin{frame}{Basic sequences}
 	
-\textbf{Exponential:} $\displaystyle 
+\textbf{Right-sided exponential:} $\displaystyle 
 x[n] = a^nu[n] = \begin{cases}
 a^n, & n \geq 0 \\
 0, & \text{otherwise}
@@ -758,7 +758,7 @@ x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})e^{j\omega n}d\omega
 	\item The oscillations are known as \textbf{Gibbs phenomenon}, and they occur whenever there is a discontinuity in the frequency domain
 	\item Interestingly, as $M\to\infty$ the oscillations become more rapid, but the size of the ripples does not decrease
 	\item The DTFT may exist even when sequences are neither absolute summable nor square summable. Examples: a constant, unit step, complex exponentials
-	\item Although all this may seem like a mathematical curiosity, it has important implications in filter design. More on this in lecture 9.
+	\item Although all this may seem like a mathematical curiosity, it has important implications in filter design (lecture 9) and in spectrum analysis (lecture 11)
 \end{itemize}
 	
 \end{frame}

@@ -72,15 +72,15 @@
 
 %
 \begin{frame}{Last lecture}
-\begin{itemize}
+	\begin{itemize}
 	\item The PSD is the DTFT of the autocorrelation function
 	\item The PSD may be two-sided or one-sided. Careful with conventions!
 	\item The periodogram method estimates the PSD directly from the magnitude squared of the DFT of the windowed signal
 	\item The periodogram is an biased estimator of the PSD, and it has large variance. Hence, the periodogram must be averaged to produce useful estimates
-	\item The Welch method is a time-averaged periodogram
+	\item The Welch method averages several periodograms
 	\item The Welch method breaks the data into overalapping segments, each of length $L$. Usually, the segments overlap by $L/2$.
 	\item Differently from the periodogram and Welch method, the Blackman-Tukey method estimates the PSD by computing the DFT of the estimated autocorrelation function
-	\item Although the estimated autocorrelation function may be an unbiased estimator, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
+	\item Although the estimator of the autocorrelation function may be unbiased, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
 	\item Increasing the sequence length $Q$ improves accuracy. Reducing the window length $L$ improves accuracy at the expense of poorer frequency resolution.
 \end{itemize}
 \end{frame}
@@ -120,7 +120,7 @@
 
 
 \begin{frame}{All-pole model}
-Consider the inverse systems
+Consider the inverse system
 \begin{center}
 	\def\INVERSE{1}
 	\resizebox{0.9\linewidth}{!}{\input{figs/all_pole_model.tex}}

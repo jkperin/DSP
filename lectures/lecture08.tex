@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -54,15 +54,9 @@
     urlcolor=cyan,
 }
 
+%% 
+% \def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex}
-
-\makeatletter
-\def\env@dcases{%
-	\let\@ifnextchar\new@ifnextchar
-	\left\lbrace
-	\def\arraystretch{2}%
-	\array{@{}l@{\quad}l@{}}}
-\makeatother
 
 %% 
 \title[EE 264]{Quantization in Digital Filter Structures}
@@ -114,7 +108,7 @@
 %
 \section{Two's complement}
 \begin{frame}{Two's complement}
-\textbf{Two's complement} is a widely used \textbf{fixed-point} representation. It allows fractions to be represented as integers.
+\textbf{Two's complement} is a widely used \textbf{fixed-point} representation, whereby fractions are represented by integers.
 
 Any real number $x$ can be represented with infinite precision in two's complement:
 \begin{equation*}
@@ -206,8 +200,9 @@ If $X_m = 2^B$. We have integer representation:
 	011_\lozenge\underbrace{1000000000000}_{\text{13 bits}}
 	\end{equation*}
 	
-	In this case, 13 bits are used to represented the fraction (0.5), whereas 3 bits are used to represent the integer part (3)
+	In this case, 13 bits are used to represent the fraction (0.5), whereas 3 bits are used to represent the integer part (3)
 	
+	\vspace{0.25cm}
 	\textbf{Q0 means integers}
 	\begin{equation*}
 	0111000000000000_\lozenge = 28672~\text{Q0}
@@ -222,7 +217,7 @@ The difference between the actual number $x$ and its representation $x_B$ is kno
 e = x - x_B
 \end{equation*}
 
-Similarly to quantization error, the roundoff error is bounded in the interval of length $\Delta$:
+Similarly to quantization error, the roundoff error is bounded in an interval of length $\Delta$:
 
 \begin{equation*}
 \Delta = \frac{\text{range}}{\text{number of steps}} = \frac{2X_m}{2^{B+1}} = \frac{X_m}{2^{B}}
@@ -236,7 +231,7 @@ For instance, for $X_m = 1$ and Q15, we would have
 
 \begin{frame}{Overflow vs clipping}
 
-There are two possibilities when number \underline{exceeds} the representation range
+There are two possibilities when a number \underline{exceeds} the representation range
 
 \begin{enumerate}
 	\only<1|handout:1>{
@@ -359,13 +354,13 @@ Example of FIR system (same applies to IIR):
 \begin{frame}{Coefficient quantization}
 	Given a system
 	\begin{align*}
-		H(z) = \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{a_0 + a_1z^{-1} + \ldots + a_Nz^{-N}}.
+		H(z) = \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{1 - a_1z^{-1} - \ldots - a_Nz^{-N}}.
 	\end{align*}
 	
-	The coefficients $\{a_0, \ldots, a_M, b_0,\ldots b_N\}$ obtained in design must  be quantized to $(B+1)$ bits for implementation:
+	The coefficients $\{a_1, \ldots, a_M, b_0,\ldots b_N\}$ obtained in design must  be quantized to $(B+1)$ bits for implementation:
 	\begin{alignat*}{2}
 		\hat{b}_k &= Q_B\{b_k\} = b_k + \Delta b_k, \qquad &&  k = 0, \ldots, M \\
-		\hat{a}_k &= Q_B\{a_k\} = a_k + \Delta a_k, \qquad && k = 0, \ldots, N
+		\hat{a}_k &= Q_B\{a_k\} = a_k + \Delta a_k, \qquad && k = 1, \ldots, N
 	\end{alignat*}
 	
 	\pause
@@ -488,7 +483,6 @@ How to mitigate this problem?
 \begin{block}{IIR}
 	\begin{itemize}
 		\item IIR systems can become unstable after coefficients quantization
-		\item Symmetry conditions are not easy to enforce. In all-pass systems, for  instance, after quantization the pole $c$ may not longer be conjugate reciprocal of the zero $1/c^*$
 		\item These issues are mitigated by increasing word length, or using cascade or parallel forms.
 	\end{itemize}
 \end{block}
@@ -498,7 +492,7 @@ How to mitigate this problem?
 %
 \section{Roundoff Noise}
 \begin{frame}{Roundoff noise and the linear noise model}
-As for quantization, we'll model roundoff noise as noise source of a \textbf{white uniformly distributed noise} that is independent of the input signal. 
+As for quantization, roundoff is modeled as an additive \textbf{white noise uniformly distributed} that is independent of the input signal. 
 
 \begin{center}
 \resizebox{0.6\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
@@ -594,7 +588,7 @@ Assuming $X_m = 1$ (typical), we have the following values:
 	\item We'll treat roundoff noise in IIR systems similarly to in FIR systems
 	\item The inherent feedback of IIR systems will lead to roundoff noise \textbf{shaping}
 	\item Now the difference between the different structures will become apparent
-		\begin{itemize}
+		\begin{itemize}\normalsize
 		\item Direct form I \& II
 		\item Transposed forms
 		\item Cascade forms
@@ -767,16 +761,16 @@ $\sigma_B^2 = 2^{-2B}/12$ for a ($B+1$)-bit two's complement representation.
 %
 \begin{frame}{Summary}
 \begin{itemize}
-	\item Two's complement is a fixed-point representation that allows fractions to be represented as integers
+	\item Two's complement is a fixed-point representation that represents fractions as integers
 	\item There's an inherent trade-off between roundoff noise and overflow/clipping
 	\item FIR systems remain stable after coefficient quantization
 	\item Linear phase FIR systems remain linear phase after coefficient quantization, since the impulse response remains symmetric
 	\item Coefficient quantization may lead to instability in IIR systems, as poles may move outside the unit circle
-	\item Similarly to quantization noise, roundoff noise is modeled by an additive white noise that is independent of the input signal (the linear noise model).
+	\item Similarly to quantization noise, roundoff noise is modeled by an additive uniformly distributed white noise that is independent of the input signal (the linear noise model).
 	\item Roundoff noise is minimized by performing quantization only after accumulation, but this requires $(2B+1)$-bit adders
 	\item In FIR structures the equivalent roundoff noise at the output is white
 	\item IIR structures lead to roundoff noise shaping
-	\item Least noisy IIR structure depends on the system
+	\item The least noisy IIR structure depends on the system
 	\item Cascade and parallel forms are used to mitigate total roundoff noise
 \end{itemize}
 \end{frame}

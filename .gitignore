@@ -228,4 +228,5 @@ lectures/m/*.tex
 homework/m/*.tex
 *.wav
 *.pptx
+*.xlsx
 homework/draft.tex

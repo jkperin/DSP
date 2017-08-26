@@ -83,7 +83,7 @@
 \begin{frame}{Last lecture}
 \begin{itemize}
 	\item Leakage and resolution are important considerations in spectrum analysis
-	\item By choosing proper windows we can minimize these issues
+	\item By properly choosing windows we can minimize these issues
 	\item Kaiser window is a nearly optimal choice. Must choose correct $\beta$ and window length $L$
 	\item $\beta$ controls the ratio between the amplitudes of the main-lobe and the largest side-lobe i.e., $\beta$ controls the amount of leakage.
 	\item The larger the main-lobe width, the smaller the resolution
@@ -142,7 +142,7 @@ A zero-mean random process has PSD $P(\omega)$ and average power $\sigma^2$.
 \begin{center}
 	\resizebox{\textwidth}{!}{\input{figs/psd_conventions.tex}}
 \end{center}
-Generally, one-sided PSD is used for real signals, while two-sided PSD is used for complex signals.
+Generally, one-sided PSD is used when dealing with real signals, while two-sided PSD is used when dealing with complex signals.
 \end{frame}
 
 %
@@ -187,9 +187,10 @@ Therefore, the area under the PSD in Matlab is equal to the average power, even 
 	\begin{equation*}
 		P[k] = P\Big(\frac{2\pi k}{N}\Big) = \frac{1}{LU}|\mathrm{DFT}\{w[n]x[n]\}|^2
 	\end{equation*}
-	since the DFT of $w[n]x[n]$ is simply the DTFT $\mathcal{F}\{w[n]x[n]\}$ sampled with period $2\pi/N$.
+	For $N \geq L$, the $N$-point DFT of $w[n]x[n]$ is simply the DTFT $\mathcal{F}\{w[n]x[n]\}$ sampled with period $2\pi/N$.
 \end{frame}
 
+%
 \begin{frame}{Periodogram and the deterministic autocorrelation function}
 Define $v[n] = w[n]x[n] \Longleftrightarrow V(e^{j\omega}) = \mathcal{F}\{w[n]x[n]\}$
 \begin{align*}
@@ -209,11 +210,11 @@ Writing $c_{vv}[m]$ in terms of $x[n]$ and $w[n]$:
 \end{frame}
 
 \begin{frame}{The periodogram as a random variable}
-The periodogram is a function of a random variable $x[n]$, therefore it is itself a random variable
+The periodogram is a function of the random variable $x[n]$, therefore it is itself a random variable
 
 \textbf{The mean of the periodogram}
 \begin{align*}
-	\bar{P}(\omega) &= \E(P(\omega)) = \E\bigg(\frac{1}{LU}\mathcal{F}\{c_{vv}[m]\}\bigg) = \E\bigg(\frac{1}{LU}\sum_{m=L-1}^{L-1}c_{vv}[m]e^{-j\omega m}\bigg) \\
+	\E(P(\omega)) = \E\bigg(\frac{1}{LU}\mathcal{F}\{c_{vv}[m]\}\bigg) = \E\bigg(\frac{1}{LU}\sum_{m=L-1}^{L-1}c_{vv}[m]e^{-j\omega m}\bigg) \\
 	& = \frac{1}{LU}\sum_{m=L-1}^{L-1}\E(c_{vv}[m])e^{-j\omega m} \\
 	& = \frac{1}{LU}\sum_{m=L-1}^{L-1}c_{ww}[m]\phi_{xx}[m]e^{-j\omega m} \tag{the window is deterministic} \\
 	& = \frac{1}{2\pi LU}C_{ww}(e^{j\omega})\ast \Phi_{xx}(e^{j\omega}) \tag{product in time $\Longleftrightarrow$ convolution in frequency} \\
@@ -254,13 +255,13 @@ The variance is reduced by the number of averages $N_{avg}$
 Periodogram definition:
 \begin{align*}
 P[k] &\equiv \frac{1}{LU}|V(e^{j2\pi/Nk})|^2, \quad\text{where}\quad U = \frac{1}{L}\sum_{n = 0}^{L-1}|w[n]|^2 \\
-&= \texttt{1/(L*U)*abs(fft(x.*w, N\_{fft})).\textasciicircum 2} \tag{Matlab code}
+&= \texttt{1/(L*U)*abs(fft(x.*window, N)).\textasciicircum 2} \tag{Matlab code}
 \end{align*}
 This returns the two-sided periodogram at frequencies $\omega_k = 2\pi/Nk, k=0, \ldots, L-1$.
 
 Matlab's periodogram function:
 \begin{align*}
-&\texttt{>> dw = 2*pi/Nfft} \\
+&\texttt{>> dw = 2*pi/N} \\
 &\texttt{>> Pw = 2*pi*periodogram(x, window, -pi:dw:pi-dw)}
 \end{align*}
 
@@ -297,14 +298,14 @@ See Matlab script: Canvas/Files/Matlab/\texttt{periodogram\_example.m}
 \tableofcontents[currentsection]
 \end{frame}
 \begin{frame}{Welch's method of estimating the PSD}
-	Welch's method is essentially a time-averaged periodogram
+	Welch's PSD estimate is obtained by averaging several periodograms
 	
 	\begin{enumerate}
 	\item Divide $x[n]$ into $K$ overlapping segments
 		\begin{equation*}
 			x_r[n] = x[rR + n], \quad n = 0, \ldots, L-1
 		\end{equation*}
-		Usually $R = L/2$. i.e., the subsequences overlap by half of samples.
+		Usually $R = L/2$. i.e., the subsequences overlap by $50\%$.
 	\item Compute the periodogram for each sequence $x_r[n]$
 		\begin{align*}
 			P_r(\omega) &= \frac{1}{LU}|\mathcal{F}\{x_r[n]w[n]\}|^2, \quad\text{where}\quad U = \frac{1}{L}\sum_{n = 0}^{L-1}|w[n]|^2 \\
@@ -340,7 +341,7 @@ For each $r$, the spectrogram is the DFT of $x[rR+m]w[m]$. Hence, we can calcula
 	\bar{P}[k] = \frac{1}{LUK} \sum_{r = 0}^{K-1} |X[r, k]|^2 \tag{Welch's PSD estimate}
 \end{equation*}
 
-This is equivalent to averaging the magnitude square of the spectrogram over time $r$.
+This is equivalent to averaging the squared magnitude of the spectrogram over time $r$.
 
 \end{frame}
 
@@ -374,7 +375,7 @@ See Matlab script: Canvas/Files/Matlab/\texttt{welch\_example.m}
 
 %
 \begin{frame}{Blackman-Tukey PSD estimate}
-	The Blackman-Tukey method estimates the autocorrelation function. The PSD follows by computing the DFT of the estimator.
+	The Blackman-Tukey method first estimates the autocorrelation function $\hat{\phi}_{xx}[m]$. The PSD follows by computing the DFT of $\hat{\phi}_{xx}[m]$.
 	\begin{enumerate}
 		\item Estimate the autocorrelation function from $Q$ samples of $x[n]$
 		\begin{equation*}
@@ -388,9 +389,9 @@ See Matlab script: Canvas/Files/Matlab/\texttt{welch\_example.m}
 			\end{cases}
 		\end{equation*}
 		window is centered around $m = 0$ and it has length $L = 2M-1$.
-		\item Enforce even symmetry
+		\item Form DFT-even sequence
 		\begin{equation*}
-			s[-m] \gets s[m], \quad m = 1, \ldots, M-1
+			s_e[m] = s[((m))_N]
 		\end{equation*}	
 		This guarantees that the PSD is linear phase.
 		\item Compute DFT
@@ -403,7 +404,7 @@ See Matlab script: Canvas/Files/Matlab/\texttt{welch\_example.m}
 %
 \begin{frame}{The mean of Blackman-Tukey PSD estimate}
 
-The estimator fo the autocorrelation function from $Q$ samples of $x[n]$
+The estimator of the autocorrelation function from $Q$ samples of $x[n]$
 \begin{equation*}
 \hat{\phi}_{xx}[m] = \frac{1}{Q-|m|}\sum_{n = 0}^{Q-1-|m|} x[m+n]x[n], \quad |m|\leq Q-1
 \end{equation*}
@@ -439,8 +440,8 @@ The mean of the PSD estimate is simply
 \begin{align*}
 & \texttt{>> phi\_hat = xcorr(x, x, M-1, `unbiased')} \tag{unbiased autocorrelation estimate}\\
 & \texttt{>> s = phi\_hat.*w} \tag{windowing} \\
-& \texttt{>> s[M:-1:1] = s[M:1:end]} \tag{enforce even symmetry} \\
-& \texttt{>> Pw = abs(fftshift(fft(s)))} \tag{two-sided PSD in interval $[-\pi, \pi)$}
+& \texttt{>> s\_e = ifftshift(s)} \tag{form DFT-even sequence} \\
+& \texttt{>> Pw = abs(fftshift(fft(s\_e)))} \tag{two-sided PSD in interval $[-\pi, \pi)$}
 \end{align*}
 
 As you'll see in HW6, \texttt{xcorr} can be computed using FFT/IFFT with complexity $\mathcal{O}(N\log_2N)$.
@@ -455,6 +456,7 @@ As you'll see in HW6, \texttt{xcorr} can be computed using FFT/IFFT with complex
 	\begin{itemize}
 		\item Increasing the number of samples $Q$ improves accuracy
 		\item Reducing the window length $L = 2M-1$ improves accuracy at the expense of poorer resolution of the PSD
+		\item The FFT length $N$ determines the number of samples of the estimated PSD
 	\end{itemize}
 \end{frame}
 
@@ -466,10 +468,10 @@ As you'll see in HW6, \texttt{xcorr} can be computed using FFT/IFFT with complex
 		\item The PSD may be two-sided or one-sided. Careful with conventions!
 		\item The periodogram method estimates the PSD directly from the magnitude squared of the DFT of the windowed signal
 		\item The periodogram is an biased estimator of the PSD, and it has large variance. Hence, the periodogram must be averaged to produce useful estimates
-		\item The Welch method is a time-averaged periodogram
+		\item The Welch method averages several periodograms
 		\item The Welch method breaks the data into overalapping segments, each of length $L$. Usually, the segments overlap by $L/2$.
 		\item Differently from the periodogram and Welch method, the Blackman-Tukey method estimates the PSD by computing the DFT of the estimated autocorrelation function
-		\item Although the estimated autocorrelation function may be an unbiased estimator, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
+		\item Although the estimator of the autocorrelation function may be unbiased, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
 		\item Increasing the sequence length $Q$ improves accuracy. Reducing the window length $L$ improves accuracy at the expense of poorer frequency resolution.
 	\end{itemize}
 \end{frame}

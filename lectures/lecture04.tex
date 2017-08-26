@@ -50,54 +50,9 @@
     urlcolor=cyan,
 }
 
-\definecolor{matlabcomment}{RGB}{34,139,34}
-
-\pgfmathdeclarefunction{gauss}{2}{%
-	\pgfmathparse{1/(#2*sqrt(2*pi))*exp(-((x-#1)^2)/(2*#2^2))}%
-}
-
-\pgfmathdeclarefunction{laplacian}{2}{%
-	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
-}
-
-\pgfmathdeclarefunction{pretty_func}{1}{%
-	\pgfmathparse{cos(deg(#1/2)) - sin(deg(#1)) + cos(deg(#1/2)-45) - sin(deg(#1/4)-154)}%
-}
-
-\pgfplotsset{
-	dirac/.style={
-		mark=triangle*,
-		mark options={scale=2},
-		ycomb,
-		scatter,
-		visualization depends on={y/abs(y)-1 \as \sign},
-		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
-	}
-}
-
-\newcommand\PlotSampledSpectrum[4]{%
-	\def\fs{#2}%
-	\def\fmax{#3}%
-	\def\ros{#4}%
-	\input{#1}%
-}
-
-\pgfmathdeclarefunction{invgauss}{2}{%
-	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
-}
-
-\tikzset{
-	declare function={
-		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
-		(and(\x==0, 1) * 1);
-	}
-}
-
-\DeclareMathOperator{\E}{\mathbb{E}} % expectation
-
-\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
-
-\input{figs/color_pallete.tex}
+%% 
+% \def\EXTERNALIZE{1} % for externalizing figures
+\input{header.tex}
 
 \title[EE 264]{Changing the Sampling Rate in DSP}
 \author{Jose Krause Perin}
@@ -211,7 +166,7 @@ x_r(t) = \sum_{n=-\infty}^{\infty} x[n]h_r(t-nT) = \sum_{n=-\infty}^{\infty} x[n
 \only<1|handout:1>{Original continuous-time signal}
 \only<2|handout:2>{Samples from original continuous-time signal}
 \only<3-6|handout:3>{At the $n$th sample, we have the sinc function $x[n]\mathrm{sinc}(t-nT)$}
-\only<7|handout:4>{Adding all the {\color{blue2} \textbf{sincs}} together results in the {\color{red}\textbf{reconstructed signal}}, which is exactly equal to the original signal.}
+\only<7|handout:4>{Adding up all {\color{blue2} \textbf{sincs}} results in the {\color{red}\textbf{reconstructed signal}}, which is exactly equal to the original signal.}
 \end{frame}
 
 \begin{frame}<beamer:5|handout:1-2>{Reconstruction: frequency domain interpretation}

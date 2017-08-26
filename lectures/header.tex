@@ -50,6 +50,10 @@
 	\pgfmathparse{1/(sqrt(2*pi))*exp(-((#1)^2)/2)}%
 }
 
+\pgfmathdeclarefunction{sign}{1}{%
+	\pgfmathparse{1*(#1 > 0) - 1*(#1 < 0)}%
+}
+
 \pgfmathdeclarefunction{laplacian}{2}{%
 	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
 }
@@ -180,5 +184,13 @@ terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
 	\def\xmax{#3}%
 	\def\samples{#4}
 	\def\w{#5}
+	\input{#1}%
+}
+
+% Gaussian characteristic function
+\newcommand\PlotGaussianCF[4]{%
+	\def\sig{#2}%
+	\def\ws{#3}%
+	\def\cap{#4}
 	\input{#1}%
 }

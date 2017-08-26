@@ -54,7 +54,8 @@
     urlcolor=cyan,
 }
 
-%
+%% 
+% \def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex} % some definitions
 
 %% 
@@ -70,28 +71,18 @@
 \end{frame}
 
 %
-%\begin{frame}{Announcements}
-%	\begin{itemize}
-%		\item Homework \#4 due on Sunday, July 30. Start early!
-%		\item Midterm review session will be on Friday at 1:30pm at \textbf{Gates B03}
-%		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}. \textbf{Deadline:} Today
-%		\item We'll release practice midterms today. Their solutions will be released on Friday after the review session.
-%	\end{itemize}
-%\end{frame}
-
-%
 \begin{frame}{Last lecture}
 \begin{itemize}
-	\item Two's complement is a fixed-point representation that allows fractions to be represented as integers
+	\item Two's complement is a fixed-point representation that represents fractions as integers
 	\item There's an inherent trade-off between roundoff noise and overflow/clipping
 	\item FIR systems remain stable after coefficient quantization
 	\item Linear phase FIR systems remain linear phase after coefficient quantization, since the impulse response remains symmetric
 	\item Coefficient quantization may lead to instability in IIR systems, as poles may move outside the unit circle
-	\item Similarly to quantization noise, roundoff noise is modeled by an additive white noise that is independent of the input signal (the linear noise model).
+	\item Similarly to quantization noise, roundoff noise is modeled by an additive uniformly distributed white noise that is independent of the input signal (the linear noise model).
 	\item Roundoff noise is minimized by performing quantization only after accumulation, but this requires $(2B+1)$-bit adders
 	\item In FIR structures the equivalent roundoff noise at the output is white
 	\item IIR structures lead to roundoff noise shaping
-	\item Least noisy IIR structure depends on the system
+	\item The least noisy IIR structure depends on the system
 	\item Cascade and parallel forms are used to mitigate total roundoff noise
 \end{itemize}
 \end{frame}
@@ -128,7 +119,7 @@
 		\end{equation*}
 		
 		\textbf{Design techniques:}
-		\begin{itemize}
+		\begin{itemize}\normalsize
 			\item Impulse invariance
 			\item Bilinear transformation
 		\end{itemize}
@@ -208,7 +199,7 @@ The resulting $h[n]$ depends on the sampling period $T$.
 \end{frame}
 
 \begin{frame}{Impulse invariance example: lowpass Butterworth filter}
-Butterworth filters are \textbf{maximally flat} in the passband and are monotonic overall. The downside of Butterworth filter is their relatively slow roll-off.
+Butterworth filters are \textbf{maximally flat} in the passband and are monotonic overall. The downside of Butterworth filters is their relatively slow roll-off.
 \vspace{0.25cm}
 
 For this example, consider the following 6th-order continuous-time lowpass Butterworth filter:
@@ -785,15 +776,14 @@ We will revisit windows when talking about spectrum analysis (lecture 12)
 
 It's typically desired that the window be maximally concentrated around $\omega = 0$ (small sidelobe area).
 
-The \textbf{Kaiser window} is a nearly optimal choice
-
+The \textbf{Kaiser window} offers a nearly optimal trade-off between main-lobe width and side-lobe area.
 \begin{equation*}
-	w[n] = \begin{cases}
-	\displaystyle\frac{I_0\Big(\beta\sqrt{1- (n-M/2)^2/(M/2)^2}\Big)}{I_0(\beta)}, & 0 \leq n \leq M \\
-	0, & \text{otherwise}
-	\end{cases},
+w[n] = \begin{cases}
+\displaystyle\frac{I_0\Big(\beta\sqrt{1- (n-\alpha)^2/\alpha^2}\Big)}{I_0(\beta)}, & 0 \leq n \leq L-1 \\
+0, & \text{otherwise}
+\end{cases},
 \end{equation*}
-where $\beta$ is a design parameter, and $I_0(\cdot)$ is the \textbf{modified Bessel function of first kind}.
+where $\alpha = (L-1)/2$, $\beta$ is a design parameter, and $I_0(\cdot)$ is the \textbf{modified Bessel function of first kind and order 0}.
 
 See section 7.5.3 of the textbook for recommendations on values of $\beta$ for lowpass filter design.
 
@@ -808,11 +798,11 @@ See section 7.5.3 of the textbook for recommendations on values of $\beta$ for l
 			h[n] = \begin{cases}
 			h_d[n]w[n], & n = 0, \ldots, M \\
 			0, &\text{otherwise}
-			\end{cases}
+			\end{cases} \tag{for $h_d[n]$ causal}
 		\end{equation*}
 		Kaiser window depends on parameters $\beta$ and $M$. Other windows only depend on $M$.
 		
-		\item Linear phase is guaranteed by selecting causal and symmetric window $w[n]$ and desired impulse response $h_d[n]$
+		\item Linear phase is guaranteed if $h_d[n]$ and $w[n]$ are symmetric
 	\end{enumerate}
 
 In Matlab: 
@@ -871,7 +861,7 @@ designs a lowpass FIR filter of order $M$ and cutoff frequency $\omega_c$ using 
 	
 	\begin{itemize}
 		\item $e$ is the error vector $e_i = E(\omega_i)$
-		\item $W$ is the weight matrix: $W = \text{\textbf{diag}}(w)$, where $w$ is the weight vector: $w_i = W(\omega_i)$
+		\item $W$ is a diagonal matrix defined as $W_{ii} = W(\omega_i)$
 		\item $d$ is the desired frequency response vector: $d_i =H_d(e^{j\omega_i})$
 		\item $h$ is the FIR filter coefficients vector $h_i = h[i]$. This is the vector we want to find. 
 		
@@ -1095,7 +1085,7 @@ If $H_d(e^{j\omega})$ is \textbf{Hermitian symmetric} i.e., $H_d(e^{j\omega}) = 
 	\end{align*}
 	}
 	\onslide<3-|handout:1>{
-	\noindent\textbf{Conclusion:} designing a good predictive filter for band-limited signals boils down to designing a good high-pass filter.
+	\textbf{Conclusion:} designing a good predictive filter for band-limited signals boils down to designing a good high-pass filter.
 	
 	This method was first proposed by \href{http://authors.library.caltech.edu/6802/1/VAIprocieee87b.pdf}{Vaidyanathan in 1987}
 	}

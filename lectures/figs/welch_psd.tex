@@ -120,7 +120,7 @@ every outer y axis line/.append style={white!15!black},
 every y tick label/.append style={font=\color{white!15!black}},
 legend style={draw=white!15!black,fill=white,legend cell align=left}]
 
-\only<3-|handout:3->{
+\only<4-|handout:4->{
 	\addplot[smooth, black!50, line width=2pt, domain=0:1, forget plot] {4*(sin(deg(pi*x)))^2};
 	
 	\addplot[black, line width=1pt] table[x index=0,y index=4] {figs/data/welch_psd.dat}; \addlegendentry{$\bar{P}(\omega) = \frac{P_0(\omega) + P_1(\omega) + P_2(\omega)}{3}$};
