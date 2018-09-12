@@ -1,0 +1,43 @@
+\begin{tikzpicture}[node distance=1.75cm]
+\tikzstyle{node}=[circle,fill=red2,minimum size=2pt,inner sep=0pt]
+%Place the nodes
+\node[terminal={below}{$x[n]$}] (x) at (0,0) {};
+\node[terminal={below}{}, right of=x] (00) {};
+\node[terminal={below}{}, right of= 00] (01) {};
+\node[terminal={below}{}, right of=01] (02) {};
+\node[terminal={below}{$y[n]$}, right of=02] (y) {};
+
+\foreach \j in {1} {
+	\pgfmathtruncatemacro{\jn}{(\j-1)}%
+	\coordinate[below of=\jn0] (\j0) {};
+	\node[terminal={below}{}, below of=\jn1] (\j1) {};
+	\coordinate[below of=\jn2] (\j2) {};
+}
+
+%
+\draw[zpath={right}] (11) to (01);
+
+%
+\draw[amark] (00) to (10);
+\draw[amark] (02) to (12);
+
+
+%
+\draw[amark={$1$}{above}] (00) to (01);
+\draw[amark={$c$}{above}] (10) to (11);
+
+%
+\draw[amark={$1$}{above}] (01) to (02);
+\draw[amark={$c$}{above}] (12) to (11);
+
+
+\draw[amark] (x) to (00);
+\draw[amark] (02) to (y);
+
+\draw[dashed] (01) circle[radius=0.5cm];
+\draw[dashed] (11) circle[radius=0.5cm];
+
+\node[node, above=0.5cm of 01] (E) {}; \node[right] at (E) {$2\sigma_{15}^2$};
+\draw[->, >=stealth, red2, \thickness] (E) to (01);
+
+\end{tikzpicture}

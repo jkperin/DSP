@@ -1,4 +1,4 @@
-\documentclass[10pt, handout]{beamer}
+\documentclass[10pt, aspectratio=169, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -54,47 +54,20 @@
 }
 
 %% 
-% \def\EXTERNALIZE{1} % for externalizing figures
+%\def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex}
 
 %% 
 \title[EE 264]{Digital Filter Structures}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{July 20, 2017}
+\date{July 25, 2017}
 
 \begin{document}
 
 \begin{frame}
   \titlepage
 \end{frame}
-
-%
-\begin{frame}{Announcements}
-	\begin{itemize}
-		\item Homework \#3 due tomorrow
-		\item Homework \#4 will be released tomorrow and it is due next Sunday, July 30 (after the midterm review session)
-		\item The review session will be on Friday at 1:30pm at \textbf{Gates B03}
-		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}
-	\end{itemize}
-\end{frame}
-
-%
-\begin{frame}{Last lecture}
-	\begin{itemize}
-		\item The frequency response of a system tell us how much each frequency is scaled (magnitude response), and delayed (phase response) by the system.
-		\item Poles increase magnitude and introduce phase lag (positive group delay)
-		\item Zeros decrease the magnitude and introduce phase lead (negative group delay)
-		\item All-pass systems have constant magnitude response. For each pole at $e_k$, there will be a zero at the conjugate reciprocal $1/e^*_k$
-		\item Minimum phase systems have all zeros inside the unit circle
-		\item Any system $H(z)$ can be decomposed into a cascade of a minimum phase system and an all-pass system $H(z) = H_{min}(z)H_{ap}(z)$
-		\item For minimum phase systems, the phase response is given by the Hilbert transform of the log-magnitude response. 
-		\item The phase response of a generalized linear phase systems is an affine function of $\omega$
-		\item FIR systems are linear phase as long as their impulse response is either even or odd symmetric
-		\item Linear phase rational IIR systems do not exist
-	\end{itemize}
-\end{frame}
-
 
 \section{Outline}
 %
@@ -117,9 +90,23 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 	&= b_0x[n] + b_1x[n-1] + \ldots + b_Mx[n-M] \tag{difference equation}
 	\end{align*}
 	There is at least one pole different from the origin
-	
-	\textbf{Careful with notation:} Note the \textbf{minus sign} of the coefficients $a_1, \ldots, a_N$. This is the same convention from the textbook. This way the coefficients $a_1, \ldots, a_N$ will appear without the minus sign in the signal flow graphs.
 \end{block}
+
+\end{frame}
+
+\begin{frame}{Careful with conventions}
+	
+	When studying digital filter structures, it is more convenient to express IIR systems according to this convention following convention: 
+
+	\begin{equation}
+		H(z) =  \frac{b_0 + b_1z^{-1} + \ldots + b_Mz^{-M}}{1 - a_1z^{-1} - \ldots - a_Nz^{-N}}
+	\end{equation}
+	
+	Note that...
+	\begin{enumerate}
+		\item the first denominator coefficient is made equal to 1 (i.e., $a_0 = 1$)
+		\item the coefficients $a_1, \ldots, a_N$ appear with a \textbf{minus sign}. This is the same convention from the textbook. This way the coefficients $a_1, \ldots, a_N$ appear without the minus sign in the signal flow graphs.
+	\end{enumerate}
 
 \end{frame}
 
@@ -129,7 +116,7 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 	
 	\begin{itemize}
 		\item Structures for IIR systems
-		\item Structure for FIR systems
+		\item Structures for FIR systems
 		\item Pipelining and parallel processing
 	\end{itemize}
 \end{frame}
@@ -154,7 +141,7 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 	\tikz[baseline]{\node[fill=blue!10,anchor=base] {$v[n]$};} = \sum_{k = 0}^{M}b_kx[n-k] \qquad \tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};} = \sum_{k = 1}^{N}a_ky[n-k] + \tikz[baseline]{\node[fill=blue!10,anchor=base] {$v[n]$};}
 	\end{equation*}
 \begin{center}
-		\resizebox{0.7\textwidth}{!}{\input{figs/IIR_direct_form_I.tex}}
+		\resizebox{0.45\textwidth}{!}{\input{figs/IIR_direct_form_I.tex}}
 \end{center}
 \end{frame}
 
@@ -164,7 +151,7 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 	\tikz[baseline]{\node[fill=blue!10,anchor=base] {$w[n]$};} = \sum_{k = 1}^{N}a_kw[n-k] + x[n] \qquad \tikz[baseline]{\node[fill=blue!20,anchor=base] {$y[n]$};} = \sum_{k = 0}^{M}b_kw[n-k]
 	\end{equation*}
 	\begin{center}
-		\resizebox{0.55\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
+		\resizebox{0.35\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
 	\end{center}
 \end{frame}
 
@@ -176,12 +163,10 @@ We know that \textbf{rational LTI systems} can be either FIR or IIR
 	H(z) = H_1(z)H_2(z)\ldots H_K(z)
 	\end{equation*}
 	
-	Typically, pairs of real factors and complex conjugate pairs are combined into 2nd-order subsystems.
-	
 	The goal of this factorization is to minimize effects of \textbf{finite-precision arithmetic}
 	
 \begin{center}
-		\resizebox{\textwidth}{!}{
+		\resizebox{0.8\textwidth}{!}{
 	\begin{tikzpicture}
 	\node (img1) {\includegraphics{figs/IIR_cascade_form.png}};
 	\node[below, black, fill=black!20, scale=3] at ($(img1.south west)!0.2!(img1.south east)$) {$H_1(z)$};
@@ -248,16 +233,17 @@ This figure shows a 6th-order system factored into three 2nd-order subsystems. E
 		\begin{column}{0.5\textwidth}
 			\textbf{Direct form II}
 			\begin{center}
-				\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
+				\resizebox{0.8\textwidth}{!}{\input{figs/IIR_direct_form_II.tex}}
 			\end{center}
 		\end{column}
 		\begin{column}{0.5\textwidth}
 			\textbf{Transposed direct form II}
 			\begin{center}
-				\resizebox{\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II.tex}}
+				\resizebox{0.8\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II.tex}}
+				
+				\pause 
+				Used in Matlab's \texttt{filter} function
 			\end{center}
-			\pause
-			Used in Matlab's \texttt{filter} function
 		\end{column}
 	\end{columns}
 \end{frame}
@@ -284,16 +270,16 @@ This operation is commonly called\textbf{ multiply-accumulate (MAC)}
 \end{frame}
 
 \begin{frame}{FIR transposed direct form}
-Similarly to IIR structures, we can apply flow graph transposition to obtain the transposed forms
+Similarly to IIR systems, we can apply flow graph transposition to obtain the transposed form
 
 \textbf{Direct form}
 \begin{center}
-	\resizebox{0.9\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+	\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
 \end{center}
 
 \textbf{Transposed direct form}
 \begin{center}
-	\resizebox{0.9\textwidth}{!}{\input{figs/FIR_transposed_direct_form_I.tex}}
+	\resizebox{0.7\textwidth}{!}{\input{figs/FIR_transposed_direct_form_I.tex}}
 \end{center}
 
 \end{frame}
@@ -306,7 +292,7 @@ We can \underline{halve} the number of multiplications by leveraging this symmet
 ~\\
 \textbf{Example:} Direct form of a \textbf{type I filter} (even symmetry and $M$ even)
 \begin{columns}
-	\begin{column}{0.7\textwidth}
+	\begin{column}{0.6\textwidth}
 		\begin{center}
 			\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_typeI_filter.tex}}
 		\end{center}
@@ -346,8 +332,6 @@ We can \underline{halve} the number of multiplications by leveraging this symmet
 	\end{column}
 \end{columns}
 
-Only the samples $h[0], \ldots, h[M/2]$ are used in the implementation
-
 \end{frame}
 
 \section{Pipelining and Parallel Processing}
@@ -376,7 +360,7 @@ Pipelining and parallel processing solve the problem in two complementary ways. 
 Suppose we want to implement this 3-tap FIR filter in real time. 
 
 \begin{center}
-	\resizebox{0.7\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+	\resizebox{0.55\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
 \end{center}
 
 The {\color{red2} \textbf{critical path}} of this filter has one multiplication, which takes $T_M$ seconds, and two additions, which take $T_A$ seconds each
@@ -395,7 +379,7 @@ so that all operations in the critical path will have been finished by the time 
 \textbf{Solution:} add memory $z^{-1}$
 \begin{center}
 	\def\PIPE{1}
-	\resizebox{0.8\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+	\resizebox{0.6\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
 \end{center}
 
 By adding the extra memory the function of the filter is not altered. However, now the {\color{red2} \textbf{critical path}} only has one multiplication and one addition. 
@@ -417,7 +401,7 @@ The pipelined FIR filter has the following \textit{schedule} assuming $T > T_M +
 
 \begin{center}
 	\def\PIPE{1}
-	\resizebox{0.8\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
+	\resizebox{0.6\textwidth}{!}{\input{figs/FIR3_direct_form_I.tex}}
 \end{center}
 
 \begin{center}

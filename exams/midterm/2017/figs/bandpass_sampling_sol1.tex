@@ -1,0 +1,48 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = false, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=1.5,
+	xmin=-6, xmax=6,
+	axis line style={->,>=stealth, shorten >= -0.7cm},
+	xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega$};}},
+	ylabel={ $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+        xshift=0.6cm,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=south,
+		xshift=0.7cm,
+	},	
+	ytick=1,
+    yticklabels={$A/T$},
+	xtick={-6,-4,...,6},
+	xticklabels={$-3\pi$, $-2\pi$,  $-\pi$, $0$, $\pi$, $2\pi$, $3\pi$}, 
+    xmajorgrids,
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+    \if\SOLUTIONS1
+      \ifdefined\SolD
+        \def\fs{4}
+        \foreach \k in {-1, 0, 1} {
+          \addplot[solid, line width=1pt] coordinates {(0-\k*\fs-\fs/2, 0) (0-\k*\fs-\fs/2, 1) (2-\k*\fs-\fs/2, 0)};
+          \addplot[solid, fill=blue!40, line width=1pt] coordinates {(-2-\k*\fs+\fs/2, 0) (0-\k*\fs+\fs/2, 1) (0-\k*\fs+\fs/2, 0)};
+          }
+      \else
+      	\def\fs{4}
+        \foreach \k in {-1, 0, 1} {
+          \addplot[solid, line width=1pt] coordinates {(0-\k*\fs, 1) (2-\k*\fs, 0)};
+          \addplot[solid, fill=blue!40, line width=1pt] coordinates {(-2-\k*\fs, 0) (0-\k*\fs, 1) (0-\k*\fs, 0)};
+      }
+      \fi
+   \fi
+\end{axis}
+\end{tikzpicture}

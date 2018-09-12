@@ -1,0 +1,108 @@
+\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\definecolor{matlabcomment}{RGB}{34,139,34}
+
+\pgfmathdeclarefunction{gauss}{1}{%
+	\pgfmathparse{1/(sqrt(2*pi))*exp(-((#1)^2)/2)}%
+}
+
+\pgfmathdeclarefunction{laplacian}{2}{%
+	\pgfmathparse{1/(#2*2)*exp(-(abs(x-#1))/(#2))}%
+}
+
+\pgfmathdeclarefunction{pretty_func}{1}{%
+	\pgfmathparse{cos(deg(#1/2)) - sin(deg(#1)) + cos(deg(#1/2)-45) - sin(deg(#1/4)-154)}%
+}
+
+\pgfplotsset{
+	dirac/.style={
+		mark=triangle*,
+		mark options={scale=2},
+		ycomb,
+		scatter,
+		visualization depends on={y/abs(y)-1 \as \sign},
+		scatter/@pre marker code/.code={\scope[rotate=90*\sign,yshift=-2pt]}
+	}
+}
+
+\def\thickness{very thick}
+
+\tikzset{
+amark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+earlymark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.25} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+latemark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.8} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+zpath/.style={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#1] {$z^{-1}$};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
+}
+
+
+\tikzset{
+	invisible/.style={opacity=0},
+	visible on/.style={alt={#1{}{invisible}}},
+	alt/.code args={<#1>#2#3}{%
+		\alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+	},
+}
+
+\newcommand\PlotSampledSpectrum[4]{%
+	\def\fs{#2}%
+	\def\fmax{#3}%
+	\def\ros{#4}%
+	\input{#1}%
+}
+
+\pgfmathdeclarefunction{invgauss}{2}{%
+	\pgfmathparse{sqrt(-2*ln(#1))*cos(deg(2*pi*#2))}%
+}
+
+\tikzset{
+	declare function={
+		sinc(\x) = (and(\x!=0, 1) * (sin(deg(pi*\x))/(pi*\x)) +
+		(and(\x==0, 1) * 1);
+	}
+}
+
+%\DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\newcommand\SimpleSys[4]{%
+	\def\xin{#2}%
+	\def\Hz{#3}%
+	\def\yout{#4}
+	\input{#1}%
+}

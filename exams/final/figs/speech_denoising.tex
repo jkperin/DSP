@@ -1,0 +1,46 @@
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfsetlayers{bg,main} 
+
+\begin{tikzpicture}[>=latex, shorten >= 0pt, draw=black!50, node distance=1cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=1.5pt,inner sep=0pt]
+    \tikzstyle{weight}=[draw=black,circle,fill=none,minimum size=20pt,inner sep=0pt,scale=0.5]
+    \tikzstyle{summer}=[weight,scale=1.8, minimum size=10pt, inner sep=4pt, scale=0.75]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=20pt,inner sep=0pt]
+    \tikzstyle{annot} = [scale=0.75]
+
+	\node[node] (in) {}; 
+    \node[summer, right = of in, inner sep=2pt] (S1) {$\sum$}; 
+    \node[node, above = of S1] (noise) {};
+    \node[node, right = of S1] (split) {};
+    \node[block, fill=white, right = 2cm of split, text width=2cm, align=center, inner sep=3pt] (AF) {Adaptive Filter};
+    \coordinate (mid) at ($(split)!0.5!(AF.west)$) {}; 
+    \node[summer, below =1cm of AF, inner sep=2pt] (S2) {$\sum$};
+    \coordinate[right=  of AF] (out) {};
+    \node[node] (out-mid) at ($(AF.east)!0.5!(out)$) {};
+    \coordinate[above=0.5cm of S2] (error);
+    
+    \draw[->] (in) -- (S1);
+    \draw[-] (S1) -- (split);
+    \draw[->] (split) -- (mid);
+    \draw[->] (mid) -- (AF);
+    \draw[->] (split) |- (S2.west);
+    \draw[->] (out-mid) |- (S2.east);
+    \draw[->] (AF) -- (out-mid) -> (out);
+    \draw[->] (noise) -- (S1.north);
+    \begin{pgfonlayer}{bg}    % select the background layer
+	    \draw[->] (S2.north) -- ++ (0, 0.5cm) -- ++(-0.4cm, 1.75cm);
+    \end{pgfonlayer}
+    
+    \node[annot, above, text width=1cm, align=center] at (in) {Speech \\ $s[n]$};
+    \node[annot, right, text width=1cm, align=center] at (noise) {Noise \\ $r[n]$};
+    \node[annot, above] at (mid) {\large $z^{-1}$};
+    \node[annot, above, text width=1cm, align=center] at (out) {Output \\ $y[n]$};
+    \node[annot, above, text width=1cm, align=center] at (split) {Noisy speech \\ $x[n]$};
+    \node[annot, right, text width=1cm, align=center] at (error) {Error \\ $e[n]$};
+    %\node[annot, above, left = of S2, text width=1.5cm, align=center] {Desired response \\ $d[n]$};
+    
+    \node[annot, anchor=east] at (S1.north west) {$+$};
+    \node[annot, anchor=south] at (S1.north west) {$+$};
+    \node[annot, anchor=south east] at (S2.west) {$+$};
+    \node[annot, anchor=south west] at (S2.east) {$-$};
+\end{tikzpicture}

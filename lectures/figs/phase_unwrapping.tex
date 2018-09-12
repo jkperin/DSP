@@ -36,7 +36,7 @@ legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \addplot [smooth, black, line width=1.5pt, forget plot, domain=2.76:3.14, samples=11] {3*x*(x-pi)};
 
 
-\node at (axis cs: 1.5, 4) {\Large Wrapped phase};
+\node at (axis cs: 1.5, 3.5) {\Large Wrapped phase};
 \only<2|handout:1>{\node at (axis cs: 1.5, -8.5) {\large \texttt{>> angle(H)}};}
 \end{axis}
 
@@ -75,7 +75,7 @@ every y tick label/.append style={font=\color{white!15!black}},
 legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \addplot [smooth, black, line width=1.5pt, forget plot, domain=0:3.14, samples=31] {3*x*(x-pi)};
 
-\node at (axis cs: 1.5, 4) {\Large Unwrapped phase};
+\node at (axis cs: 1.5, 3.5) {\Large Unwrapped phase};
 \only<2|handout:1>{\node at (axis cs: 1.5, -8.5) {\large \texttt{>> unwrap(angle(H))}};}
 
 \end{axis}

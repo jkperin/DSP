@@ -12,14 +12,14 @@
 
 
 \node[block, below of=s2] (s3) {\resizebox{0.1\linewidth}{!}{\input{figs/random_sequence.tex}}};
-\node[left=0cm of s3,scale=0.15] {$X(n, \chi_3)$};
-\node[below=0cm of s3, scale=0.2] (dots) {\Large $\vdots$};
+\node[left=0cm of s3,scale=0.15] (x3) {$X(n, \chi_3)$};
+\node[below=0cm of x3, scale=0.2] (dots) {\Large $\vdots$};
 
-\draw[red, very thin] ($(s1.north) + (-0.02,0)$) rectangle ($(dots.south) + (0.03,0)$);
+\draw[red, very thin] ($(s1.north) + (-0.01,0)$) rectangle ($(s3.south) + (0.04,0)$);
 \node [scale=0.15] (dist) at ($(s1.north) + (0.3cm, 0.05cm)$) {$x_n\sim p_{x_n}(x_n)$};
 \draw [-{Latex[length=0.2mm,width=0.2mm]}, very thin, red,scale=0.1] (s1.north) to[out=90, in=180] (dist.west);
 
-\draw[red, very thin] ($(s1.north) + (-0.42,0)$) rectangle ($(dots.south) + (-0.38,0)$);
+\draw[red, very thin] ($(s1.north) + (-0.42,0)$) rectangle ($(s3.south) + (-0.38,0)$);
 \node [scale=0.15] (dist2) at ($(s1.north) + (-0.12cm, 0.1cm)$) {$x_m\sim p_{x_m}(x_m)$};
 \draw [-{Latex[length=0.2mm,width=0.2mm]}, very thin, red,scale=0.1] ($(s1.north) + (-4,0)$) to[out=90, in=180] (dist2.west);
 

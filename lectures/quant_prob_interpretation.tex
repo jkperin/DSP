@@ -1,0 +1,196 @@
+%% Draft of probabilistic interpretation of quantization
+\section{Probabilistic Interpretation of Quantization}
+\begin{frame}{Probability distribution of the output of a quantizer}
+\textbf{Question:} what's the probability density function (PDF) $p_{x_Q}(x)$ of the quantizer output $x_Q[n] \sim p_{x_Q}(x)$ when the input signal $x[n]$ has PDF $x[n] \sim p_{x}(x)$?
+\begin{center}
+	\resizebox{0.75\textwidth}{!}{\input{figs/quantizer_output_pdf.tex}}
+\end{center}
+
+\onslide<4|handout:1>{
+The PDF of $x_Q[n] \sim p_{x_Q}(x)$ is formed by impulses at the quantization levels. The area of any given impulse is equal to the area under $p_x(x)$ in the quantization interval corresponding to that impulse. In the example of the figure, the area of the impulse at the origin is equal to the highlighted area under $p_x(x)$.
+}
+\end{frame}
+
+%
+\begin{frame}{Area sampling}
+We can view $p_{x_Q}(x)$ as samples of the area of $p_x(x)$ under quantization intervals. This form of sampling is called \textbf{area sampling}.
+
+\begin{equation*}
+p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+\end{equation*}
+where 
+\begin{equation*}
+r(x) = \begin{cases}
+\frac{1}{\Delta}, & -\frac{\Delta}{2} \leq x \leq \frac{\Delta}{2} \\
+0, & \text{otherwise}
+\end{cases} \tag{rectangular window of area 1}
+\end{equation*}
+
+\begin{equation*}
+s(x) = \sum_{n = -\infty}^{\infty} \delta(x - n\Delta) \tag{impulse train}
+\end{equation*}
+The period of the impulse train (\textit{sampling period}) is $\Delta$
+
+\textbf{Interesting:} although quantization is an nonlinear operation on the signal, it is a linear operation on that signal PDF, since area sampling is linear.
+\end{frame}
+
+%
+\begin{frame}{Area sampling: graphically}
+\begin{center}
+	\resizebox{0.9\textwidth}{!}{\input{figs/area_sampling_graphically.tex}}
+\end{center}	
+\end{frame}
+
+%
+\begin{frame}{Random variables and convolution}
+The area sampling interpretation of quantization gives us a simple equation for the PDF of $x_Q[n]$:
+\begin{equation*}
+p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+\end{equation*}
+
+\pause
+\textbf{Another interpretation:} in probability theory, we use convolution to calculate the PDF of the \textbf{sum of two independent random variables}:
+
+\begin{equation*}
+Z = X + Y \Longrightarrow p_Z = p_X \ast p_Y
+\end{equation*}
+
+\pause
+Applying to our problem:
+
+\begin{equation*}
+\tilde{x}_Q[n] = x[n] + q[n] \Longrightarrow p_{\tilde{x}_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}
+\end{equation*}
+where $q[n]$ is a random variable independent of $x[n]$ and with PDF $p_q(x) = r(x)$. Therefore, $q$ is an \textbf{uniform random variable} ($q\sim\mathcal{U}[-\Delta/2, \Delta/2]$).
+\end{frame}
+
+%
+\begin{frame}
+Comparing with the definition of quantization error:
+\begin{align*}
+x_Q[n] &= x[n] - e[n] \tag{from definition of quantization error} \\
+\tilde{x}_Q[n] &= x[n] + q[n] \tag{from probabilistic interpreation of area sampling}
+\end{align*}
+
+The equations for $x_Q[n]$ and $\tilde{x}_Q[n]$ are very similar, but there's an important difference. The PDF $p_{x_Q}(x)$ is formed by \textbf{sampling} $p_{\tilde{x}_Q}(x)$.
+
+\pause
+\begin{center}
+	\resizebox{0.55\textwidth}{!}{\input{figs/sampled_gaussian_pdf.tex}}
+\end{center}
+
+\pause
+If the sampled PDF ($p_{x_Q}(x)$) perfectly describes $p_{\tilde{x}_Q}(x)$, we can say that quantization error is perfectly described by an uniform random process.
+
+\pause 
+\textbf{Question:}  under what conditions can we perfectly reconstruct $p_{\tilde{x}_Q}(x)$ from its samples? \\
+\end{frame}
+
+%
+\begin{frame}{Revisiting the Shannon-Nyquist theorem}
+	Recall that the \textbf{Shannon-Nyquist theorem} guarantees that we can perfectly recover a signal from its samples if two conditions are met:
+	\begin{enumerate}
+		\item \textbf{No aliasing; spectrum replicas do not overlap}
+		\item Use ideal reconstruction filter (ideal lowpass filter)
+	\end{enumerate}
+	\pause
+	\begin{block}{Conditions for no aliasing}
+		\begin{enumerate}
+			\item The \textbf{characteristic function} (Fourier transform) of the area-sampled input PDF must satisfy: 
+			\begin{equation*}
+				\Phi_{p_{x_Q}}(j\theta) = \mathcal{F}\{p_{x_Q}(x)\} = 0, |\theta| > \theta_N
+			\end{equation*}
+			This is analogous to the condition of a signal being \textit{band-limited}.
+			\item\pause The \textit{sampling frequency} $\theta_s$ must be such that $\theta_s > 2\theta_N$.
+			
+			In this context, $\theta_s = 2\pi/\Delta$, and the quantization interval $\Delta$ is equivalent to the \textit{sampling period} (period of the impulse train).
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+%
+\begin{frame}<beamer:0|handout:1>
+Additional comments
+\begin{itemize}
+	\item When we used the Shannon-Nyquist theorem for sampling a continuous-time signal, we said that we can use an anti-aliasing filter to minimize aliasing, but we could not use the ideal lowpass filter, as it is unfeasible.
+	\item In this discussion on quantization, we just want theoretical assurance that we can reconstruct the PDF from its samples. Therefore, for this purpose, we can use the ideal lowpass filter.
+	\item On the other hand, we cannot guarantee that there won't be aliasing, as many probability distributions are not \textit{band-limited}.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}
+	\textbf{Conclusion:} if the conditions for no aliasing are met, we can perfectly reconstruct the original PDF from its samples, and therefore, quantization noise can be \underline{perfectly modeled} as an uniform random process.
+	
+	\pause
+	\textbf{Bad news:} the conditions for no aliasing are generally not met in practice. \textbf{Example:} Gaussian distribution. The characteristic function of the Gaussian distribution is a Gaussian function. The Gaussian function is not \textit{band-limited}, as it is always non-zero.
+	
+	\pause
+	\textbf{How can we mitigate aliasing?}
+	\begin{enumerate}
+		\item Anti-aliasing filter? This would be equivalent to modify the PDF of the input signal. But what would it do the signal?
+		\item Oversampling $\implies$ shorter sampling period ($\Delta$) $\implies$ finer quantization
+	\end{enumerate}
+\end{frame}
+
+% 
+\begin{frame}{Example for the Gaussian input distribution}
+	\begin{itemize}
+		\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = 2.1\sigma$};}
+		\item Overlap of spectrum replicas results in \underline{significant aliasing}
+		\item The estimated quantization noise PDF differs from the uniform distribution
+	\end{itemize}
+	
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+			Fourier transform of sampled PDF
+				\begin{center}
+					\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{2.9920}{$\Delta = 2.1\sigma$}}
+				\end{center}
+		\end{column}
+			\begin{column}{0.5\textwidth}
+			Estimated quantization noise PDF
+			\begin{center}
+					\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=2sigma.tex}}
+			\end{center}
+			\end{column}
+	\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Example for the Gaussian input distribution}
+\begin{itemize}
+	\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = \sigma$};}
+	\item Spectrum replicas are sufficiently apart; \underline{aliasing is negligible}
+	\item The estimated quantization noise PDF agrees well with the uniform distribution
+\end{itemize}
+
+\begin{columns}[t]
+	\begin{column}{0.5\textwidth}
+		Fourier transform of sampled PDF
+		\begin{center}
+			\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{6.2832}{$\Delta = \sigma$}}
+		\end{center}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		Estimated quantization noise PDF
+		\begin{center}
+			\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=sigma.tex}}
+		\end{center}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Summary on the probabilistic interpretation of quantization}
+	\begin{itemize}
+		\item In the probability domain, quantization corresponds to area sampling of the input PDF (a linear operation).		
+		\item If there's no aliasing (spectrum replicas of area-sampled input PDF do not overlap)
+		\begin{enumerate}
+			\item Characteristic function of the area-sampled input PDF is \textit{band-limited} with maximum \textit{frequency} $\theta_N$
+			\item Sampling period $\Delta$ satisfies $\Delta < \pi/\theta_N$
+		\end{enumerate}
+		the quantization error is \underline{perfectly modeled} by an uniform random process.
+		\item In general aliasing cannot be avoided, but oversampling (finer quantization) makes aliasing negligible and consequently we can still accurately model quantization error as an uniform random process.  
+	\end{itemize}
+\end{frame}

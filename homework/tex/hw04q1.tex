@@ -1,0 +1,28 @@
+% This file was automatically created from the m-file 
+% "m2tex.m" written by USL. 
+% The fontencoding in this file is UTF-8. 
+%  
+% You will need to include the following two packages in 
+% your LaTeX-Main-File. 
+%  
+% \usepackage{color} 
+% \usepackage{fancyvrb} 
+%  
+% It is advised to use the following option for Inputenc 
+% \usepackage[utf8]{inputenc} 
+%  
+  
+% definition of matlab colors: 
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                  \hspace*{-1.6em}{\scriptsize 1}$  $\color{mgrey}#%% Problem 1#\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 2}$  clear, $\color{mdarkgrey}$clc, close all$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 3}$  $\\ \hspace*{-1.6em}{\scriptsize 4}$  b = conv(conv([1 -exp(1j*pi/3)], [1 -exp(-1j*pi/3)]), [1 1/0.85]);$\\ \hspace*{-1.6em}{\scriptsize 5}$  a = conv(conv([1 -0.9*exp(1j*pi/3)], [1 -0.9*exp(-1j*pi/3)]), [1 0.85]);$\\ \hspace*{-1.6em}{\scriptsize 6}$  $\\ \hspace*{-1.6em}{\scriptsize 7}$  $\color{mgrey}#%% a)#\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 8}$  zplane(b, $\color{mdarkgrey}$a) $\color{black}$$\color{mgrey}$% b and a must be row vectors$\color{black}$$\\ \hspace*{-1.6em}{\scriptsize 9}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1a_pole_zero'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\ \hspace*{-2em}{\scriptsize 10}$  $\\ \hspace*{-2em}{\scriptsize 11}$  $\color{mgrey}#%% b)#\color{black}$$\\ \hspace*{-2em}{\scriptsize 12}$  figure, $\color{mdarkgrey}$freqz(b, a)$\color{black}$$\\ \hspace*{-2em}{\scriptsize 13}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1b_mag_phase'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\ \hspace*{-2em}{\scriptsize 14}$  $\\ \hspace*{-2em}{\scriptsize 15}$  $\color{mgrey}#%% c)#\color{black}$$\\ \hspace*{-2em}{\scriptsize 16}$  figure, $\color{mdarkgrey}$grpdelay(b, a)$\color{black}$$\\ \hspace*{-2em}{\scriptsize 17}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1b_grpdelay'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}

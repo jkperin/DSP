@@ -25,17 +25,19 @@ every outer y axis line/.append style={white!15!black},
 every y tick label/.append style={font=\color{white!15!black}},
 legend style={draw=white!15!black,fill=white,legend cell align=left}]
 \draw (axis cs:0,0) circle [black!50, dashed, line width=2pt, radius=1];
-\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
-table[row sep=crcr]{
-	0.56569 0.56569 \\
-	0.56569 -0.56569 \\
-};
-
-\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
-table[row sep=crcr]{
-	-0.88388 0.88388 \\
-	-0.88388 -0.88388 \\
-};
+\if\SOLUTIONS1
+	\addplot [line width=1pt,mark=x, only marks, mark size = 3pt]
+	table[row sep=crcr]{
+		0.56569 0.56569 \\
+		0.56569 -0.56569 \\
+	};
+	
+	\addplot [line width=1pt,mark=*, only marks, mark size = 3pt, mark options={fill=white}]
+	table[row sep=crcr]{
+		-0.88388 0.88388 \\
+		-0.88388 -0.88388 \\
+	};
+\fi
 \end{axis}
 
 \begin{axis}[

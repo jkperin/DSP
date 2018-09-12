@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -55,14 +55,14 @@
 }
 
 %% 
-% \def\EXTERNALIZE{1} % for externalizing figures
+%\def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex}
 
 %% 
 \title[EE 264]{Quantization in Digital Filter Structures}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{July 25, 2017}
+\date{July 30, 2017}
 
 \begin{document}
 
@@ -70,17 +70,7 @@
   \titlepage
 \end{frame}
 
-%
-\begin{frame}{Announcements}
-	\begin{itemize}
-		\item Homework \#4 due on Sunday, July 30. Start early!
-		\item Midterm review session will be on Friday at 1:30pm at \textbf{Gates B03}
-		\item Please fill out the mid-quarter teaching evaluation survey and get 2\% extra credit: \url{https://tinyurl.com/y8cyfddy}. \textbf{Deadline:} Today
-		\item We'll release practice midterms today. Their solutions will be released on Friday after the review session.
-	\end{itemize}
-\end{frame}
 
-%
 \begin{frame}{Last lecture}
 \begin{itemize}
 	\item There are different forms of realizing IIR and FIR rational systems
@@ -237,13 +227,13 @@ There are two possibilities when a number \underline{exceeds} the representation
 	\only<1|handout:1>{
 		\item \textbf{Overflow} wraps around.
 		\begin{center}
-			\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
+			\resizebox{0.7\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
 		\end{center}
 	} \only<2|handout:2>{
 		\setcounter{enumi}{1}
 		\item \textbf{Clipping} holds the output at the highest level.
 		\begin{center}
-			\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_clip.tex}}
+			\resizebox{0.7\textwidth}{!}{\input{figs/twos_complement_clip.tex}}
 		\end{center}
 	}
 \end{enumerate}
@@ -294,7 +284,7 @@ Additional comments:
 	\end{alignat*}
 	
 	\begin{alignat*}{4}
-	&0000_\lozenge 0100000000000000000000000000 &&= 0.25 &&&~\text{Q30} \\
+	&0000_\lozenge 0100000000000000000000000000 &&= 0.25 &&&~\text{Q28} \\
 	+ & 0001_\lozenge 0010000000000000000000000000 &&= 1.125 &&&~\text{Q28} \\
 	\hline
 	&0001_\lozenge 0110000000000000000000000000 &&= 1.375 &&&~\text{Q28} \\
@@ -318,8 +308,7 @@ Additional comments:
 		\hline
 		00_\lozenge 011000000000000&00000000000000000 &&= 0.375 &&&~\text{Q30}
 		\end{alignat*}
-		
-		
+		\vspace{-0.5cm}
 		\begin{alignat*}{4}
 		&01_\lozenge10000000000000 &&= 1.5 &&&~\text{Q14} \\
 		\times & 00_\lozenge11000000000000 &&= 0.5 &&&~\text{Q14} \\
@@ -327,7 +316,7 @@ Additional comments:
 		0001_\lozenge 00100000000&00000000000000000 &&= 1.125 &&&~\text{Q28}
 		\end{alignat*}
 		
-		Because of the extra bits, multiplications do not overflow.
+		Because of the extra bits, \textbf{multiplications do not overflow}.
 		
 	\end{block}
 \end{frame}
@@ -335,16 +324,16 @@ Additional comments:
 \begin{frame}{Quantization in systems implementation}
 Example of FIR system (same applies to IIR):
 \begin{center}
-	\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+	\resizebox{0.8\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
 \end{center}
 
 \textbf{Practical issues:}
 \begin{itemize}
 	\item Coefficients $\{h[n]\}$ must be quantized to fit the representation.
 	\item Multiplications and additions are realized with finite precision.
-	\item Multiplications do not overflow
-	\item Additions may overflow. Must scale signals or coefficients to prevent overflow.
-	\item Decreasing the representation leads to roundoff errors e.g., going from $2B+1$ bits to $B+1$ bits after multiplication. Roundoff noise will be treated with the linear noise model, similarly to quantization.
+	\item Multiplications do not overflow.
+	\item Additions may overflow. Must scale input signal or coefficients to prevent overflow.
+	\item Decreasing the representation leads to \textbf{roundoff errors} e.g., going from $2B+1$ bits to $B+1$ bits after multiplication. Roundoff noise will be treated with the linear noise model, similarly to quantization.
 \end{itemize}
 \end{frame}
 
@@ -442,13 +431,13 @@ Bandpass 12th-order elliptic filter
 \begin{columns}
 \begin{column}{0.5\textwidth}
 	\begin{center}
-		\resizebox{\textwidth}{!}{\input{figs/irr_coeff_quantiz_pole_zero.tex}}
+		\resizebox{0.9\textwidth}{!}{\input{figs/irr_coeff_quantiz_pole_zero.tex}}
 	\end{center}
 \end{column}
 
 \begin{column}{0.6\textwidth}
 	\begin{center}
-		\resizebox{\textwidth}{!}{\input{figs/irr_coeff_quantiz_mag_resp.tex}}
+		\resizebox{0.9\textwidth}{!}{\input{figs/irr_coeff_quantiz_mag_resp.tex}}
 	\end{center}
 \end{column}
 \end{columns}
@@ -466,7 +455,7 @@ In general, tightly clustered roots are very sensitive to coefficient quantizati
 How to mitigate this problem?
 \begin{itemize}
 \item Higher resolution
-\item Cascade or parallel forms are much less sensitive to coefficient quantization than direct forms.
+\item Cascade or parallel forms are less sensitive to coefficient quantization than direct forms.
 \end{itemize}
 \end{frame}
 
@@ -495,7 +484,7 @@ How to mitigate this problem?
 As for quantization, roundoff is modeled as an additive \textbf{white noise uniformly distributed} that is independent of the input signal. 
 
 \begin{center}
-\resizebox{0.6\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
+\resizebox{0.5\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
 \end{center}
 
 Assuming $X_m = 1$ (typical), we have the following values:
@@ -510,7 +499,7 @@ Assuming $X_m = 1$ (typical), we have the following values:
 \begin{frame}{Roundoff noise in FIR systems}
 	Direct form of FIR filter
 	\begin{center}
-		\resizebox{0.75\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
+		\resizebox{0.55\textwidth}{!}{\input{figs/FIR_direct_form_I.tex}}
 	\end{center}
 	\vspace{-0.4cm}
 	Two forms of implementation:
@@ -532,39 +521,37 @@ Assuming $X_m = 1$ (typical), we have the following values:
 \begin{frame}{1. Quantization immediately after multiplication}
 	\begin{center}
 		\def\Quantiz{1}
-		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
 	\end{center}
 
 	Equivalent \textbf{linear noise model}:
 	
 	\only<1|handout:1>{Every noise source has average power: $\sigma_B^2 = \frac{\Delta^2}{12}$}
 	\only<2|handout:2>{Lump noise sources into one with average power:  $\E(e^2[n]) = (M+1)\sigma_B^2$}
-	\vspace{-0.25cm}
 	\begin{center}
 		\def\Quantiz{0}
-		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz.tex}}
 	\end{center}
 \end{frame}
 
 \begin{frame}{2. Quantization immediately after accumulation}
 	\begin{center}
 		\def\Quantiz{1}
-		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
 	\end{center}
 	Equivalent \textbf{linear noise model}:
 	
 	Output noise source has average power $\E(e^2[n]) = \frac{\Delta^2}{12}$. The noise power is ($M+1$) times smaller than in quantization after multiplication
-	\vspace{-0.5cm}
 	\begin{center}
 		\def\Quantiz{0}
-		\resizebox{\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
+		\resizebox{0.7\textwidth}{!}{\input{figs/FIR_direct_form_I_quantiz_end.tex}}
 	\end{center}
 \end{frame}
 
 \begin{frame}{Preventing overflow in FIR systems}
 	Larger range $X_m$ reduces chance of overflow, but leads to higher quantization error.
 	 \begin{center}
-		\resizebox{0.9\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
+		\resizebox{0.7\textwidth}{!}{\input{figs/twos_complement_overflow.tex}}
 	\end{center}
 \end{frame}
 
@@ -601,7 +588,7 @@ Assuming $X_m = 1$ (typical), we have the following values:
 	Quantization is performed after every multiplication
 	\begin{center}
 		\def\QUANTIZ{1}
-		\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+		\resizebox{0.8\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
 	\end{center}
 \end{frame}
 
@@ -612,7 +599,7 @@ As for FIR filters, we can replace the quantizers by noise sources with average 
 \end{equation*}
 \begin{center}
 	\def\QUANTIZ{0}
-	\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+	\resizebox{0.8\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
 \end{center}
 \end{frame}
 
@@ -623,7 +610,7 @@ Combining all noise sources into one
 \end{equation*}
 \begin{center}
 	\def\QUANTIZ{2}
-	\resizebox{\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
+	\resizebox{0.7\textwidth}{!}{\input{figs/IIR_direct_form_I_quantiz.tex}}
 \end{center}
 
 \onslide<2|handout:1>{Quantization noise is \textbf{shaped} by the filter defined in the dashed rectangle:
@@ -660,7 +647,7 @@ H_a(z) = \frac{1}{A(z)} = \frac{1}{1 - a_1z^{-1} - a_2z^{-2}} \tag{shaped by the
 \end{align*}
  
 \begin{center}
-	\resizebox{0.7\textwidth}{!}{\input{figs/IIR_direct_form_II_quantiz.tex}}
+	\resizebox{0.5\textwidth}{!}{\input{figs/IIR_direct_form_II_quantiz.tex}}
 \end{center}
 
 \end{frame}
@@ -688,10 +675,10 @@ The average quantization noise power at the output is given by
 		\begin{column}{0.5\textwidth}
 			\textbf{Transposed direct form I}
 			\begin{center}
-				\resizebox{1.2\textwidth}{!}{\input{figs/IIR_transposed_direct_form_I_quantiz.tex}}
+				\resizebox{0.9\textwidth}{!}{\input{figs/IIR_transposed_direct_form_I_quantiz.tex}}
 			\end{center}
 			Average power of each noise source
-			\onslide<3|handout:0> {
+			\onslide<2|handout:0> {
 			\begin{align*}
 				\sigma_{e_1}^2 &= N\sigma_B^2 \\
 				\sigma_{e_2}^2 &= (M+1)\sigma_B^2
@@ -710,10 +697,10 @@ The average quantization noise power at the output is given by
 			\textbf{Transposed direct form II}
 			\vspace{-0.07cm}
 			\begin{center}
-				\resizebox{\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II_quantiz.tex}}
+				\resizebox{0.75\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II_quantiz.tex}}
 			\end{center}
 			Average power of each noise source
-			\onslide<3|handout:0> {
+			\onslide<2|handout:0> {
 				\begin{align*}
 				\sigma_{e}^2 &= (M+N+1)\sigma_B^2 \\
 				\end{align*}

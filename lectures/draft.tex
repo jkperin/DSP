@@ -1,3 +1,180 @@
+\begin{frame}{Finding the autocorrelation}
+To find the parameters $a_1, \ldots, a_N$, we need to compute the autocorrelation $r[0], \ldots, r[N-1]$ from $M+1$ samples of the signal $s[n]$.
+
+Two methods:
+\begin{enumerate}
+	\item \textbf{Autocorrelation method}
+	This method assumes that the signal $s[n]$ is \underline{zero outside the interval} $[0, M+1]$. Therefore, for $s[n]$ deterministic we have
+	\begin{equation*}
+	r_{ss}[|m|] = \sum_{n =0}^{M-|m|}s[n]s[n+|m|], |m| \leq N-1
+	\end{equation*}
+	This implies $r_{ss}[m] = 0, |m| > M$.
+	\item \textbf{Covariance method}
+	This method assumes that the signal $s[n]$ is \underline{unknown outside the interval} $[0, M+1]$. Therefore, for $s[n]$ deterministic we have
+	\begin{equation*}
+	r_{ss}[m] = \sum_{n = N}^{M}s[n]s[n+|m|], m = 0, 1, \ldots, N-1
+	\end{equation*}	
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Convolution as a matrix-vector product}
+We can write a convolution as a matrix-vector product
+\begin{align*}
+y[n] &= \sum_{m = 0}^N h_nx[n-m] \\
+y &= Xh \\
+\begin{bmatrix}
+y[0] \\
+y[1] \\
+y[2] \\
+\vdots \\ 
+y[L-1] \\
+\end{bmatrix}
+&= \begin{bmatrix}
+x[0] & 0 & \ldots & 0 \\
+x[1] & x[0] & \ddots & \vdots \\
+\vdots & x[1] & \ddots &  0\\
+x[L-1] & \vdots &\ddots &  x[0]\\
+0 & x[L-1] & \ddots & x[1] \\
+\vdots & \vdots & \ddots &  \vdots \\
+0  & 0 & \ldots & x[L-1] 
+\end{bmatrix}_{L\times N}\cdot\begin{bmatrix}
+h_0 \\
+h_1 \\
+h_2 \\
+\vdots \\ 
+h_{N-1} \\
+\end{bmatrix}
+\end{align*}
+
+The matrix $X$ is called \textbf{Toeplitz matrix}.
+
+\vspace{0.25cm}
+In Matlab: \texttt{>> X = toeplitz(c, r)}, where the vector \texttt{c} is the first column of $X$, and the vector \texttt{r} is the first row of $X$.
+
+\end{frame}
+
+
+\begin{frame}{All-pole model for deterministic signals}
+Back to our problem when $s[n]$ is deterministic:
+\begin{equation}
+\sum_{n = 0}^{L-1} |v[n] - \sum_{m = 0}^N a_ns[n-m]|^2 \tag{if $s[n]$ is deterministic}
+\end{equation}
+
+Now we can write this in matrix notation
+\begin{equation*}
+||v - Sh||^2_2
+\end{equation*}
+
+This is a \textbf{least-squares problem}, and its solutions is 
+\begin{equation}
+h = S^{\dagger}v \tag{least-squares solution}
+\end{equation}
+where $S^{\dagger} = (S^TS)^{-1}S^T$ is the \textbf{Moore-Penrose pseudo-inverse}.
+
+\vspace{0.25cm}
+When $s[n]$ is deterministic, $v[n]$ is assumed to be an impulse. Hence, $v = [1, 0, \ldots, 0]^T$.
+\end{frame}
+
+
+\begin{frame}{All-pole model for random signals}
+When $s[n]$ is random, we want to minimize
+\begin{equation*}
+\E\Big(|v[n] - \sum_{m = 0}^N a_ns[n-m]|^2\Big)
+\end{equation*}
+
+
+
+\begin{equation*}
+\E(s[n]v[n]) = \sum_{m = 0}^N a_n\E(s[n]s[n-m]), \quad n = 0, \ldots, L-1
+\end{equation*}
+
+\end{frame}
+
+
+
+%
+\begin{frame}{Revisiting the Bartlett or triangular window}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Time}
+		\begin{equation*}
+		w_B[n] = \begin{cases}
+		1 - |n|/M, & |n| < M \\
+		0, & \text{otherwise}
+		\end{cases}
+		\end{equation*}
+	\end{column}
+	
+	\begin{column}{0.5\textwidth}
+		\textbf{Frequency}
+		\begin{equation*}
+		W_B[n] = \frac{1}{M}\bigg(\frac{\sin(\omega M/2)}{\sin(\omega/2)}\bigg)^2
+		\end{equation*}
+	\end{column}
+\end{columns}
+
+\hspace*{-0.75cm}\resizebox{0.95\paperwidth}{!}{\input{figs/barlett_time_freq.tex}}
+\end{frame}
+
+
+%
+\begin{frame}{Design specifications}
+Specifications of \textbf{frequency-selective} filters
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/design_specs.tex}}
+\end{center}
+
+\textbf{Terminology}
+\begin{itemize}
+	\item $\delta_1$ passband ripple
+	\item $\delta_2$ stopband ripple
+	\item $\omega_p$ passband edge frequency
+	\item $\omega_p$ stopband edge frequency
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Poles, zeros, and the frequency response}
+
+\textbf{Adding one more zero:} $H(z) = (1 - r_1e^{j\theta}z^{-1})(1 - r_2e^{j\psi}z^{-1})$
+
+\begin{columns}[t]
+	\begin{column}{0.7\textwidth}
+		\vspace{-0.5cm}
+		\begin{center}
+			\resizebox{\linewidth}{!}{\input{figs/pole_zero_freq_resp_2zeros.tex}}
+		\end{center}
+	\end{column}
+	
+	\begin{column}{0.3\textwidth}	
+		\only<1|handout:1>{
+			\textbf{Magnitude}
+			\flushleft
+			\begin{align*}
+			H(z) &= \frac{z - r_1e^{j\theta}}{z}\cdot\frac{z - r_2e^{j\psi}}{z} \\
+			|H(e^{j\omega})| &= \bigg|\frac{{\color{red2} v_1} - {\color{black} v_2}}{{\color{red2} v_1}}\bigg|\bigg|\frac{{\color{red2} v_1} - {\color{black} v_4}}{{\color{red2} v_1}}\bigg|\\
+			&= \frac{||{\color{blue2} v_3}||}{||{\color{red2} v_1}||}\frac{||{\color{green2} v_5}||}{||{\color{red2} v_1}||} \\
+			&= ||{\color{blue2} v_3}||||{\color{green2} v_5}||
+			\end{align*}
+		}
+		
+		\only<2|handout:2>{
+			\textbf{Phase}
+			\flushleft
+			\begin{align*}
+			H(z) &= \frac{z - r_1e^{j\theta}}{z}\cdot\frac{z - r_2e^{j\psi}}{z} \\
+			\angle H(e^{j\omega})  &= \angle\frac{{\color{red2} v_1} - {\color{black} v_2}}{{\color{red2} v_1}} + \angle\frac{{\color{red2} v_1} - {\color{black} v_4}}{{\color{red2} v_1}}\\
+			&= \angle {\color{blue2} v_3} + \angle {\color{green2} v_5} - 2\omega
+			\end{align*}
+		}
+	\end{column}
+\end{columns}
+
+\only<1|handout:1>{\textbf{Conclusion:} As $e^{j\omega}$ approaches a zero, $|H(e^{j\omega})| \to 0$}
+\only<2|handout:2>{\textbf{Conclusion:} A zero causes a negative to positive phase change of the phase response (\textbf{phase advance})}
+\end{frame}
+
+
+
 %
 \begin{frame}{The unilateral $z$-transform}
 
@@ -56,54 +233,3 @@ The bilateral $z$-transform we've seen so far does not account for initial condi
 
 %%%%%%% Discrete Fourier Transform
 
-\begin{frame}{The discrete Fourier transform (DFT)}
-	
-	\begin{block}{Definition}
-		\begin{equation} \tag{Direct transform}
-		X[k] = \sum_{n=0}^{N-1} x[n]e^{-j(2\pi/N)kn}, k = 0, 1, \ldots, N-1
-		\end{equation}
-		
-		\begin{equation} \tag{Inverse transform}
-		x[n] = \frac{1}{N}\sum_{k=0}^{N-1} X[k]e^{-j(2\pi/N)kn}, n = 0, 1, \ldots, N-1
-		\end{equation}
-	\end{block}
-	
-	\begin{itemize}
-		\item It is an exact representation of finite-length or periodic sequences
-		\item Computing the direct and inverse transformations using the equations above has complexity $\mathcal{O}(N^2)$.
-		\item The direct and inverse transformations can be computed efficiently using the fast-Fourier transform (FFT) algorithm with complexity of $\mathcal{O}(N\log_2 N)$. This algorithm was known by Gauss back in 1805, and it was  rediscovered by Cooley and Tukey in 1965.
-	\end{itemize}
-	
-\end{frame}
-
-
-\begin{frame}{Relation between DFT and $z$-Transform}
-	
-	\begin{columns}
-		\begin{column}{0.5\textwidth}
-			\begin{block}{DFT}
-				\begin{equation} \tag{Direct transform}
-				X[k] = \sum_{n=0}^{N-1} x[n]\tikz[baseline]{
-					\node[fill=blue!20,anchor=base] (t1) {$e^{-j(2\pi/N)kn}$};
-				}
-				\end{equation}
-			\end{block}
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			\begin{block}{$z$-Transform}
-				\begin{equation} \tag{Direct transform}
-				X(z) = \sum_{n=-\infty}^{\infty} x[n]\tikz[baseline]{
-					\node[fill=blue!20,anchor=base] (t1) {$z^{-n}$};
-				}
-				\end{equation}
-			\end{block}
-		\end{column}
-	\end{columns}
-	\vspace{0.5cm}
-	\textbf{The DFT is equal to the sampled $z$-Transform:}
-	\begin{figure}
-		\centering
-		\resizebox{0.4\linewidth}{!}{\input{figs/sampled_unit_circle.tex}}
-		\label{fig:sampled_unit_circle}
-	\end{figure}
-\end{frame}

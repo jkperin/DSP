@@ -1,0 +1,109 @@
+\def\layersep{1.5cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily]
+\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+\tikzstyle{weight}=[draw=black,circle,fill=none,minimum size=3pt,inner sep=0pt,font=\fontsize{6}{6}\selectfont]
+\tikzstyle{summer}=[weight, minimum size=15pt, inner sep=2pt]
+\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+\tikzstyle{annot} = []
+
+\node[node] (rk) at (0, -\dy cm) {};
+\node[node] (in) at (0.25*\layersep, -\dy cm) {};
+\node[block] (H1) at (1*\layersep, -\dy cm) {$H_1(z)$};
+\node[block] (g) at (2*\layersep, -\dy cm) {$g(\cdot)$};
+\node[block] (H2) at (3*\layersep, -\dy cm) {$H_2(z)$};
+\draw[-, dashed] (1*\layersep-0.75cm,-\dy*0.5) rectangle (3*\layersep+0.75cm,-1.5*\dy);
+\node[annot, below=4pt] at (2*\layersep, -1.5*\dy) {``Unknown'' plant};
+\node[node] (plant-out) at (4*\layersep, -\dy cm) {};
+\coordinate (output) at (4.5*\layersep, -\dy cm) {};
+\node[summer] (error) at (4*\layersep, -2*\dy cm) {\Large $\Sigma$};
+\coordinate (error-out) at (4.5*\layersep, -2*\dy cm) {};
+
+\draw (error-out) -- (4.5*\layersep, -3.75*\dy cm) -- (2.5*\layersep, -3.75*\dy cm) -- (1.5*\layersep, -2.3*\dy cm);
+\node[block, fill=white, minimum width=3cm] (adapt) at (2*\layersep, -3*\dy cm) {Adaptive filter};
+
+\path[-] (rk) edge (in);
+\path (in) edge (H1);
+\path (H1) edge (g);
+\path (g) edge (H2);
+\path[-] (H2) edge (plant-out);
+\draw (in) |- (adapt);
+\draw (plant-out) -- (output);
+\draw (plant-out) -- (error);
+\draw[-] (error) -- (error-out);
+\draw (adapt) -| (error);
+
+\node[above right = 0.5mm and 0.1mm of error, scale=0.8] {$+$};
+\node[below right = 0.5mm and 0.1mm of error, scale=0.8] {$-$};
+\node[left = -2mm of rk, text width = 2cm, align=center, scale=0.8] {Plant input \\ $r_k$};
+\node[right = -2mm of output, text width = 3cm, align=center, scale=0.8] {Desired response \\ $d_k$};
+\node[scale=0.8, below right = -5mm and 1mm of adapt] {$y_k = X_k^TW_k$};
+\node[right = 1mm of error-out, align=center, scale=0.8] {error \\ $\epsilon_k$};
+
+
+
+% 	\node[summer] (Adder) at (3*\layersep,-\dy*2.5 cm) {\large $\Sigma$}; 
+%     \node[node, inner sep=0pt] (mid) at (4.5*\layersep,-\dy*2.5 cm) {}; 
+
+%     \node[node, inner sep=0pt] (output-tap) at (7.3*\layersep,-\dy*2.5 cm) {};
+%     \coordinate (output) at (8*\layersep,-\dy*2.5 cm) {};
+%     \node[summer, minimum size=10pt] (error) at (6*\layersep,-\dy*5 cm) {$\Sigma$}; 
+%     \coordinate (xw) at (4.5*\layersep,-\dy*5 cm) {};
+%     \coordinate (out) at (7.3*\layersep,-\dy*5 cm) {};
+%     \node[weight,fill=white] (gamma) at (4.5*\layersep,-\dy*4 cm) {\small $\gamma$};
+%     \coordinate (error-out) at (6*\layersep,-\dy*6 cm) {};
+
+
+%     \coordinate (A) at (\layersep,-6*\dy cm) {};
+%     \coordinate (B) at (\layersep,\dy cm) {};
+%     \path (A) edge (B);
+%     \path[-] (error) edge (error-out);
+%     \path[-] (error-out) edge (A);
+
+%     \foreach \name / \y in {0,...,3} {
+%     % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+%         \node[node] (I-\name) at (0,-\dy*\y) {}; % Draw the input layer nodes
+%         \node[weight,fill=white] (W-\name) at (\layersep,-\dy*\y cm) {$W_\name$}; % Draw the hidden layer  layer node     
+%      }   	
+
+% 	\node[node] (I-4) at (0,-5*\dy cm) {}; % Draw the hidden layer 
+% 	\node[weight, fill=white] (W-4) at (\layersep,-5*\dy cm) {$W_n$};
+
+%     %% Annotations
+%     \node[annot] at (-0.3,0) {$+1$};
+%     \node[annot] at (-0.3,-\dy) {$X_{k1}$};
+%     \node[annot] at (-0.3,-\dy*2) {$X_{k2}$};
+%     \node[annot] at (-0.3,-\dy*3) {$X_{k3}$};
+%     \node[annot] at (-0.3,-\dy*5) {$X_{kn}$};
+%     \node[annot] at (-0.3,-\dy*3.75) {$\vdots$};
+
+%     \node[font=\fontsize{3}{3}\selectfont] at (6*\layersep-7,-\dy*4.7 cm) {$-$};
+%     \node[font=\fontsize{3}{3}\selectfont] at (6*\layersep+7,-\dy*4.7 cm) {$+$};
+%     \node[annot] at (3*\layersep+7,-\dy*5.7 cm) {$\epsilon_k$};
+%     \node[annot, right of=output] {Output};
+%     \node[annot, below of=SGM] {Sigmoid};
+
+%     \foreach \name in {0,...,4} {
+%     		\path (I-\name) edge (W-\name);
+%             \path (W-\name) edge (Adder);
+%      }
+
+%     \path[-] (Adder) edge (mid);
+%     \path (mid) edge (SGM);
+%     \path[-] (mid) edge (gamma);
+%     \path[-] (gamma) edge (xw);
+%     \path (xw) edge (error);
+%     \path[-] (SGM) edge (output-tap);
+%     \path (output-tap) edge (output);
+%     \path[-] (output-tap) edge (out);
+%     \path (out) edge (error);
+
+
+%% Text
+%     \node[annot,left of=I1-3, node distance=1cm] (in) {\normalsize Inputs};
+%     \node[annot,right of=O4-3, node distance=0.5cm] (out) {\normalsize Outputs};
+%    \draw[decoration={brace,mirror,raise=5pt},decorate, thick, text width=3em, text centered]
+%    (7.5, -4) -- node[below=6pt] {\normalsize LMS output layer} (8.5, -4);
+\end{tikzpicture}

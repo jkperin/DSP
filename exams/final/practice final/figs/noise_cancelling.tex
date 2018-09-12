@@ -1,0 +1,30 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+    \tikzstyle{adder}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=0pt]
+
+	\node[node] (sc) {};
+	\node[node, below of=sc] (xc) {};
+	\node[adder, right=4cm of sc] (add) {\Large $+$};
+	\coordinate (mid1) at ($(sc)!0.5!(add)$);
+	\coordinate (mid2) at ($(sc)!0.5!(xc)$);
+	
+	\node[block, rotate=+30] (C) at (mid2 -| mid1) {$H(z)$};
+	\coordinate[right=1.5cm of add] (yc) {};
+	\coordinate[below of=yc] (yc2) {};
+		
+    \path (sc) edge (add);
+    \path (xc) edge (yc2);
+    \draw (xc) to (C.west);
+    \draw (C.east) to (add);
+    \draw (add) to (yc);
+    
+    \node[above = 0mm of sc, text width = 2.5cm, align=center] {$s[n]+v[n]$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+    \node[above = 0mm of yc2, text width = 1cm, align=center] {$x[n]$};
+    \node[below = 2mm of yc, text width = 3cm, align=center, scale=0.75] {Front microphone};
+    \node[below = 2mm of yc2, text width = 3cm, align=center, scale=0.75] {Rear microphone};
+    \node[left=0mm of xc, text width = 2cm, align=center, scale=0.75] {Noise  \\ source};
+    \node[left=0mm of sc, text width = 2cm, align=center, scale=0.75] {Speaker};
+    \node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+\end{tikzpicture}

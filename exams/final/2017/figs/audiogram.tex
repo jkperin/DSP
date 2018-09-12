@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+\begin{axis}[
+%axis lines*=middle,
+enlargelimits = false, clip=true,
+scale only axis,
+axis line style={->,>=stealth, shorten >= 0pt},
+xlabel={Frequency (Hz)},
+ylabel={Hearing loss (dB)},
+every outer x axis line/.append style={white!15!black},
+every x tick label/.append style={font=\color{white!15!black}},
+xmin=0, xmax=10,
+ymin=-60, ymax=10,
+xtick={0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10},
+ymajorgrids,
+xmajorgrids,
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left, at={(axis cs: 1.05, -5)}}]
+
+\addplot [smooth, color=black, mark=*, mark size = 3pt, mark options={fill=white}, solid, line width=2pt] table[x index=0,y index=1] {figs/adiogram.dat}; 
+
+\end{axis}
+\end{tikzpicture}
+
+
+% each nth point={100}
+% restrict x to domain=1:4

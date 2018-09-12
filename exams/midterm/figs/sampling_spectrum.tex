@@ -1,0 +1,209 @@
+\begin{tikzpicture}
+\begin{axis}[
+	name=plot1,
+	axis lines*=middle,
+	enlargelimits = true, clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=2,
+	xmin=-4, xmax=4,
+	axis line style={->,>=stealth},
+	xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\Omega$};}},
+	ylabel={ $X_c(j\Omega)$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.7cm,
+	},	
+	ytick=1,
+	yticklabels={ $A$},
+	xtick={-2, 0, 2},
+	xticklabels={ $-\Omega_b$,  0, $\Omega_b$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	\addplot[solid, line width=1pt] coordinates {(0, 0) (2, 1) (2, 0) (7, 0)};
+    \addplot[solid, fill=blue!40, line width=1pt] coordinates {(-7, 0) (-2, 0) (-2, 1) (0, 0)};
+\end{axis}
+
+\begin{axis}[
+	name=plot2,
+    at=(plot1.below south east), anchor=above north east, yshift=-0.75cm,
+	axis lines*=middle,
+	enlargelimits = true,	clip=true,
+	scale only axis,
+	width=\textwidth,
+	height=0.2\textwidth,
+	ymin=0, ymax=2,
+	xmin=-4, xmax=4,
+	axis line style={->,>=stealth},
+	xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \Omega T$};}},
+	ylabel={ $X(e^{j\omega})$},
+	every axis x label/.style={
+		at={(ticklabel* cs:1)},
+		anchor=north,
+	},
+	every axis y label/.style={
+		at={(ticklabel* cs:0.8)},
+		anchor=south,
+		xshift=0.7cm,
+	},	
+	ytick=1,
+	yticklabels={ },
+	xtick={-4, ..., 4},
+	xticklabels={$-2\pi$, $-\frac{3\pi}{2}$, $-\pi$, $-\frac{\pi}{2}$, 0, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$}, 
+	every outer y axis line/.append style={white!15!black},
+	every y tick label/.append style={font=\color{white!15!black}},
+	legend style={draw=white!15!black,fill=white,legend cell align=left}]
+	
+	\if\SOLUTIONS1
+		\node at (axis cs: 0.5, 1) {$A/T$};
+		\foreach \df in {-8, -4, 0, 4, 8}
+		{
+			\edef\temp{\noexpand\addplot[solid, line width=1pt] coordinates {(0+\df, 0) (2+\df, 1) (2+\df, 0) (7+\df, 0)};}
+			\temp
+			\edef\temp{\noexpand\addplot[solid, fill=blue!40, line width=1pt] coordinates {(-7+\df, 0) (-2+\df, 0) (-2+\df, 1) (0+\df, 0)};}
+			\temp
+		}
+ 	\fi
+\end{axis}
+
+\begin{axis}[
+name=plot3,
+at=(plot2.below south east), anchor=above north east, yshift=-0.75cm,
+axis lines*=middle,
+enlargelimits = true, clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-4, xmax=4,
+axis line style={->,>=stealth},
+xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \Omega T$};}},
+ylabel={ $X_d(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},	
+ytick=1,
+yticklabels={ },
+xtick={-4, ..., 4},
+xticklabels={$-2\pi$, $-\frac{3\pi}{2}$, $-\pi$, $-\frac{\pi}{2}$, 0, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$},  
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\if\SOLUTIONS1
+\node at (axis cs: 0.5, 1) {$A/T$};
+\foreach \df in {-10, -6, -2, 2, 6, 10}
+{
+	\edef\temp{\noexpand\addplot[solid, line width=1pt] coordinates {(0+\df, 0) (2+\df, 1) (2+\df, 0) (7+\df, 0)};}
+	\temp
+	\edef\temp{\noexpand\addplot[solid, fill=blue!40, line width=1pt] coordinates {(-7+\df, 0) (-2+\df, 0) (-2+\df, 1) (0+\df, 0)};}
+	\temp
+}
+\fi
+\end{axis}
+
+\begin{axis}[
+name=plot4,
+at=(plot3.below south east), anchor=above north east, yshift=-0.75cm,
+axis lines*=middle,
+enlargelimits = true, clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-4, xmax=4,
+axis line style={->,>=stealth},
+xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \frac{\Omega T}{2}$};}},
+ylabel={ $X_e(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},	
+ytick=1,
+yticklabels={ },
+xtick={-4, ..., 4},
+xticklabels={$-2\pi$, $-\frac{3\pi}{2}$, $-\pi$, $-\frac{\pi}{2}$, 0, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\if\SOLUTIONS1
+\node at (axis cs: 0.5, 1) {$A/T$};
+\foreach \df in {-8,-6,..., 8}
+{
+	\edef\temp{\noexpand\addplot[solid, line width=1pt] coordinates {(-1+\df, 0) (0+\df, 1) (0+\df, 0) (\df, 0)};}
+	\temp
+	\edef\temp{\noexpand\addplot[solid, fill=blue!40, line width=1pt] coordinates {(\df, 0) (\df, 1) (1+\df, 0) (\df, 0)};}
+	\temp
+}
+\fi
+\end{axis}
+
+\begin{axis}[
+name=plot5,
+at=(plot4.below south east), anchor=above north east, yshift=-0.75cm,
+axis lines*=middle,
+enlargelimits = true, clip=true,
+scale only axis,
+width=\textwidth,
+height=0.2\textwidth,
+ymin=0, ymax=2,
+xmin=-4, xmax=4,
+axis line style={->,>=stealth},
+xlabel={ \tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\omega = \frac{\Omega T}{2}$};}},
+ylabel={ $X_f(e^{j\omega})$},
+every axis x label/.style={
+	at={(ticklabel* cs:1)},
+	anchor=north,
+},
+every axis y label/.style={
+	at={(ticklabel* cs:0.8)},
+	anchor=south,
+	xshift=0.7cm,
+},	
+ytick=1,
+yticklabels={},
+xtick={-4, ..., 4},
+xticklabels={$-2\pi$, $-\frac{3\pi}{2}$, $-\pi$, $-\frac{\pi}{2}$, 0, $\frac{\pi}{2}$, $\pi$, $\frac{3\pi}{2}$, $2\pi$}, 
+every outer y axis line/.append style={white!15!black},
+every y tick label/.append style={font=\color{white!15!black}},
+legend style={draw=white!15!black,fill=white,legend cell align=left}]
+
+\if\SOLUTIONS1
+\node at (axis cs: 0.5, 1) {$A/T$};
+\foreach \df in {-8,-4,..., 8}
+{
+	\edef\temp{\noexpand\addplot[solid, line width=1pt] coordinates {(-4+\df, 0) (-0.5+\df, 0) (-0.5+\df, 0.5) (\df, 1) (\df, 0) (-0.5+\df, 0)};}
+	\temp
+	\edef\temp{\noexpand\addplot[solid, fill=blue!40, line width=1pt] coordinates {(\df, 0) (\df, 1) (0.5+\df, 0.5) (0.5+\df, 0) (\df, 0)};}
+	\temp
+}
+\fi
+\end{axis}
+
+\node[below, inner sep=0.25cm] at (plot1.south) {(a)};
+\node[below, inner sep=0.25cm] at (plot2.south) {(b)};
+\node[below, inner sep=0.25cm] at (plot3.south) {(c)};
+\node[below, inner sep=0.25cm] at (plot4.south) {(d)};
+\node[below, inner sep=0.25cm] at (plot5.south) {(e)};
+
+
+\end{tikzpicture}

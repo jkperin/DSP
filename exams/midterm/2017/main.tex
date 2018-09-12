@@ -1,0 +1,418 @@
+\documentclass[10pt]{article}
+\usepackage{geometry}
+\geometry{a4paper}
+\pagestyle{myheadings}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{placeins} % for FloatBarrier
+\usepackage[makeroom]{cancel}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../figs/}}
+
+\definecolor{blue2}{RGB}{51, 105, 232}  
+\definecolor{red2}{RGB}{213, 15, 37}  
+\definecolor{green2}{RGB}{0, 153, 37}  
+
+\input{preamble.tex}
+
+%%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
+\def\SOLUTIONS{1} % change to 1 to produce solutions
+\def\SolutionsColor{red2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Header
+\if\SOLUTIONS1
+	\markboth{\em \color{\SolutionsColor} \textbf{EE264: Midterm Solutions}}{\em \color{\SolutionsColor} \textbf{EE264: Midterm Solutions}}
+    \title{EE 264 Midterm Solutions}
+\else
+	\markboth{\em EE264: Midterm, August 1st -- Summer 2017}{\em EE264: Midterm, August 1st -- Summer 2017}
+    \title{EE 264 Midterm}
+\fi
+
+% Document
+\begin{document}
+\input{cover.tex}
+\pagebreak
+
+\section*{Problem 1: Short questions (30 points)}
+
+Answer each of the following questions. Lengthy explanations and extensive derivations are not necessary. You may answer the questions with a few sentences, equations, or clearly labeled sketches or diagrams.
+
+\begin{description}
+\item[(a)] (2 points) What's the region of convergence (ROC) of the $z$-transform of a \underline{causal} FIR system? What about the ROC of a \underline{causal} IIR system? 
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor} For FIR systems, all poles are at the origin, therefore the ROC is the entire $z$-plan except for the origin. For IIR systems, the ROC is the exterior of a circle defined by the outermost pole.
+}
+\else\vspace{3cm}
+\fi
+
+%
+\item[(b)] (7 points) Write the $z$-transform of the LTI system defined by the difference equation:
+\begin{equation}
+y[n] = x[n] - 2x[n-1] - 0.8y[n-1],
+\end{equation}
+and determine if each statement about this system is \underline{true} or \underline{false}. Give a brief reason to support your assertion.
+
+\begin{enumerate}\setlength\itemsep{2em}
+  \item This system is causal
+  \item This system is IIR
+  \item The impulse response of this system is absolute summable
+  \item This system has constant group delay over all frequencies
+  \item This system has a causal and stable inverse.
+\end{enumerate}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor} Applying the linearity and time-shift properties of the $z$-transform:
+\begin{equation*}
+H(z) = \frac{Y(z)}{X(z)} = \frac{1 - 2z^{-1}}{1 + 0.8z^{-1}}
+\end{equation*}
+
+\begin{enumerate}
+  \item True. The output does not depend on future samples.
+  \item True. The system has an autoregressive part (i.e., pole away from the origin)
+  \item True. All poles are inside the unit circle.
+  \item False. It is not FIR, and linear phase rational IIR systems do no exist.
+  \item False. There's a zero outside the unit circle.
+\end{enumerate}
+}
+\else\vspace{3.5cm}
+\fi
+
+%
+\item[(c)] (4 points) A \underline{causal} FIR system with \underline{real} coefficients has impulse response $h[n]$. What are the conditions on $h[n]$ that will ensure that this system has generalized linear phase? What are the corresponding conditions on the zeros of the $z$-transform of $h[n]$, $H(z)$?
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor} 
+A causal FIR system has generalized linear phase response if its impulse response is either even or odd symmetric: $h[n] = \pm h[-n]$.
+
+These conditions correspond to zeros appearing in conjugate and conjugate reciprocal pairs. That is, if $c$ is a zero, then $c^*, 1/c, 1/c^*$ must also be zeros.
+
+}
+\else\vspace{5cm}
+\fi
+
+%
+\item[(d)] (7 points) Is the product of autocorrelation functions also an autocorrelation function? Formally, suppose that $\phi_{xx}[m]$ and $\phi_{yy}[m]$ are autocorrelation functions of two different WSS random processes. Define $\phi_{zz}[m] = \phi_{xx}[m]\cdot \phi_{yy}[m]$. Can $\phi_{zz}[m]$ also be an autocorrelation function of some WSS process? Justify.
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+A function can be an autocorrelation function of a WSS process as long as it is (i) real, (ii) even symmetric, and (iii) its Fourier transform (PSD) is non-negative at all frequencies. 
+
+$\phi_{zz}[m]$ is real and even, since it is the product of two real and even functions. That is, 
+\begin{equation*}
+\phi_{zz}[m] = \phi_{xx}[m]\cdot \phi_{yy}[m] = \phi_{xx}[-m]\cdot \phi_{yy}[-m] = \phi_{zz}[-m]
+\end{equation*}
+
+Multiplication of the autocorrelation functions means convolution of the PSDs:
+\begin{align*}
+  \Phi_{zz}(e^{j\omega}) &= \mathcal{F}\{\phi_{zz}[m]\} = \Phi_{xx}(e^{j\omega}) \ast \Phi_{yy}(e^{j\omega}) \\
+  &= \frac{1}{2\pi}\int_{-\pi}^\pi \Phi_{xx}(e^{j\theta})\Phi_{yy}(e^{j(\omega-\theta)})d\theta \\
+  &\geq 0,
+\end{align*}
+where the inequality follows because $\Phi_{xx}(e^{j\omega}) \geq 0~\forall\omega$ and $\Phi_{yy}(e^{j\omega}) \geq 0~\forall\omega$.
+
+Therefore, $\phi_{zz}[m]$ can be an autocorrelation function of a WSS process.
+}
+\else\vspace{7cm}
+\fi
+
+%
+\item[(e)] (5 points) We would like to \underline{perfectly} reproduce a given continuous-time system $H_c(j\Omega)$ in DSP. This system is \underline{band-limited}: $H_c(j\Omega) = 0, \text{for } |\Omega| > \Omega_N$. Specify the sampling period of the C-to-D converter, the equivalent discrete-time system $H(e^{j\omega})$, and the reconstruction filter to perfectly reproduce $H_c(j\Omega)$ in DSP.
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor} 
+If there's no aliasing and if we use the ideal reconstruction filter, we can guarantee that
+\begin{equation}
+H(e^{j\Omega T}) = H_c(j\Omega), |\Omega| \leq \Omega_s/2
+\end{equation}
+
+Consequently, we need a C-to-D with sampling period $T = \frac{2\pi}{\Omega_s} < \frac{\pi}{\Omega_N}$. The D-to-C converter must use an ideal lowpass filter as reconstruction filter, and the ideal lowpass filter must have cutoff frequency $\frac{\pi}{T}$ and gain $T$.
+
+}
+\else\vspace{4cm}
+\fi
+
+
+%
+\item[(f)] (5 points) Consider the following second-order IIR system:
+\begin{equation}
+H(z) = \frac{1}{1 - az^{-2}},
+\end{equation}
+where $0 < a < 1$. The filter coefficient $a$ is quantized for implementation resulting in $\hat{a} = a + e$. What is the maximum value of the error $e$ that guarantees that this IIR system remains stable after coefficient quantization? How many bits in two's complement (including the sign bit) would be necessary to ensure stability if $a = 0.95$? Assume $X_m = 1$ and that $a$ was quantized by rounding so that $-\Delta/2\leq e\leq \Delta/2$.
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor} To guarantee stability we must have all poles inside the unit circle:
+\begin{equation*}
+\sqrt{a + e} < 1 \implies e < 1 - a.
+\end{equation*}
+
+With rounding $e \leq \Delta/2$. Therefore, $\Delta \leq 2(1-a)$.
+
+Since $\Delta = 2^{-B}X_m$, we have $B \geq -\log_2(2(1-a)) = 3.32$. Thus, we must have $B = 4$, at least, and use representation of $B+1 = 5$ bits.
+}
+\else\vspace{4cm}
+\fi
+
+\end{description}
+\newpage
+
+\section*{Problem 2: Poles and zeros of the deterministic autocorrelation function (30 points)}
+As discussed in class, the deterministic autocorrelation function of an LTI system with impulse response $h[n]$ is defined by
+\begin{equation}
+c_{hh}[n] = h[n] \ast h^*[-n].
+\end{equation}
+
+For this problem, consider that $h[n]$ is \underline{causal} and that the pole-zero diagram of its $z$-transform, $H(z)$, is shown in Figure~\ref{fig:pole-zero}a.
+
+\begin{description}
+\item{(a)} (8 points)
+Sketch the pole-zero diagram of the $z$-transform of the deterministic autocorrelation function $C_{hh}(z) \Longleftrightarrow c_{hh}[n]$. Use the empty diagram of Figure~\ref{fig:pole-zero}b for your sketch. 
+
+\textit{Hint:} First write $C_{hh}(z)$ in terms of $H(z)$ using the properties of the $z$-transform.
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/pole-zero-autocorr.tex}}
+    \caption{Pole-zero diagram of (a) $H(z)$ and (b) $C_{hh}(z)$.} \label{fig:pole-zero}
+\end{figure}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Using the conjugate and time reversal properties of the $z$-transform, we can write: $h^*[-n] \Longleftrightarrow H^*(1/z^*)$. Consequently,
+\begin{equation*}
+C_{hh}(z) = H(z)H^*(1/z^*)
+\end{equation*}
+
+From this equation we see that all the poles and zeros of $H(z)$ are also poles and zeros of $C_{hh}(z)$. 
+
+Moreover, suppose that $p$ is a pole of $H(z)$. Then, $H(z)$ must have a factor $\frac{1}{z-p}$:
+\begin{equation}
+\frac{1}{z-p} \implies \frac{1}{(1/z^*-p)^*}  = \frac{z}{p^*(1/p^*-z)} 
+\end{equation}
+Therefore, for each pole $p$ of $H(z)$, $C_{hh}(z)$ has a pole at $p$,  another pole at $1/p^*$, and a new zero at $z = 0$. We can use the same arguments to show that for every zero $c$ of $H(z)$, $C_{hh}(z)$ has a zero at $c$, another zero at $1/c^*$, and a new pole at $z = 0$. Now we're ready to draw the zero-pole plot
+}
+\else\vspace{7cm}
+\fi
+
+\item{(b)} (4 points) In part (a) you may have noticed that $C_{hh}(z)$ has poles outside the unit circle. Does that mean that $C_{hh}(z)$ is unstable? Justify your answer. 
+
+\textit{Hint:} $h[n]$ is causal, but is $c_{hh}[n]$ causal?
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+$c_{hh}[n]$ is not causal, since it is the convolution of a causal ($h[n]$) and an anti-causal ($h^*[-n]$) sequence. Therefore, the ROC of  $C_{hh}(z)$ is the annulus (ring-shaped region) between two circles defines by the poles.  This region includes the unit circle, and therefore $C_{hh}(z)$ is stable.
+}
+\else\vspace{3cm}
+\fi
+
+\item{(c)} (7 points) Suppose that a \underline{white} noise signal $x[n]$ with average power $\sigma_x^2 = 1$ is input to the system $h[n]$. Sketch the PSD of the output noise $y[n] = x[n]\ast h[n]$. Since the pole-zero diagram does not provide information about the gain, the first and last points of the magnitude response are already included. Note that the magnitude in this plot is in log scale.
+
+\textit{Note:} your sketch does not need to be perfect to receive full credit, but be sure to indicate the most relevant points.
+
+\begin{figure}[!h]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{figs/mag-autocorr.tex}}
+    \caption{Sketch of the PSD of the output of $h[n]$ for a white noise input.} \label{fig:mag-resp}
+\end{figure}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Near $\pi/4$ (45 degrees) there is a pole in $H(z)$, therefore we should expect an increase in the magnitude response. There is a zero near $3\pi/4$ (135 degrees), therefore the magnitude response should decrease further near the zero.
+}
+\else\vspace{2cm}
+\fi
+
+\item{(d)} (3 points) Give an expression for the average power of the output signal $y[n]$. Your answer should depend on $\sigma_x^2$ and either $c_{hh}[n]$ or $H(e^{j\omega})$.
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+\begin{align*}
+\sigma_y^2 &= \frac{1}{2\pi}\int_{-\pi}^{\pi}\Phi_{yy}(e^{j\omega})d\omega = \sigma_x^2\frac{1}{2\pi}\int_{-\pi}^{\pi}|H(e^{j\omega})|^2d\omega \\
+&=\sigma_x^2c_{hh}[0]
+\end{align*}
+}
+\else\vspace{6cm}
+\fi
+
+\item{(e)} (8 points) Note from Figure~\ref{fig:pole-zero}a that $H(z)$ is not minimum phase. Sketch the pole-zero diagram of $H_{min}(z)$ and $H_{ap}(z)$ so that $H(z) = H_{min}(z)H_{ap}(z)$, where $H_{min}(z)$ is a minimum-phase system and $H_{ap}(z)$ is an all-pass system. 
+\end{description}
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/min-ap-decomposition.tex}}
+    \caption{Minimum-phase and all-pass decomposition of $H(z)$.} \label{fig:min-all-pass}
+\end{figure}
+
+
+\newpage
+\section*{Problem 3: Bandpass sampling (20 points)}
+
+In class we saw that undersampling leads to aliasing, which is often undesirable. But undersampling is not always the villain. By appropriately undersampling bandpass signals, we can avoid spectrum overlapping and, at the same time, down-convert the signal to baseband. This process is called \textit{sampling translation}.
+
+Figure~\ref{fig:bp_spectrum1}a shows the spectrum of a bandpass signal $x_c(t)$ with carrier frequency $\Omega_c$ and bandwidth $\Omega_b$. Generally, $\Omega_c >> \Omega_b$. The goal is to sample $x_c(t)$ with sampling frequency $\Omega_s = \frac{2\pi}{T} << \Omega_c$ such that the spectrum of the resulting discrete-time signal $x[n] = x_c(nT)$ is as illustrated in Figure~\ref{fig:bp_spectrum1}b. $X(e^{j\omega})$ is at baseband (centered around $\omega = 0$) and the spectrum replicas do not overlap. 
+
+% \begin{figure}[!h]
+% \centering
+% 	\resizebox{!}{0.2\textwidth}{\input{figs/bandpass_sampling_diagram.tex}}
+%     \caption{Bandpass sampling diagram.} \label{fig:bp_diagram}
+% \end{figure}
+
+\begin{figure}[!h]
+\centering
+	\resizebox{0.87\textwidth}{!}{\input{figs/bandapss_sampling_spectrum.tex}}
+    \caption{Bandpass sampling.} \label{fig:bp_spectrum1}
+\end{figure}
+
+
+\begin{description}
+\item[(a)] (2 points) What is the sampling frequency necessary to perform Nyquist sampling of the bandpass signal $x_c(t)$?
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+\begin{align*}
+\Omega_{s} = 2(\Omega_c + \Omega_b)
+\end{align*}
+}
+\else\vspace{1cm}
+\fi
+
+\item[(b)] (6 points) Suppose that $\Omega_c = 8\pi$ rad/s and $\Omega_b = \pi$ rad/s. Draw the spectrum of $x[n]$ when $x_c(t)$ is sampled with sampling frequency $\Omega_s = 2\pi$ rad/s  (much smaller than the Nyquist rate). 
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/bandpass_sampling_sol1.tex}}\label{fig:bp_spectrum_sol1}
+\end{figure}
+\if\SOLUTIONS0\vspace{5cm}
+\fi
+
+\item[(c)] (7 points) In part (b) you saw that there is no spectrum overlap, even though $x_c(t)$ was sampled below the Nyquist rate. Is that always possible? Give conditions on the sampling frequency $\Omega_s$ in terms of $\Omega_c$ and $\Omega_b$ so that: (i) the spectrum is centered around $\omega = 0$ as in Figure~\ref{fig:bp_spectrum1}b, \underline{and} (ii) such that there is no spectrum overlap. 
+
+\textit{Hint:} The spectrum replicas occur according to the sampling equation:
+\begin{equation}
+X(e^{j\Omega T}) = \frac{1}{T}\sum_{k=-\infty}^\infty X_c(j(\Omega-k\Omega_s))
+\end{equation}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Staring with the sampling equation we have the following conditions:
+
+(i) In order to bring the signal down to baseband:
+\begin{align*}
+0 - k\Omega_s = \Omega_c \implies \Omega_c = -k\Omega_s
+\end{align*}
+for some negative integer $k$.
+
+(ii) The ($-k-1$)th spectrum replica must fall at least at $-2\Omega_b$ in order to avoid spectrum overlap. Therefore, 
+\begin{align*} \nonumber
+-2\Omega_b - (k-1)\Omega_s &\geq \Omega_c \\ \nonumber
+-2\Omega_b - (k-1)\Omega_s &\geq -k\Omega_s \tag{since $\Omega_c = -k\Omega_s$} \\
+\Omega_s &\geq 2\Omega_b
+\end{align*}
+}
+\else\vspace{10cm}
+\fi
+
+
+\item[(d)] (5 points) Repeat part (b), but now assume that $\Omega_c = 7\pi$ rad/s and $\Omega_b = \pi$ rad/s. Sampling is still performed with sampling frequency $\Omega_s = 2\pi$ rad/s. 
+
+\textit{Note:} Although there isn't spectrum overlap in this case either, further processing would be necessary to center the spectrum around $\omega = 0$, as in Figure~\ref{fig:bp_spectrum1}b.
+
+\begin{figure}[!h]
+\centering
+	\def\SolD{1}
+	\resizebox{\textwidth}{!}{\input{figs/bandpass_sampling_sol1.tex}} \label{fig:bp_spectrum_sol1}
+\end{figure}
+\if\SOLUTIONS0\vspace{5cm}
+\fi
+
+\end{description}
+
+\newpage
+\section*{Problem 4: (20 points)}
+The diagram of Figure~\ref{fig:sampling_diagram} represents the initial DSP of a high-speed application. Since fast ADCs are expensive, the design engineers decided to perform Nyquist-rate sampling and upsample the signal immediately after the ADC, as illustrated in Figure~\ref{fig:sampling_diagram}. The lowpass filter $H(z)$ after upsampling is used to eliminate unwanted spectrum replicas of the signal and of quantization noise. The additive white  noise introduced by the quantizer has average power $\sigma_Q^2$.
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/sampling_diagram.tex}} 
+    \caption{Block diagram of system for problem 4.}\label{fig:sampling_diagram}
+\end{figure}
+
+\begin{description}
+\item[(a)] (8 points) The plot below shows the spectrum $X(e^{j\omega})$ with signal (triangular shape) and quantization noise (dashed red line) components. Use the empty graphs below to sketch $X_e(e^{j\omega})$ and $Y(e^{j\omega})$. In your plots, draw both the signal and noise components. Assume that $H(z)$ is the ideal lowpass filter with cutoff frequency $\pm\pi/2$ and \underline{unit gain}.
+
+\textit{Hint:} consider signal and noise separately.
+ 
+\FloatBarrier
+\begin{figure}[!h]
+\centering
+	\resizebox{0.9\textwidth}{!}{\input{figs/spectrum_upsampled.tex}} \label{fig:spectrum_upsample}
+\end{figure}
+\FloatBarrier
+
+\item[(b)] (6 points) Now assume that $H(z)$ is the first-order lowpass filter given by
+\begin{equation}
+H(z) = \frac{1 + cz^{-1}}{1 - cz^{-1}}, \qquad 0 < c < 1.
+\end{equation}
+
+Assume that this filter is implemented using the transposed direct form II with signal values and filter coefficients scaled as Q15 integers. The result of multiplications is quantized to 16-bits (15 bits plus sign) \underline{immediately after} the multiplications and \underline{before} any additions are done. Draw the signal flow graph diagram of this system. In your drawing include noise sources representing the quantization of the multiplications. Label each noise source with average power $\sigma_{15}^2$. You may combine noise sources whenever possible. In addition, circle \underline{all nodes} in which overflow may happen.
+
+\textit{Note:} You do not need to include noise sources in multiplications by 1.
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Overflow may happen in any node in which additions are performed. Multiplications do not overflow. 
+
+The noise sources were combined into one with average power $2\sigma_{15}^2$. Note that since $b_0 = 1$, in this case, then this multiplication is not performed and therefore we should not include a noise source for it.
+
+\FloatBarrier
+\begin{figure}[h!]
+\centering
+	\def\SolD{1}
+	\resizebox{0.5\textwidth}{!}{\input{figs/IIR_transposed_direct_form_II.tex}}
+\end{figure}
+\FloatBarrier
+}
+\else\vspace{7cm}
+\fi
+
+\item{(c)} (6 points) Write an equation for the PSD of the total noise at the output of $H(z)$. The total noise includes quantization noise from the quantizer and roundoff noise from your filter implementation in part (b). Write your answer in terms of $\sigma_{15}^2$, $\sigma_{Q}^2$, and $c$.
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Using superposition, we see that the quantization noise is filtered by $H(z)$, while the roundoff noise is filtered only by the poles of $H(z)$, which we'll denoted by $\frac{1}{A(z)}$. Therefore,
+
+\begin{align*}
+\Phi_{ff}(e^{j\omega}) &= \sigma_Q^2|H(e^{j\omega})|^2 + 2\sigma_{15}^2\frac{1}{|A(e^{j\omega})|} \\
+&= \sigma_Q^2|H(e^{j\omega})|^2 + 2\sigma_{15}^2\frac{1}{|A(e^{j\omega})|} \\
+& = \frac{\sigma_Q^2(1 + c^2 + 2c\cos\omega) + 2\sigma_{15}^2}{1 + c^2 - 2c\cos\omega}
+\end{align*}
+
+}
+\else\vspace{5cm}
+\fi
+\end{description}
+
+
+\end{document}

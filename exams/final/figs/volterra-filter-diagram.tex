@@ -1,0 +1,197 @@
+\def\layersep{1cm}
+\def\outsep{0.7cm}
+\def\dy{1.25}
+
+\begin{tikzpicture}[shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily, cross/.style={path picture={ 
+		\draw[black]
+		(path picture bounding box.south east) -- (path picture bounding box.north west) (path picture bounding box.south west) -- (path picture bounding box.north east);
+	}}]
+\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+\tikzstyle{weight}=[draw=black,circle,fill=white,text width=0.9cm,inner sep=0pt, align=center, font=\fontsize{6}{6}\selectfont]
+\tikzstyle{prod}=[draw=black,circle,cross,fill=none,minimum size=15pt,inner sep=0pt]
+\tikzstyle{summer}=[weight, minimum size=15pt]
+\tikzstyle{block}=[draw=black,rectangle,fill=none, minimum size =0.5cm, inner sep=0pt]
+\tikzstyle{annot} = [scale=0.75]
+
+\node[node] (rk) at (0, -\dy cm) {};
+\node[node] (xk) at (1*\layersep, -\dy cm) {};
+\node[node] (xk-1) at (5*\layersep, -\dy cm) {};
+\node[node] (xk-2) at (8*\layersep, -\dy cm) {};
+\node[node] (xk-mid) at (1*\layersep, -1.5*\dy cm) {};
+\node[node] (xk-1-mid) at (5*\layersep, -1.5*\dy cm) {};
+\node[node] (xk-1-mid2) at (5*\layersep, -2*\dy cm) {};
+\node[node] (xk-2-mid) at (8*\layersep, -1.5*\dy cm) {};
+\node[node] (error) at (-\layersep, -3*\dy cm) {};
+\draw[->, >=latex] (error) edge (10*\layersep, -3*\dy cm);
+\node[annot, above = 1mm of error] {$\epsilon_k$};
+
+\draw[->, >=latex] (rk) edge (xk);
+\draw[->, >=latex] (xk) edge (xk-1);
+\draw[->, >=latex] (xk-1) edge (xk-2);
+
+
+\node[node] (bias) at (0, -2*\dy cm) {};
+\node[weight] (w0) at (0, -3*\dy cm) {$w_0$};
+\node[weight] (w20) at (\layersep, -3*\dy cm) {$w_2(0)$};
+\node[block, fill=white] (sq1) at (2*\layersep, -2*\dy cm) {$(\cdot)^2$};
+\node[weight] (w10) at (2*\layersep, -3*\dy cm) {$w_1(0)$};
+\node[prod] (prod1) at (3*\layersep, -2*\dy cm) {};
+\node[weight] (w101) at (3*\layersep, -3*\dy cm) {$w_1(0, 2)$};
+\node[prod] (prod2) at (4*\layersep, -2*\dy cm) {};
+\node[weight] (w102) at (4*\layersep, -3*\dy cm) {$w_1(0, 1)$};
+\node[node] (xk-2-prod1) at (3.5*\layersep, -2*\dy cm) {};
+
+\node[weight] (w21) at (5*\layersep, -3*\dy cm) {$w_2(1)$};
+\node[block, fill=white] (sq2) at (6*\layersep, -2*\dy cm) {$(\cdot)^2$};
+\node[weight] (w11) at (6*\layersep, -3*\dy cm) {$w_1(1)$};
+\node[prod] (prod3) at (7*\layersep, -2*\dy cm) {};
+\node[weight] (w112) at (7*\layersep, -3*\dy cm) {$w_1(1, 2)$};
+
+\node[weight] (w22) at (8*\layersep, -3*\dy cm) {$w_2(2)$};
+\node[block, fill=white] (sq3) at (9*\layersep, -2*\dy cm) {$(\cdot)^2$};
+\node[weight] (w12) at (9*\layersep, -3*\dy cm) {$w_1(2)$};
+
+\node[summer] (sum) at (4.5*\layersep, -5*\dy cm) {\Large $\Sigma$};
+\coordinate (out) at (4.5*\layersep, -6*\dy cm) {};
+
+\draw[->, >=latex] (bias) -- (w0);
+\draw[->, >=latex] (xk) -- (w20);
+\draw[->, >=latex] (xk-mid) -| (sq1);
+\draw[->, >=latex] (xk-mid) -| (prod1);
+\draw[->, >=latex] (xk-mid) -| (prod2);
+\draw[->, >=latex] (sq1) -- (w10);
+\draw[->, >=latex] (prod1) -- (w101);
+\draw[->, >=latex] (prod2) -- (w102);
+\draw[->, >=latex] (xk-2-prod1) -- (prod1);
+
+\draw[->, >=latex] (xk-1) -- (w21);
+\draw[->, >=latex] (xk-1-mid) -| (sq2);
+\draw[->, >=latex] (xk-1-mid) |- (prod2);
+\draw[->, >=latex] (xk-1-mid) -| (prod3);
+\draw[->, >=latex] (sq2) -- (w11);
+\draw[->, >=latex] (prod3) -- (w112);
+
+\draw[->, >=latex] (xk-2) -- (w22);
+\draw[->, >=latex] (xk-2-mid) -| (sq3);
+\draw[->, >=latex] (xk-2-mid) |- (prod3);
+\node[node] at (8*\layersep, -2*\dy cm) {};
+\draw[->, >=latex] (sq3) -- (w12);
+
+\draw[->, >=latex] (w0) -- (sum);
+\draw[->, >=latex] (w101) -- (sum);
+\draw[->, >=latex] (w102) -- (sum);
+\draw[->, >=latex] (w112) -- (sum);
+\foreach \number in {0,...,2} {
+	\draw[->, >=latex] (w2\number) edge (sum);
+	\draw[->, >=latex] (w1\number) edge (sum);
+}
+\draw[->, >=latex] (sum) edge (out);
+
+\node[annot, left = 1mm of rk] {$x[n]$}; 
+\node[annot, above = 1mm of xk] {$x[n]$}; 
+\node[annot, above = 1mm of xk-1] {$x[k-1]$}; 
+\node[annot, above = 1mm of xk-2] {$x[k-2]$}; 
+\node[annot, above = 1mm of xk-2-prod1, scale=0.7] {$x[k-2]$}; 
+\node[annot, above right = 0.5mm and 1.5cm of xk] {$z^{-1}$};
+\node[annot, above right = 0.5mm and 1cm of xk-1] {$z^{-1}$};
+\node[annot, above = 1mm of bias] {$+1$}; 
+\node[annot, right = 1mm of out] {$y[n]$}; 
+
+%\node[node] (rk) at (0, -\dy cm) {};
+%\node[node] (in) at (0.25*\layersep, -\dy cm) {};
+%\node[block] (H1) at (1*\layersep, -\dy cm) {$H_1(z)$};
+%\node[block] (g) at (2*\layersep, -\dy cm) {$g(\cdot)$};
+%\node[block] (H2) at (3*\layersep, -\dy cm) {$H_2(z)$};
+%\draw[-, dashed] (1*\layersep-0.75cm,-\dy*0.5) rectangle (3*\layersep+0.75cm,-1.5*\dy);
+%\node[annot, below=4pt] at (2*\layersep, -1.5*\dy) {``Unknown'' plant};
+%\node[node] (plant-out) at (4*\layersep, -\dy cm) {};
+%\coordinate (output) at (4.5*\layersep, -\dy cm) {};
+%\node[summer] (error) at (4*\layersep, -2*\dy cm) {\Large $\Sigma$};
+%\coordinate (error-out) at (4.5*\layersep, -2*\dy cm) {};
+%
+%\draw (error-out) -- (4.5*\layersep, -3.75*\dy cm) -- (2.5*\layersep, -3.75*\dy cm) -- (1.5*\layersep, -2.3*\dy cm);
+%\node[block, fill=white, minimum width=3cm] (adapt) at (2*\layersep, -3*\dy cm) {Adaptive filter};
+%
+%\path[-] (rk) edge (in);
+%\path (in) edge (H1);
+%\path (H1) edge (g);
+%\path (g) edge (H2);
+%\path[-] (H2) edge (plant-out);
+%\draw (in) |- (adapt);
+%\draw (plant-out) -- (output);
+%\draw (plant-out) -- (error);
+%\draw[-] (error) -- (error-out);
+%\draw (adapt) -| (error);
+%
+%\node[above right = 0.5mm and 0.1mm of error, scale=0.8] {$+$};
+%\node[below right = 0.5mm and 0.1mm of error, scale=0.8] {$-$};
+%\node[left = -2mm of rk, text width = 2cm, align=center, scale=0.8] {Plant input \\ $r_k$};
+%\node[right = -2mm of output, text width = 3cm, align=center, scale=0.8] {Desired response \\ $d_k$};
+%\node[scale=0.8, below right = -5mm and 1mm of adapt] {$y_k = X_k^TW_k$};
+%\node[right = 1mm of error-out, align=center, scale=0.8] {error \\ $\epsilon_k$};
+
+
+
+% 	\node[summer] (Adder) at (3*\layersep,-\dy*2.5 cm) {\large $\Sigma$}; 
+%     \node[node, inner sep=0pt] (mid) at (4.5*\layersep,-\dy*2.5 cm) {}; 
+
+%     \node[node, inner sep=0pt] (output-tap) at (7.3*\layersep,-\dy*2.5 cm) {};
+%     \coordinate (output) at (8*\layersep,-\dy*2.5 cm) {};
+%     \node[summer, minimum size=10pt] (error) at (6*\layersep,-\dy*5 cm) {$\Sigma$}; 
+%     \coordinate (xw) at (4.5*\layersep,-\dy*5 cm) {};
+%     \coordinate (out) at (7.3*\layersep,-\dy*5 cm) {};
+%     \node[weight,fill=white] (gamma) at (4.5*\layersep,-\dy*4 cm) {\small $\gamma$};
+%     \coordinate (error-out) at (6*\layersep,-\dy*6 cm) {};
+
+
+%     \coordinate (A) at (\layersep,-6*\dy cm) {};
+%     \coordinate (B) at (\layersep,\dy cm) {};
+%     \path (A) edge (B);
+%     \path[-] (error) edge (error-out);
+%     \path[-] (error-out) edge (A);
+
+%     \foreach \name / \y in {0,...,3} {
+%     % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+%         \node[node] (I-\name) at (0,-\dy*\y) {}; % Draw the input layer nodes
+%         \node[weight,fill=white] (W-\name) at (\layersep,-\dy*\y cm) {$W_\name$}; % Draw the hidden layer  layer node     
+%      }   	
+
+% 	\node[node] (I-4) at (0,-5*\dy cm) {}; % Draw the hidden layer 
+% 	\node[weight, fill=white] (W-4) at (\layersep,-5*\dy cm) {$W_n$};
+
+%     %% Annotations
+%     \node[annot] at (-0.3,0) {$+1$};
+%     \node[annot] at (-0.3,-\dy) {$X_{k1}$};
+%     \node[annot] at (-0.3,-\dy*2) {$X_{k2}$};
+%     \node[annot] at (-0.3,-\dy*3) {$X_{k3}$};
+%     \node[annot] at (-0.3,-\dy*5) {$X_{kn}$};
+%     \node[annot] at (-0.3,-\dy*3.75) {$\vdots$};
+
+%     \node[font=\fontsize{3}{3}\selectfont] at (6*\layersep-7,-\dy*4.7 cm) {$-$};
+%     \node[font=\fontsize{3}{3}\selectfont] at (6*\layersep+7,-\dy*4.7 cm) {$+$};
+%     \node[annot] at (3*\layersep+7,-\dy*5.7 cm) {$\epsilon_k$};
+%     \node[annot, right of=output] {Output};
+%     \node[annot, below of=SGM] {Sigmoid};
+
+%     \foreach \name in {0,...,4} {
+%     		\path (I-\name) edge (W-\name);
+%             \path (W-\name) edge (Adder);
+%      }
+
+%     \path[-] (Adder) edge (mid);
+%     \path (mid) edge (SGM);
+%     \path[-] (mid) edge (gamma);
+%     \path[-] (gamma) edge (xw);
+%     \path (xw) edge (error);
+%     \path[-] (SGM) edge (output-tap);
+%     \path (output-tap) edge (output);
+%     \path[-] (output-tap) edge (out);
+%     \path (out) edge (error);
+
+
+%% Text
+%     \node[annot,left of=I1-3, node distance=1cm] (in) {\normalsize Inputs};
+%     \node[annot,right of=O4-3, node distance=0.5cm] (out) {\normalsize Outputs};
+%    \draw[decoration={brace,mirror,raise=5pt},decorate, thick, text width=3em, text centered]
+%    (7.5, -4) -- node[below=6pt] {\normalsize LMS output layer} (8.5, -4);
+\end{tikzpicture}
