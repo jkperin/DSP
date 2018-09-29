@@ -142,7 +142,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hmwkTitle}{Homework \#05} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -163,7 +163,125 @@
 
 \begin{document}
 	
+	
 \section{Problem 1}
+
+\subsection{(a)}
+
+\begin{align} \nonumber
+H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
+&= 0.05634\frac{1+z^{-1}}{1-0.683z^{-1}}\cdot\frac{1 -1.0166z^{-1} + z^{-2}}{1 -1.4461z^{-1} + 0.7957z^{-2}}
+\end{align}
+
+To implement each subsystem you could choose whatever form. The picture below shows the implementation assuming a direct form II.
+
+\begin{figure}[!h]
+	\resizebox{0.9\textwidth}{!}{\input{figs/hw03q5_flow_graph_cascade.tex}}
+\end{figure}
+\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign, since the diagram assumes a transfer function of the form:
+
+\begin{equation}
+	H(z) = \frac{\sum_{k=0}^M b_kz^{-k}}{1-\sum_{k=1}^N a_kz^{-k}}
+\end{equation}
+
+\subsection{(b)}
+
+\begin{align} \nonumber
+H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
+&= \frac{0.0563 -0.0009z^{-1}   -0.0009z^{-2}   + 0.0563z^{-3}}{1.0000   -2.1291z^{-1}    +1.7834z^{-2}   -0.5435z^{-3}}
+\end{align}
+
+\FloatBarrier
+\begin{figure}[!h]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{figs/hw03q5_flow_graph_direct_form_II.tex}}
+\end{figure}
+\FloatBarrier
+
+\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign.
+\subsection{(c)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_zplane.eps}
+	\caption{Pole-zero diagram of $H(z)$.}
+\end{figure}
+\FloatBarrier
+
+\subsection{(d)}
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_zplane_quant.eps}
+	\caption{Comparison of pole-zero diagram of $H(z)$ before and after coefficient quantization.}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/hw04q6_mag.eps}
+	\caption{Comparison of magnitude response of $H(z)$ before and after coefficient quantization.}
+\end{figure}
+\FloatBarrier
+
+The pole-zero diagram shows that the poles and zeros did not change much, and consequently all other properties of the system should remain roughly the same.
+
+
+\newpage
+\section{Problem 2}
+
+\subsection{(a)}
+By inspection
+\begin{equation}
+	H(z) = \frac{z^{-1} - a}{1 - az^{-1}}
+\end{equation}
+
+\subsection{(b)}
+
+\begin{equation}
+\sigma_{15}^2 = \frac{\Delta^2}{12} = \frac{2^{-30}}{12}
+\end{equation}
+
+\begin{figure}[!h]
+	\centering
+	\input{figs/hw04q7_flow_graphs_midterm_2014.tex}
+\end{figure}
+
+\subsection{(c)}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(A)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(B)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(C)}
+\end{equation}
+
+\begin{equation}
+\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2 + \sigma_{15}^2|H(e^{j\omega})|^2 = 2\sigma_{15}^2 \tag{(D)}
+\end{equation}
+
+\subsection{(d)}
+
+(A) and (B) will have the largest output noise average power.
+
+\begin{equation}
+	\sigma_{f}^2 = 2\sigma_{15}^2\sum_{k = 0}^\infty (a^2)^k = \frac{2\sigma_{15}^2}{1 - a^2}
+\end{equation}
+
+The above equation comes from computing the inverse DTFT of the PSD found in part (c), which is a a typical second-order transform. 
+
+Note: It can be shown that (A) and (B) will have the largest output noise by showing that the integral of the PSD is larger in those systems. 	
+	
+\newpage
+\section{Problem 3}
 
 Matlab code for this problem is attached at the end of this question.
 
@@ -212,11 +330,12 @@ This problem is equivalent to interchanging decimation and filtering. Therefore,
 	H_{32}(z) = H_{16}(z^2)
 \end{equation}
 
-\subsection{Matlab code for Problem 1}
+\subsection{Matlab code for Problem 3}
 
 \input{tex/classic_filters.tex}
 
-\section{Problem 2}
+\newpage
+\section{Problem 4}
 
 Matlab code for this problem is attached at the end of this question.
 
@@ -329,11 +448,11 @@ Due to the linear phase property, the FIR filter introduces a delay of $M/2 = 26
 \end{figure}
 \FloatBarrier
 
-\subsection{Matlab code for Problem 2}
+\subsection{Matlab code for Problem 4}
 \input{tex/notch_filter_ecg.tex}
 
 \newpage
-\section{Problem 3}
+\section{Problem 5}
 \subsection{(a)}
 
 For the window method we simply need to make
@@ -418,11 +537,11 @@ This filter will have constant magnitude between $0.1\pi$ and $0.9\pi$. The para
 
 See the code for details.
 
-\subsection{Matlab code for Problem 3}
+\subsection{Matlab code for Problem 5}
 \input{tex/fir_hilbert_transformer.tex}
 
 \newpage
-\section{Problem 4}
+\section{Problem 6}
 \subsection{(a)}
 
 For the window method we simply need to make
@@ -509,7 +628,7 @@ Hence, the total power after filtering is
 
 This value is 14 times larger than $\sigma^2$.
 
-\subsection{Matlab code for problem 4}
+\subsection{Matlab code for problem 6}
 \input{tex/linear_equalization.tex}
 
 \end{document}

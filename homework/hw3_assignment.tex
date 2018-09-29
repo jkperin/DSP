@@ -5,7 +5,7 @@
 \setlength{\textheight}{9.4 in }
 \setlength{\topmargin}{-0.7 in}
 \pagestyle{myheadings}
-\markboth{\em EE264: Homework \#03}{\em EE264: Homework \#03}
+\markboth{\em EE264: Homework \#04}{\em EE264: Homework \#04}
 \usepackage[pdftex]{graphicx} \usepackage{eso-pic}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -41,18 +41,17 @@
 \begin{centering}
 	{\large Stanford University}\\
 	{\large EE 264: Digital Signal Processing}\\
-	{\large Summer, 2017} \\
+	{\large Summer, 2018} \\
 	\mbox{}\\
-	{\large Homework \#03}\\
+	{\large Homework \#04}\\
 	\mbox{}\\
 \end{centering}
-\noindent Date assigned:  July 14, 2017 \hfill
-Date due: July 21, 2017\\
+\noindent Date assigned:  July 20, 2018 \hfill
+Date due: July 27, 2018\\
 \noindent \rule{6.5 in}{0.5pt}
 %\mbox{}\\
 \noindent {\bf Reading:}  This assignment covers primarily lectures 3 to 5, which corresponds to chapter 4 of the text book {\bf DTSP 3e}. \\
-\noindent {\bf Homework submission:}  Please submit your solutions on Canvas. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if applicable). \\
-\noindent {\bf Extra practice:}  Problems for extra practice are provided at the end of this assignment. Do \underline{not} turn in solutions to extra practice problems.
+\noindent {\bf Homework submission:}  Please submit your solutions on Gradescope. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if any). \\
 
 \noindent
 \rule{6.5 in}{0.5pt}
@@ -405,6 +404,8 @@ The equivalent system is shown in Figure~\ref{fig:noise_shaping_diagram2}b. Note
 		\item Use the Matlab function \texttt{upsample(e, M)} to implement upsampling.
 		\item For decimation, you may use the Matlab function \texttt{decimate(e, M)}. This function already includes the anti-aliasing pre-filtering $H_{aa}(z)$. By default, \texttt{decimate(e, M)} uses as anti-aliasing filter the Chebyshev Type I IIR filter of order 8.
 	\end{itemize}
+	\textit{Note: In order to calculate the newly quantized signal after noise shaping, the input path in Fig. 6b is multiplied by 1/M in order to account for the fact that in Fig. 6a the signal is also decimated. Any solutions that do not correct the input signal by a 1/M factor (dividing it by the oversampling factor) will not be acceptable.}
+
 	
 	\item [(e)] Calculate the quantization noise power after decimation. By how much was the power reduced compared with the original quantization noise? Express this reduction in dB and state how many extra bits of resolution would be needed to achieve the same improvement.
 		
@@ -427,26 +428,5 @@ The equivalent system is shown in Figure~\ref{fig:noise_shaping_diagram2}b. Note
 
 \end{description}
 
-\newpage
-\noindent {\bf Problem 5: Extra credit (25 points)}
-
-Implement the system of Figure~\ref{fig:noise_shaping_diagram2}a with the feedback loop. To realize this system you'll need to follow these steps
-\begin{enumerate}
-	\item Interpolate the signal $x[n]$ with upsampling factor $M$, in order to achieve the signal with rate $22.05\times M$ kHz. You may use the Matlab function \texttt{interp1}, which performs linear interpolation. 
-	\item Implement the feedback loop. You'll need to write $H(z)$ as a difference equation and implement it inside a \texttt{for} loop. Now the noise source will be your function \texttt{quantizer}, which you should call at every iteration.
-	\item Decimate the output signal of the feedback loop in order to obtain the quantized signal $x_Q[n]$. This signal should have the same quality you obtained in the previous problem. Note, however, that now we can no longer separate the signal from the shaped quantization noise.
-\end{enumerate}
-
-
-\newpage
-
-\begin{center}
-	\noindent {\Large \textbf{Extra Practice}}
-\end{center}
-\noindent {\bf The following problems from the textbook are for extra practice if you need it. Do \underline{not} turn in solutions to these problems. }\\
-
-\includepdf[pages=-]{include/DTSP3e_problems467}
-\includepdf[pages=-]{include/DTSP3e_problems463}
-\includepdf[pages=-]{include/DTSP3e_problems463-2}
 
 \end{document}

@@ -157,9 +157,9 @@
 %	NAME AND CLASS SECTION
 %----------------------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\hmwkTitle}{Homework \#03} % Assignment title
+\newcommand{\hmwkTitle}{Homework \#04} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -441,31 +441,7 @@ The noise power after noise shaping and filtering is $\tilde{\sigma}_e^2 = 1.113
 \end{equation}
 
 Since for every extra bit of resolution we have a 6.02 dB improvement of SNR. This improvement in SNR would be equivalent to increase the quantizer resolution by 1.6 bits. More significant improvements could be achieved either by using higher oversampling factor $M$ or higher-order noise shaping (different filter $H(z)$).
-
-\noindent\textbf{Another accepted solution:}
-
-Note that to achieve the correct noise power we must multiply the decimated noise by $M$ (oversampling factor) in order to account for the fact that the signal in the diagram of Figure 6a is also decimated. Since the question didn't explicitly instruct you to multiply by $M$, we'll also accept the solution without correcting for the noise power. In this case, the noise power after noise shaping and filtering is $\tilde{\sigma}_e^2 = 1.2367\times 10^{-5}$. We can define the signal-to-noise ratio (SNR) improvement 
-\begin{equation}
-\text{SNR}_{\text{improvement}} = 10\log_{10}\Big(\frac{\tilde{\sigma}_e^2}{\sigma_e^2}\Big) = 19.2283~\text{dB (or 83.72 in linear units)}.
-\end{equation}
-
-This improvement in SNR would be equivalent to increase the quantizer resolution by approximately 3 bits.
-
 \subsection{Matlab code for parts (b) through (e)}
 \input{tex/quantization_noise_shaping.tex}
-
-\section{Problem 5 (extra credit)}
-
-Referring to the diagram of lecture notes 5 slide 25, we see that the feedback loop filter $H(z) = \frac{1}{1-z^{-1}}$. This IIR system has the following difference equation:
-\begin{eqnarray}
-y[n] - y[n-1] = x[n]
-\end{eqnarray}
-
-Now we have everything to implement the code, which is shown below
-
-\input{tex/noise_shaping_feedback_loop.tex}
-
-The signal quality is similar to the one obtained in problem 4(d), when the noise power is corrected. The performance can be improved further by increasing the oversampling factor $M$.
-
 
 \end{document}

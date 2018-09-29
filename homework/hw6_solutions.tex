@@ -245,7 +245,7 @@ Ideally the adaptive filter would converge to $H(z)$. However, since $H(z)$ is I
 	\item[(b)] This signal can be represented as  $x[n] = e^{j\pi n}, n = 0, \ldots, 7$. Start with the result from part (a) and use the circular time shift property of the DFT. Note that for $N = 8$, 
 	
 	\begin{equation}
-	(-1)^n = e^{j\pi n} = W_N^{-nN/2}
+	(-1) = e^{j\pi n} = W_N^{-N/2n}
 	\end{equation}
 	Using the circular frequency shift property, the DFT is a shift of the DFT from part (a) by $N/2 = 4$: $X[k] = \{0, 0, 0, 0, 8, 0, 0, 0\}$
 	
@@ -255,7 +255,7 @@ Ideally the adaptive filter would converge to $H(z)$. However, since $H(z)$ is I
 	\end{equation}
 	Using the circular frequency shift property, the DFT is a shift of the DFT from part (a) by $N/4 = 2$: $X[k] = \{0, 0, 8, 0, 0, 0, 0, 0\}$
 	
-	\item[(d)] Start with the the result of part (c). Note that $\sin(\pi n/2) = -j/2(e^{j\pi n/2} - e^{-j\pi n/2})$. Using the circular frequency shift property, we find that $X[k] = \{0, 0, -4j, 0, 0, 0, 4j, 0\}$
+	\item[(d)] Start withe the result of part (c). Note that $sin(\pi n/2) = -j/2(e^{j\pi n/2} - e^{-j\pi n/2})$. Using the circular frequency shift property, we find that $X[k] = \{0, 0, -4j, 0, 0, 0, 4j, 0\}$
 	
 	\item[(e)] The DFT of an impulse is constant in frequency: $X[k] = \{1, 1, 1, 1, 1, 1, 1, 1\}$.
 	

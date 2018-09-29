@@ -24,19 +24,18 @@ in} \setlength{\oddsidemargin}{0 in}
 \begin{centering}
 {\large Stanford University}\\
 {\large EE 264: Digital Signal Processing}\\
-{\large Summer, 2017} \\
+{\large Summer, 2018} \\
 \mbox{}\\
 {\large Homework \#01}\\
 \mbox{}\\
 \end{centering}
 \noindent Date assigned:  June 29, 2018 \hfill
-Date due: July 6, 2017\\
+Date due: July 6, 2018\\
 \noindent \rule{6.5 in}{0.5pt}
 %\mbox{}\\
 \noindent {\bf Reading:}  This assignment covers lectures notes 1 and 2, which correspond to the chapters 2 and 3 of the text book {\bf DTSP 3e}. \\
-\noindent {\bf Homework submission:}  Please submit your solutions on Gradescope. Create a single .pdf file containing all your analytical derivations, plots, and Matlab code. \\
-\noindent {\bf Extra practice:}  Problems for extra practice are provided at the end of this assignment to help you review basic concepts on signals and systems. Do \underline{not} turn in solutions to extra practice problems.
 
+\noindent {\bf Homework submission:}  Please submit your solutions on Gradescope. Create a single .pdf file containing all your analytical derivations, plots, and Matlab code. \\
 \noindent
 \rule{6.5 in}{0.5pt}
 \mbox{}\\
@@ -45,31 +44,33 @@ Date due: July 6, 2017\\
 Consider the LTI systems described by the following difference equations:
 
 \begin{description}
-	\item{(i)} $y[n] = x[n] - 0.5x[n-1] + 0.5x[n-2]$
-	\item{(ii)} $y[n] - 0.5y[n-1] + 0.2y[n-2] + 0.3y[n-3] = x[n] + 0.5x[n-1] + 0.1x[n-2] + 0.5x[n-3]$
+	\item[(i)] $y[n] = x[n] - 0.5x[n-1] + 0.5x[n-2]$
+	\item[(ii)] $y[n] - 0.5y[n-1] + 0.2y[n-2] + 0.3y[n-3] = x[n] + 0.5x[n-1] + 0.1x[n-2] + 0.5x[n-3]$
 \end{description}
+\vspace{2.5mm}
 \noindent
 For each of these systems, do the following:
 \begin{description}
-	\item{(a)} Calculate the system $z$-transform $H(z) = \frac{Y(z)}{X(z)}$.
-	\item{(b)} Sketch the pole-zero diagram of $H(z)$. Clearly label the location of the poles, zeros, and the ROC. Is this system causal? Is it stable? Please justify.\\
+	\item[(a)] Calculate the system $z$-transform $H(z) = \frac{Y(z)}{X(z)}$.
+	\item[(b)] Sketch the pole-zero diagram of $H(z)$. Clearly label the location of the poles, zeros, and the ROC. Is this system causal? Is it stable? Please justify.\\
 	\textit{Hint:} If you need to calculate the roots of a polynomial, you may use the Matlab function \texttt{roots}.
-	\item{(c)} Plot the magnitude ($20\log_{10}(|H(e^{j\omega})|)$) and phase ($\arg(H(e^{j\omega}))$) responses of each system. \\
+	\item[(c)] Plot the magnitude ($20\log_{10}(|H(e^{j\omega})|)$) and phase ($\arg(H(e^{j\omega}))$) responses of each system. \\
 	\textit{Hint:} For this part you can use the Matlab function \texttt{freqz}.
-	\item {(d)} Suppose that the input to both systems is the signal $x[n] = \cos(0.4\pi n)$. Which system would produce the output with highest amplitude? Justify your answer, you do not need to plot their output.
+	\item [(d)] Suppose that the input to both systems is the signal $x[n] = \cos(0.4\pi n)$. Which system would produce the output with highest amplitude? Justify your answer, you do not need to plot their output.
 \end{description}
 
+\vspace{5mm}
 \noindent {\bf Problem 2: Echo cancellation (30 points)}
 
 Echo cancellation is an application of signal processing that arises frequently in practice. The basic idea is that a signal of interest is corrupted by one or more echoes, which are delayed and scaled copies of the original signal. The goal of echo cancellation is to process the corrupted signal so as to recover the original signal.
-
+\vspace{1.5mm}
 There are two common models for echo generation. In the first echo-generation model, there are only a few echoes. An example is propagation of radio signals outdoors, where there are a few different transmission paths between the transmitting antenna and receiving antenna, each with a different path gain and path delay. This is called \textit{multipath} propagation. In the simplest instance, there is a primary path and just one echo. In discrete time, the system is described by the difference equation
-
+\vspace{1.5mm}
 \begin{equation}
 y[n] = x[n] + \alpha x[n-N],
 \end{equation}
 where $N$ is the delay between the primary path and the echo, and $\alpha$ is the echo amplitude. Note that this system is \textit{nonrecursive} and has a \textit{finite impulse response (FIR)}.
-
+\vspace{1.5mm}
 In the second echo-generation model, there is an infinite sequence of echoes with decreasing amplitudes. This may occur in a concert hall, where sound is reflected off multiple surfaces. In discrete time, such a system is described by an $N$th-order difference equation:
 
 \begin{equation}
@@ -77,7 +78,10 @@ y[n] = x[n] + \alpha y[n-N].
 \end{equation}                                                           
 Note that the second echo-generation system is \textit{autoregressive} or \textit{recursive} and has an \textit{infinite impulse response (IIR)}.
 
+\vspace{2.5mm}
 In this problem, you'll use each of those systems to generate an echoed signal, and then you'll design echo cancellation filters to recover the original signal. 
+
+\vspace{3.5mm}
 
 \noindent
 \textbf{Generating an echoed signal:}
@@ -90,12 +94,12 @@ To generate the echoed signal, suppose that the delay between the primary path a
 	\item[(a)] Write an equation for the $z$-transform of each of the ech generation systems.
 	\item[(b)] For each system, generate the echoed signal by using the Matlab function \texttt{filter(b, a, x)}. Plot the echoed time-domain waveforms. Use the Matlab function \texttt{sound(x, fs)} to play the echoed signal and comment on what you hear.
 	\item[(c)] Now the echo cancellation part, we will achieve perfect echo cancellation if we can design a system $G(z)$ such that $H(z)G(z) = 1$, where $H(z)$ is the echo generating system. Hence, we must have $G(z) = H^{-1}(z)$. Write an equation for $G(z)$ for each of the echo generating systems. For each case, is $G(z)$ IIR or FIR? Is it stable? Justify.
-	\item {(d)} Implement the systems you found in part (c) to recover the original signal. Once again you can use the Matlab function \texttt{filter}. Plot the recovered waveforms and describe whether or not perfect echo cancellation was achieved. You can also hear the recovered signals by using the function \texttt{sound}.
+	\item [(d)] Implement the systems you found in part (c) to recover the original signal. Once again you can use the Matlab function \texttt{filter}. Plot the recovered waveforms and describe whether or not perfect echo cancellation was achieved. You can also hear the recovered signals by using the function \texttt{sound}.
 \end{description}
 
 \newpage
 \noindent
-{\bf Problem 3 (15 points)} \\
+{\bf Problem 3 (10 points)} \\
 Consider the following model for how fixed-point arithmetic affects the implementation of an LTI system:
 \setlength{\unitlength}{1in}
 \begin{center}
@@ -130,19 +134,13 @@ The input $x[n]$ is a stationary random signal with zero mean and power spectrum
 \item{(a)} Use superposition to determine an equation for $\Phi_{yy}(e^{j\omega})$, the power
     spectrum of the output of the second filter, and either sketch it or plot it for $-\pi
     <\omega <\pi$.
-\item{(b)} Use any convenient means to determine an
-    equation for the autocorrelation function $\phi_{yy}[m]$ of $y[n]$.\\
-    \textit{Hint:} Rewrite the equation that you obtained in part (a) so that you can use the following DTFT relation:
-    \begin{equation*}
-    e^{-a|n|} \xleftrightarrow{\text{DTFT}} \frac{1- e^{-2a}}{1+e^{-2a} -2e^{-a}\cos\omega}
-    \end{equation*}
     
-    
-\item{(c)} Use any convenient means to determine the total average power $\E\{y^2[n]\}$ of the output
+\item{(b)} Use any convenient means to determine the total average power $\E\{y^2[n]\}$ of the output
     of the second filter.
 \end{description}
 
-\newpage
+\vspace{5mm}
+
 \noindent
 {\bf Problem 4 (25 points)} \\
 Consider the following cascade system: \setlength{\unitlength}{1in}
@@ -203,9 +201,10 @@ $\phi_{xx}[m]=20\delta[m]$.
 Determine the cross-correlation function $\phi_{wy}[m]=\E\{w[n+m]y^{*}[n]\}$ between the input and output of the second system.
 \end{description}
 
-\newpage
+\vspace{5mm}
+
 \noindent
-{\bf Problem 5 (40 points)} \\
+{\bf Problem 5 (15 points)} \\
 Consider an $L$-point moving average system defined by the difference equation
 \begin{equation}
 \label{eq:1}
@@ -227,60 +226,6 @@ $\Phi_{xx}(e^{j\omega})$, the power spectrum of the input signal.
 function of the output of the system. Sketch $\phi_{yy}[m]$ for $L=5$.
 \item{(c)} Determine expressions for the mean and average power of
 the output sequence $y[n]$.
-\item{(d)} Now consider the case $L=5$ and state all possible values of the output signal samples $y[n]$. Also, enumerate all the different
-    ways that each output value can be achieved (i.e., the pattern of input
-    samples that produces it) and from this determine the probability of
-    each output sample value.  Plot the probability density function of the
-    output, $p_{\bf y}(y)$.
-
-\item{(e)} Note that $y[n]$ is the sum of $L$ scaled independent random variables.
-    Therefore the probability density function of the output can be
-    obtained by convolution of $p_{\bf x}(x)$ with itself $L-1$
-    times. Explain why the convolutions are discrete convolutions in this case. Use this fact to compute the probability densities for $L=2, 3,
-    4, 5$.  How would your answer change if the system were an $L$-point
-    ``running sum'' (i.e., no $1/L$ factor in Eq. (\ref{eq:1})) instead of
-    a moving average?
-
-\item{(f)} Write a Matlab function that will compute the probability density
-    of the output an $L$-point moving average filter with Bernoulli random input signal. Your function should have the
-    following calling sequence: \verb+[p,x]=out_prob(L)+, where \verb+p+ is
-    a vector of probabilities, \verb+x+ is a vector of corresponding
-    amplitudes, and \verb+L+ is the length of the running sum. Therefore,
-    you should be able to obtain a plot of the probability density with
-    \verb+stem(x,p)+.  Hand in your program and plots of the probability
-    density function for \verb+L=5+ and also for \verb+L=6+. \\
-    \textit{Hint:} You can use the \verb+conv( )+ function to compute the required convolutions as discrete convolutions.
-
-\item{(g)} Determine a closed-form expression for the frequency response of
-    the $L$-point moving average system. Use this to determine an expression for the power spectrum of the output. Use Matlab to plot this function for $L=4$.
-\item{(h)} Discuss how your answers to the above would change if the input
-    to the moving average filter was a sequence of independent random
-    variables where $-1$ occurs with probability $\beta$ and $+1$ occurs with
-    probability $q=1-\beta$.
 \end{description}
 \newpage
-
-
-\noindent {\bf  The following problems from the textbook are for extra practice if you need it. Do \underline{not} turn in solutions to these problems. }\\
-
-\noindent {\bf Prove these results for extra practice.}
-
-Problems  2.84, 2.87, 2.88 in DTSP 3e. (2.77, 2.80, 2.81 in DTSP 2e)
-
-\mbox{}\\
-\noindent {\bf Problem 1.1}
-
-Work Problem  2.91 in DTSP 3e. (2.84) \\
-
-\noindent {\bf Problem 1.2}
-
-Work Problem 2.96 in DTSP 3e. (2.89) \\
-
-\noindent {\bf Problem 1.3}
-
-Work Problem 2.98 in DTSP 3e. (2.91) \\
-\newpage
-
-\includepdf[pages=-]{include/problems_from_chapter2_DTSP3e.pdf}
-
 \end{document}

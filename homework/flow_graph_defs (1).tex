@@ -1,0 +1,45 @@
+\def\thickness{very thick}
+
+\tikzset{
+amark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+earlymark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.25} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+latemark/.style 2 args={
+	decoration={             
+		markings, 
+		mark=at position {0.8} with { 
+			\arrow{stealth},
+			\node[#2] {#1};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+zpath/.style={
+	decoration={             
+		markings, 
+		mark=at position {0.5} with { 
+			\arrow{stealth},
+			\node[#1] {$z^{-1}$};
+		}
+	}, \thickness,
+	postaction={decorate}
+},
+terminal/.style 2 args={draw,circle,inner sep=2pt,label={#1:#2}},
+}

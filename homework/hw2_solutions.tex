@@ -39,6 +39,17 @@
 \newcommand{\Conv}{\mathop{\scalebox{1.5}{\raisebox{-0.2ex}{$\ast$}}}}%
 
 
+\definecolor{blue2}{RGB}{51, 105, 232}  
+\definecolor{red2}{RGB}{213, 15, 37}  
+\definecolor{green2}{RGB}{0, 153, 37}  
+
+
+%%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
+\def\SOLUTIONS{1} % change to 1 to produce solutions
+\def\SolutionsColor{red2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % rect results in 1 if a < x < b, and 0 otherwise
 \pgfmathdeclarefunction{rect}{3}{%
 	\pgfmathparse{(and(#1 >= #2, #1 <= #3) * 1.0}%
@@ -156,9 +167,9 @@
 %	NAME AND CLASS SECTION
 %----------------------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\hmwkTitle}{Homework \#02} % Assignment title
+\newcommand{\hmwkTitle}{Homework \#03} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -178,7 +189,91 @@
 %----------------------------------------------------------------------------------------
 
 \begin{document}
+
 \section{Problem 1}
+\begin{description}
+\item{(a)} (8 points)
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/pole-zero-autocorr.tex}}
+    \caption{Pole-zero diagram of (a) $H(z)$ and (b) $C_{hh}(z)$.} \label{fig:pole-zero}
+\end{figure}
+
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Using the conjugate and time reversal properties of the $z$-transform, we can write: $h^*[-n] \Longleftrightarrow H^*(1/z^*)$. Consequently,
+\begin{equation*}
+C_{hh}(z) = H(z)H^*(1/z^*)
+\end{equation*}
+
+From this equation we see that all the poles and zeros of $H(z)$ are also poles and zeros of $C_{hh}(z)$. 
+
+Moreover, suppose that $p$ is a pole of $H(z)$. Then, $H(z)$ must have a factor $\frac{1}{z-p}$:
+\begin{equation}
+\frac{1}{z-p} \implies \frac{1}{(1/z^*-p)^*}  = \frac{z}{p^*(1/p^*-z)} 
+\end{equation}
+Therefore, for each pole $p$ of $H(z)$, $C_{hh}(z)$ has a pole at $p$,  another pole at $1/p^*$, and a new zero at $z = 0$. We can use the same arguments to show that for every zero $c$ of $H(z)$, $C_{hh}(z)$ has a zero at $c$, another zero at $1/c^*$, and a new pole at $z = 0$. Now we're ready to draw the zero-pole plot
+}
+\else\vspace{7cm}
+\fi
+
+\item{(b)} (4 points) 
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+$c_{hh}[n]$ is not causal, since it is the convolution of a causal ($h[n]$) and an anti-causal ($h^*[-n]$) sequence. Therefore, the ROC of  $C_{hh}(z)$ is the annulus (ring-shaped region) between two circles defines by the poles.  This region includes the unit circle, and therefore $C_{hh}(z)$ is stable.
+}
+\else\vspace{3cm}
+\fi
+
+
+
+
+\item{(c)} (7 points) 
+\begin{figure}[!h]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{figs/mag-autocorr.tex}}
+    \caption{Sketch of the PSD of the output of $h[n]$ for a white noise input.} \label{fig:mag-resp}
+\end{figure}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Near $\pi/4$ (45 degrees) there is a pole in $H(z)$, therefore we should expect an increase in the magnitude response. There is a zero near $3\pi/4$ (135 degrees), therefore the magnitude response should decrease further near the zero.
+}
+\else\vspace{2cm}
+\fi
+
+\item{(d)} (3 points) 
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+\begin{align*}
+\sigma_y^2 &= \frac{1}{2\pi}\int_{-\pi}^{\pi}\Phi_{yy}(e^{j\omega})d\omega = \sigma_x^2\frac{1}{2\pi}\int_{-\pi}^{\pi}|H(e^{j\omega})|^2d\omega \\
+&=\sigma_x^2c_{hh}[0]
+\end{align*}
+}
+\else\vspace{6cm}
+\fi
+
+\item{(e)} (8 points)
+\end{description}
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/min-ap-decomposition.tex}}
+    \caption{Minimum-phase and all-pass decomposition of $H(z)$.} \label{fig:min-all-pass}
+\end{figure}
+\mbox
+
+
+
+
+
+
+
+
+
+\section{Problem 2}
 \subsection{(a)}
 \begin{figure}[h!]
 	\centering
@@ -237,7 +332,7 @@ Both spectra have amplitude 1, since, by definition, the ideal lowpass filter ha
 	
 Note that even though the DSP operation was the same in both scenarios, the result in continuous time was different. This problem illustrates that the outcome depends on the sampling frequency.
 	
-\section{Problem 2}
+\section{Problem 3}
 \subsection{(a)}
 To obtain a white noise spectrum after sampling, the sampling period $T$ must be such that the linear taper part of the spectrum replicas perfectly overlaps as illustrated in the figure below:
 
@@ -283,7 +378,7 @@ Since the discrete-time autocorrelation function is simply the sampled continuou
 
 Therefore, we can only obtain a discrete-time white noise from a non-white continuous-time noise if the continuous-time autocorrelation function is zero at the sampling instants $\tau = mT$, except at $\tau = mT = 0$.
 
-\section{Problem 3}	
+\section{Problem 4}	
 \subsection{(a)}
 
 Recall the following Fourier transform pairs:
@@ -481,7 +576,7 @@ X_r(j\Omega) &= (30\pi + 5\pi(e^{j\pi/3}+e^{-j\pi/3}))\delta(\Omega) + 10\pi(\de
 X_r(t) = 35/2 + 10\cos(600\pi t)
 \end{equation}
 	
-\section{Problem 4}
+\section{Problem 5}
 \subsection{(a)}
 
 The maximum value of $t_d$ will occur when the sound source is along the dashed line and above the first (top) microphone. This way, the sound will reach microphone 1, and only after propagating the distance $d$, it will reach the second microphone. Similarly, the minimum negative value of $t_d$ will occur when the sound source is along the dashed line, but now below the second microphone. Therefore,

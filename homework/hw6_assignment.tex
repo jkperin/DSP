@@ -90,7 +90,7 @@ Matlab file \texttt{problem1\_template.m}. as a template to develop your answers
 
 \begin{description}
 	\item [(a)] Give an expression for the transfer function of the adaptive filter that would result in perfect noise cancellation. Your answer should depend on $H(z)$ only.
-	\item [(b)] What is the Wiener solution for the weights of the adaptive filter if $x[n]$ and $r[n]$ were uncorrelated? In other words, what would be the resulting adaptive filter if there were no noise component in $x[n]$?
+	\item [(b)] What is the Wiener solution for the weights of the adaptive filter if $x[n]$ and $r[n]$ were uncorrelated? In other words, what would be the resulting adaptive filter if there were noise component in $x[n]$?
 	\item [(c)] Calculate the adaptation constant $\mu$ such that $\mu = 0.001\mu_{max}$, where $\mu_{max} = 1/\mathrm{trace}(R)$.
 	\item [(d)] Using the value of $\mu$ you computed in part (c), estimate how long it takes, in seconds, for the LMS algorithm to converge. You may assume that convergence is achieved after 4 time constants. The sampling frequency of the audio signal is 22.05 kHz. 
 	\item [(d)] Describe whether the following metrics would increase, decrease, or remain the same, if we increase the value of $\mu$. Please justify your answers with one or two sentences.
@@ -119,7 +119,7 @@ Given these 8-point signals $x[n], n = 0, \ldots, 7$, compute the 8-point DFTs o
 \begin{description}
 	\item [(a)] $x[n] = \{1, 1, 1, 1, 1, 1, 1, 1\}$
 	\item [(b)] $x[n] = \{1, -1, 1, -1, 1, -1, 1, -1\}$
-	\item [(c)] $x[n] = e^{jn\pi/2}, n = 0, \ldots, 7$
+	\item [(c)] $x[n] = e^{j\pi/2 n}, n = 0, \ldots, 7$
 	\item [(d)] $x[n] = \sin(\pi n/2), n = 0, \ldots, 7$
 	\item [(e)] $x[n] = \{1, 0, 0, 0, 0, 0, 0, 0\}$
 	\item [(f)] $x[n] = \{0, 0, 1, 0, 0, 0, 0, 0\}$
