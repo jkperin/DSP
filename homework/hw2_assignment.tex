@@ -5,7 +5,7 @@
 \setlength{\textheight}{9.4 in }
 \setlength{\topmargin}{-0.7 in}
 \pagestyle{myheadings}
-\markboth{\em EE264: Homework \#02}{\em EE264: Homework \#02}
+\markboth{\em EE264: Homework \#03}{\em EE264: Homework \#03}
 \usepackage[pdftex]{graphicx} \usepackage{eso-pic}
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -21,6 +21,10 @@
 \usepackage{xcolor}
 \usepackage{subcaption}
 \usepackage{pdfpages}
+\usepackage{setspace}
+\usepackage{placeins} % for FloatBarrier
+\usepackage[makeroom]{cancel}
+\usepackage[absolute,overlay]{textpos}
 %\captionsetup{compatibility=false}
 %\usepackage{dsfont}
 \usepackage[absolute,overlay]{textpos}
@@ -31,40 +35,150 @@
 \usetikzlibrary{pgfplots.groupplots}
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{plotmarks}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
 
 \DeclareGraphicsExtensions{.pdf,.eps,.png}
 
 \DeclareMathOperator{\E}{\mathbb{E}} % expectation
+
+\definecolor{blue2}{RGB}{51, 105, 232}  
+\definecolor{red2}{RGB}{213, 15, 37}  
+\definecolor{green2}{RGB}{0, 153, 37}  
+
+
+%%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
+\def\SOLUTIONS{0} % change to 1 to produce solutions
+\def\SolutionsColor{red2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \begin{document}
 \thispagestyle{empty}
 \begin{centering}
 	{\large Stanford University}\\
 	{\large EE 264: Digital Signal Processing}\\
-	{\large Summer, 2017} \\
+	{\large Summer, 2018} \\
 	\mbox{}\\
-	{\large Homework \#02}\\
+	{\large Homework \#03}\\
 	\mbox{}\\
 \end{centering}
-\noindent Date assigned:  July 6, 2017 \hfill
-Date due: July 13, 2017\\
+\noindent Date assigned:  July 13, 2018 \hfill
+Date due: July 20, 2018\\
 \noindent \rule{6.5 in}{0.5pt}
 %\mbox{}\\
-\noindent {\bf Reading:}  This assignment covers lecture 3, which corresponds to the sections 4.1--4.9 of the text book {\bf DTSP 3e}. \\
-\noindent {\bf Homework submission:}  Please submit your solutions on Canvas. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if applicable). \\
-\noindent {\bf Extra practice:}  Problems for extra practice are provided at the end of this assignment. Do \underline{not} turn in solutions to extra practice problems.
-
+\noindent {\bf Reading:}  Problems 2-5 need lecture notes 4, which will be finished in class on Monday, July 16, 2018. \\
+\noindent {\bf Homework submission:}  Please submit your solutions on Gradescope. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if any). \\
 \noindent
 \rule{6.5 in}{0.5pt}
 \mbox{}\\
 
-\noindent {\bf Problem 1: (25 points)}
+
+
+\noindent {\bf Problem 1: Poles and zeros of the deterministic autocorrelation function (30 points)}
+
+As discussed in class, the deterministic autocorrelation function of an LTI system with impulse response $h[n]$ is defined by
+\begin{equation}
+c_{hh}[n] = h[n] \ast h^*[-n].
+\end{equation}
+
+For this problem, consider that $h[n]$ is \underline{causal} and that the pole-zero diagram of its $z$-transform, $H(z)$, is shown in Figure~\ref{fig:pole-zero}a.
+
+\begin{description}
+\item{(a)} (8 points)
+Sketch the pole-zero diagram of the $z$-transform of the deterministic autocorrelation function $C_{hh}(z) \Longleftrightarrow c_{hh}[n]$. Use the empty diagram of Figure~\ref{fig:pole-zero}b for your sketch. 
+
+\textit{Hint:} First write $C_{hh}(z)$ in terms of $H(z)$ using the properties of the $z$-transform.
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/pole-zero-autocorr.tex}}
+    \caption{Pole-zero diagram of (a) $H(z)$ and (b) $C_{hh}(z)$.} \label{fig:pole-zero}
+\end{figure}
+
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Using the conjugate and time reversal properties of the $z$-transform, we can write: $h^*[-n] \Longleftrightarrow H^*(1/z^*)$. Consequently,
+\begin{equation*}
+C_{hh}(z) = H(z)H^*(1/z^*)
+\end{equation*}
+
+From this equation we see that all the poles and zeros of $H(z)$ are also poles and zeros of $C_{hh}(z)$. 
+
+Moreover, suppose that $p$ is a pole of $H(z)$. Then, $H(z)$ must have a factor $\frac{1}{z-p}$:
+\begin{equation}
+\frac{1}{z-p} \implies \frac{1}{(1/z^*-p)^*}  = \frac{z}{p^*(1/p^*-z)} 
+\end{equation}
+Therefore, for each pole $p$ of $H(z)$, $C_{hh}(z)$ has a pole at $p$,  another pole at $1/p^*$, and a new zero at $z = 0$. We can use the same arguments to show that for every zero $c$ of $H(z)$, $C_{hh}(z)$ has a zero at $c$, another zero at $1/c^*$, and a new pole at $z = 0$. Now we're ready to draw the zero-pole plot
+}
+\else\vspace{7cm}
+\fi
+
+\item{(b)} (4 points) In part (a) you may have noticed that $C_{hh}(z)$ has poles outside the unit circle. Does that mean that $C_{hh}(z)$ is unstable? Justify your answer. 
+
+\textit{Hint:} $h[n]$ is causal, but is $c_{hh}[n]$ causal?
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+$c_{hh}[n]$ is not causal, since it is the convolution of a causal ($h[n]$) and an anti-causal ($h^*[-n]$) sequence. Therefore, the ROC of  $C_{hh}(z)$ is the annulus (ring-shaped region) between two circles defines by the poles.  This region includes the unit circle, and therefore $C_{hh}(z)$ is stable.
+}
+\else\vspace{3cm}
+\fi
+
+
+
+
+\item{(c)} (7 points) Suppose that a \underline{white} noise signal $x[n]$ with average power $\sigma_x^2 = 1$ is input to the system $h[n]$. Sketch the PSD of the output noise $y[n] = x[n]\ast h[n]$. Since the pole-zero diagram does not provide information about the gain, the first and last points of the magnitude response are already included. Note that the magnitude in this plot is in log scale.
+
+\textit{Note:} your sketch does not need to be perfect to receive full credit, but be sure to indicate the most relevant points.
+
+\begin{figure}[!h]
+	\centering
+	\resizebox{0.6\textwidth}{!}{\input{figs/mag-autocorr.tex}}
+    \caption{Sketch of the PSD of the output of $h[n]$ for a white noise input.} \label{fig:mag-resp}
+\end{figure}
+
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+Near $\pi/4$ (45 degrees) there is a pole in $H(z)$, therefore we should expect an increase in the magnitude response. There is a zero near $3\pi/4$ (135 degrees), therefore the magnitude response should decrease further near the zero.
+}
+\else\vspace{2cm}
+\fi
+
+\item{(d)} (3 points) Give an expression for the average power of the output signal $y[n]$. Your answer should depend on $\sigma_x^2$ and either $c_{hh}[n]$ or $H(e^{j\omega})$.
+\if\SOLUTIONS1
+{\color{\SolutionsColor}
+\begin{align*}
+\sigma_y^2 &= \frac{1}{2\pi}\int_{-\pi}^{\pi}\Phi_{yy}(e^{j\omega})d\omega = \sigma_x^2\frac{1}{2\pi}\int_{-\pi}^{\pi}|H(e^{j\omega})|^2d\omega \\
+&=\sigma_x^2c_{hh}[0]
+\end{align*}
+}
+\else\vspace{6cm}
+\fi
+
+\item{(e)} (8 points) Note from Figure~\ref{fig:pole-zero}a that $H(z)$ is not minimum phase. Sketch the pole-zero diagram of $H_{min}(z)$ and $H_{ap}(z)$ so that $H(z) = H_{min}(z)H_{ap}(z)$, where $H_{min}(z)$ is a minimum-phase system and $H_{ap}(z)$ is an all-pass system. 
+\end{description}
+
+\begin{figure}[!h]
+\centering
+	\resizebox{\textwidth}{!}{\input{figs/min-ap-decomposition.tex}}
+    \caption{Minimum-phase and all-pass decomposition of $H(z)$.} \label{fig:min-all-pass}
+\end{figure}
+\mbox
+
+
+\noindent {\bf Problem 2: (15 points)}
 
 Consider the generic discrete-time system discussed in class:
 
 \begin{figure}[!h]
 	\centering
-	\resizebox{0.9\textwidth}{!}{\input{../lectures/figs/ctd-lti-dtc.tex}}
+	\resizebox{0.9\textwidth}{!}{\input{figs/ctd-lti-dtc.tex}}
 	\caption{Diagram for discrete-time processing of continuous-time signals.}
 \end{figure}
 
@@ -93,7 +207,7 @@ We'll consider two different scenarios. In the first, sampling is performed at t
 \end{description}
 \mbox{}\\
 
-\noindent {\bf Problem 2: (25 points)}  (from mid-term exam, fall 2009)
+\noindent {\bf Problem 3: (15 points)}  (from mid-term exam, fall 2009)
 
 A continuous-time random signal $x_c(t)$ has autocorrelation function
 $\phi_{x_c x_c}(\tau)$ and corresponding power spectrum $\Phi_{x_cx_c}(j\Omega)$, which is shown in Figure \ref{fig:CTspectrum}.
@@ -122,8 +236,8 @@ discrete-time white noise signal.
 \end{description}
 \mbox{}\\
 
-\newpage
-\noindent {\bf Problem 3: (20 points)}
+\mbox
+\noindent {\bf Problem 4: (15 points)}
 
 Consider the continuous-time representation of the process of sampling
 followed by reconstruction shown in Figure \ref{fig:sampreconst}.
@@ -163,7 +277,7 @@ $X_c(j\Omega)$ and plot it as a function of $\Omega$.
 \end{description}
 \mbox{}\\
 
-\noindent {\bf Problem 4: (30 points)}
+\noindent {\bf Problem 5: (25 points)}
 
 Consider the two-channel microphone array depicted in Figure \ref{fig:array_fig}.
 \begin{figure}[!htb]
@@ -193,14 +307,5 @@ where $s[n]=s_c(nT)$ and $s_D[n]=s_{c}(nT+t_d)$.  When $D=t_d/T$  is an integer,
 \item{(d)}  Where will the maximum value of $\phi_{x_1x_2}[m]$ occur?  How could this result be used in an algorithm for estimating the time delay $t_d$?
 \item{(e)}  Assume that the sampled signal component $s[n]$ is a white random signal with  power spectrum $\Phi_{ss}(e^{j\omega}) = \sigma_s^2$ for all $\omega$. Using the result of (c) obtain an expression for the cross-power spectrum, $\Phi_{x_1x_2}(e^{j\omega})$, and use it to determine an expression for $\phi_{x_1x_2}[m]$ that is valid even when $D=t_d/T$ is \emph{not} an integer. Specialize your result for the case when $D$ is an integer, i.e., when $t_d$ is an integer multiple of the sampling period $T$.
 \end{description}
-
-\newpage
-
-\begin{center}
-	\noindent {\Large \textbf{Extra Practice}}
-\end{center}
-\noindent {\bf The following problems from the textbook are for extra practice if you need it. Do \underline{not} turn in solutions to these problems. }\\
-
-\includepdf[pages=8-11]{include/ps2_w16.pdf}
 
 \end{document}

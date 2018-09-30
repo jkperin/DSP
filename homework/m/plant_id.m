@@ -5,8 +5,8 @@ clear, clc, close all
 b = 0.05634*conv([1 0.9], [1 -1.0166 0.8]);
 a = conv([1 -0.683], [1 -1.4461 0.7957]);
 
-% b = 10*conv([1 -0.9], [1 -1.0166 0.8]);
-% a = 1;
+b = 10*ones(1, 5);
+a = 1;
 
 figure, zplane(b, a)
 
@@ -51,9 +51,9 @@ hHT(w == 0) = 0; % enforces hHT = 0, when w = 0
 
 % Convolution integral
 dw = abs(w(1))-abs(w(2)); % frequency resolution
-% w2 = -2*pi+dw:dw:2*pi-dw;
-% hHT = sin(w2)./(1-cos(w2));
-% hHT(w2 == 0) = 0; % enforces hHT = 0, when w = 0
+w2 = -2*pi+dw:dw:2*pi-dw;
+hHT = sin(w2)./(1-cos(w2));
+hHT(w2 == 0) = 0; % enforces hHT = 0, when w = 0
 P = -1/(2*pi)*conv(logMag, hHT, 'same')*dw;
 
 % Plot results

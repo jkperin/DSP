@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169, handout]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -59,7 +59,7 @@
 \input{header.tex} % some definitions
 
 %% 
-\title[EE 264]{Parametric Signal Modeling}
+\title[EE 264]{Power Spectrum Density Estimation}
 \author{Jose Krause Perin}
 \institute{Stanford University}
 \date{August 15, 2017}
@@ -72,243 +72,396 @@
 
 %
 \begin{frame}{Last lecture}
-	\begin{itemize}
-	\item The PSD is the DTFT of the autocorrelation function
-	\item The PSD may be two-sided or one-sided. Careful with conventions!
-	\item The periodogram method estimates the PSD directly from the magnitude squared of the DFT of the windowed signal
-	\item The periodogram is an biased estimator of the PSD, and it has large variance. Hence, the periodogram must be averaged to produce useful estimates
-	\item The Welch method averages several periodograms
-	\item The Welch method breaks the data into overalapping segments, each of length $L$. Usually, the segments overlap by $L/2$.
-	\item Differently from the periodogram and Welch method, the Blackman-Tukey method estimates the PSD by computing the DFT of the estimated autocorrelation function
-	\item Although the estimator of the autocorrelation function may be unbiased, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
-	\item Increasing the sequence length $Q$ improves accuracy. Reducing the window length $L$ improves accuracy at the expense of poorer frequency resolution.
+\begin{itemize}
+	\item Leakage and resolution are important considerations in spectrum analysis
+	\item By properly choosing windows we can minimize these issues
+	\item Kaiser window is a nearly optimal choice. Must choose correct $\beta$ and window length $L$
+	\item $\beta$ controls the ratio between the amplitudes of the main-lobe and the largest side-lobe i.e., $\beta$ controls the amount of leakage.
+	\item The larger the main-lobe width, the smaller the resolution
+	\item By increasing the window length we reduce the main-lobe width and consequently improve the resolution
+	\item Time-dependent Fourier transform or short-time Fourier transform allows us to keep track of frequency variation in time
+	\item Spectrogram is a commonly used way to display the TDFT
+	\item In the spectrogram the TDFT is sampled both in time and in frequency
+	\item The window length determines the resolution of the spectrogram
 \end{itemize}
 \end{frame}
 
 %
-\begin{frame}{Parametric signal modeling}
-	\begin{itemize}
-		\item Another representation of signals
-		\item We'll model \textit{complicated} signals as the output of some system to white noise or to an impulse.
-		\item Hence, the signal will be described by the parameters (coefficients) of the system
-		\item We'll cover the \textbf{all-pole model} or \textbf{autoregressive (AR) model}
-	\end{itemize}
+\begin{frame}{Today's lecture}
+	How to estimate the power spectrum density (PSD) of WSS signals.
+	\tableofcontents
 \end{frame}
 
-\begin{frame}{All-pole model}
-	\begin{center}
-	\resizebox{0.5\linewidth}{!}{\input{figs/all_pole_model.tex}}
-	\end{center}
-	
-	Given a signal $s[n]$, find $H(z)$ and $v[n]$ such that 
-	\begin{equation*}
-		s[n] \approx \hat{s}[n] = h[n] \ast v[n]
-	\end{equation*}
-	
+\begin{frame}{Revisiting stationary random signals}
 	\begin{itemize}
-		\item The \textbf{all-pole model} assumes
+		\item Stationarity refers to time-invariance of some or all statistics of a random process
+		\item We will limit our studies to wide-sense stationary (WSS) random processes
+		\item The mean of a WSS process is constant, while the autocorrelation function depends only on the time deference $m$, and not on the absolute time $n$.
+		\begin{align}
+			\E(x[n]) &=\mu \tag{constant mean} \\
+			\E(x[m+n]x^*[n]) &= \phi_{xx}[m] \tag{autocorrelation function depends only on time difference $m$}
+		\end{align}
+		\item The power spectrum density (PSD) of a WSS process is the Fourier transform of the autocorrelation function:
 		\begin{equation*}
-			H(z) = \frac{G}{1 - a_1z^{-1} - \ldots - a_{N}z^{-N}}
+			P(\omega) \equiv \Phi_{xx}(e^{j\omega}) = \mathcal{F}\{\phi_{xx}[m]\}
 		\end{equation*}
-		all zeros are at the origin
-		\item If $s[n]$ is a \underline{finite-energy deterministic signal}, $v[n]$ is chosen to be an unit impulse
-		\item If $s[n]$ is a \underline{WSS random process}, $v[n]$ is chosen to be a white noise process with unit average power
+		
+		The PSD is purely real, even symmetric, and non-negative. 
+		\item Average power
+		\begin{equation}
+			\E(|x[n]|^2) = \phi_{xx}[0] = \frac{1}{2\pi}\int_{-\pi}^{\pi} \Phi_{xx}(e^{j\omega}) d\omega \tag{average power}
+		\end{equation}
 	\end{itemize}
-
-	\textbf{Question:} how to find the coefficients $a_1, \ldots, a_N$?
 \end{frame}
 
-
-\begin{frame}{All-pole model}
-Consider the inverse system
-\begin{center}
-	\def\INVERSE{1}
-	\resizebox{0.9\linewidth}{!}{\input{figs/all_pole_model.tex}}
-\end{center}
-
-The inverse is an FIR system: $H^{-1}(z) = \frac{1}{G}(1 - a_1 - \ldots - a_Nz^{-N})$. Therefore,
+\begin{frame}{Conventions}
+A zero-mean random process has PSD $P(\omega)$ and average power $\sigma^2$.
 
 \begin{equation*}
-Gv[n] \approx s[n] - \sum_{k = 1}^N a_ks[n-k]
+	\sigma^2 = \frac{1}{2\pi} \int_{-\pi}^{\pi} P(\omega)d\omega = \int_{-0.5}^{0.5} P(f)df
 \end{equation*}
 
-Defining the error
-\begin{align*}
-e_m[n] &= Gv[n] - \Big(s[n] - \sum_{k = 1}^N a_ks[n-k]\Big) \tag{modeling error} \\
-\end{align*}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\textbf{Two-sided PSD}
+	\end{column}
 
-\end{frame}
+	\begin{column}{0.5\textwidth}
+		\textbf{One-sided PSD}
+	\end{column}
+\end{columns}
+\hspace{0.5cm}\resizebox{0.8\textwidth}{!}{\input{figs/psd_conventions.tex}}
 
-
-\begin{frame}
-We want to find coefficients $a_1, \ldots, a_n$ that minimize the \textbf{mean-square error}
-\begin{equation*}
-\langle |e_m[n]|^2 \rangle = \begin{cases}
-\displaystyle\sum_{n =0}^{L} |e_m[n]|^2, & \text{$s[n]$ deterministic} \\
-\E\Big(|e_m[n]|^2\Big), & \text{$s[n]$ random}
-\end{cases}
-\end{equation*}
-
-From the properties of the mean-square error, it can be shown that the error is minimum when
-\begin{equation*}
-\langle s[n-i]e_m[n] \rangle = 0,  \quad i = 0, \ldots, N
-\end{equation*}
-The error is orthogonal to all inputs. This is known as the \textbf{orthogonality principle}
+Generally, one-sided PSD is used when dealing with real signals, while two-sided PSD is used when dealing with complex signals.
 \end{frame}
 
 %
-\begin{frame}
-Applying the orthogonality principle:
-
-\begin{equation*}
-\Big\langle s[n-i] \Big(Gv[n] - (s[n] - \sum_{k = 1}^N a_ks[n-k])\Big) \Big\rangle  = 0, \quad i = 0, \ldots, L
-\end{equation*}
-
-We'll only consider the cases when $i = 1, \ldots, N$:
-\begin{align*}
-	&\Big\langle s[n-i] \Big(Gv[n] - (s[n] - \sum_{k = 1}^N a_ks[n-k])\Big) \Big\rangle  = 0, \quad i = 1, \ldots, N \\
-	&\langle s[n-i]s[n]\rangle - \sum_{k = 1}^N a_k\langle s[n-i]s[n-k]\rangle)  = 0, \quad i = 1, \ldots, N \tag{from causality $\langle s[n-i]v[n]\rangle = 0$}\\
-\end{align*}
-
-Note that $\langle s[l]s[m]\rangle$ is equivalent to either the \textbf{deterministic autocorrelation function} if $s[n]$ is deterministic, or $\langle s[l]s[m]\rangle$  is equivalent to the \textbf{autocorrelation function} if $s[n]$ is random
-\begin{equation*}
-	\langle s[l]s[m]\rangle = \begin{cases}
-	c_{ss}[l-m], & \text{$s[n]$ deterministic} \\
-	\phi_{ss}[l-m], & \text{$s[n]$ random}
+\begin{frame}{Matlab conventions}
+The Matlab functions for PSD estimation follow these conventions:
+\begin{itemize}
+	\item Matlab returns \textbf{one-sided PSD} if signal is real and \textbf{two-sided PSD} if the signal is complex.
+	\item You can force Matlab to return two-sided PSD by specifying frequency vector $\omega$ with negative frequencies
+	\item When working with normalized frequency $f = \omega/(2\pi)$, Matlab returns 
+	\begin{equation*}
+		\texttt{Pf} = \begin{cases}
+		2P(f), &\text{if one-sided PSD} \\
+		P(f), &\text{if two-sided PSD} \\
+		\end{cases}
+	\end{equation*}
+	\item When working with normalized frequency $\omega$, Matlab returns 	
+	\begin{equation*}
+	\texttt{Pw\_norm} = \displaystyle\begin{cases}
+		\displaystyle\frac{1}{\pi}P(\omega), &\text{if one-sided PSD} \\
+		\displaystyle\frac{1}{2\pi}P(\omega), &\text{if two-sided PSD} \\
 	\end{cases}
-\end{equation*}
-
+	\end{equation*}
+\end{itemize}
+Therefore, the area under the PSD in Matlab is equal to the average power, even when working with $\omega$.
 \end{frame}
 
-\begin{frame}
-	If $s[n]$ is deterministic:
+%
+\section{Periodogram}
+\begin{frame}{Outline}
+	\tableofcontents[currentsection]
+\end{frame}
+\begin{frame}{The periodogram}
+	The \textbf{periodogram} of $x[n]$ is given by
 	\begin{equation*}
-		c_{ss}[i] = \sum_{k = 1}^N a_kc_{ss}[k-i],  \quad i = 1, \ldots,N
+		P(\omega) \equiv \frac{1}{LU}|\mathcal{F}\{w[n]x[n]\}|^2, \quad\text{where}\quad U = \frac{1}{L}\sum_{n = 0}^{L-1}|w[n]|^2
 	\end{equation*}
 	
-	
-	If $s[n]$ is random: 
-	\begin{equation*}
-	\phi_{ss}[i] = \sum_{k = 1}^N a_k\phi_{ss}[k-i], \quad i = 1, \ldots,N
-	\end{equation*}
-	
-	These equations are known as \textbf{normal equations} or \textbf{Yule-Walker equations}.
+	The periodogram is the magnitude squared of the DTFT of $w[n]x[n]$, normalized by the window length $L$ and the window power $U$.
 	
 	\vspace{0.25cm}
-	They form a system of $N$ linear equations of $N$ variables. Hence, there is at most one solution.
+	The sampled periodogram can be computed efficiently using the DFT:
+	\begin{equation*}
+		P[k] = P\Big(\frac{2\pi k}{N}\Big) = \frac{1}{LU}|\mathrm{DFT}\{w[n]x[n]\}|^2
+	\end{equation*}
+	For $N \geq L$, the $N$-point DFT of $w[n]x[n]$ is simply the DTFT $\mathcal{F}\{w[n]x[n]\}$ sampled with period $2\pi/N$.
 \end{frame}
 
-\begin{frame}{In matrix notation}
-
-Define
-\begin{equation*}
-	r[i] = \begin{cases}
-	c_{ss}[i], & \text{$s[n]$ deterministic} \\
-	\phi_{ss}[i], & \text{$s[n]$ random} \\
-	\end{cases}
-\end{equation*}
-We can write the \textbf{normal equations} in matrix notation:
+%
+\begin{frame}{Periodogram and the deterministic autocorrelation function}
+Define $v[n] = w[n]x[n] \Longleftrightarrow V(e^{j\omega}) = \mathcal{F}\{w[n]x[n]\}$
 \begin{align*}
-	Ra &= r \\
-	\begin{bmatrix}
-	r[0] & r[1] & \ldots & r[N-1] \\
-	r[1] & r[0] & \ldots & r[N-2] \\
-	\vdots & \vdots & \ddots & \vdots \\
-	r[N-1] & r[N-2] & \ldots & r[0] \\
-	\end{bmatrix}&\begin{bmatrix}
-	a_1 \\
-	a_2 \\
-	\vdots \\
-	a_N
-	\end{bmatrix} = \begin{bmatrix}
-	r[1] \\
-	r[2] \\
-	\vdots \\
-	r[N]
-	\end{bmatrix}
+	P(\omega) &= \frac{1}{LU}|\mathcal{F}\{w[n]x[n]\}|^2 =  \frac{1}{LU}\Big(V(e^{j\omega})V^*(e^{j\omega})\Big) \\
+	&=\frac{1}{LU}\mathcal{F}\{v[n]\ast v^*[-n]\} \tag{$|V(e^{j\omega})|^2 =\mathcal{F}\{v[n]\ast v^*[-n]\}$}  \\
+	&=\frac{1}{LU}\mathcal{F}\{c_{vv}[m]\} \tag{by definition $c_{vv}[m] = v[m]\ast v^*[-m]$}
 \end{align*}
-$R$ is the \textbf{autocorrelation matrix}. Note that $R$ is symmetric $R = R^T$.
+
+The periodogram is the DTFT of the \textbf{deterministic autocorrelation function} $c_{vv}[m]$, normalized by the window length $L$ and the window power $U$.
 
 \vspace{0.5cm}
-In Matlab: \texttt{>> a = R\textbackslash r}
+Writing $c_{vv}[m]$ in terms of $x[n]$ and $w[n]$:
+\begin{equation*}
+	c_{vv}[m] = (x[m]w[m])\ast (x^*[-m]w^*[-m]) = \sum_{n = 0}^{L-1} x[n]x^*[m-n]w[n]w^*[m-n]
+\end{equation*}
+
 \end{frame}
 
-\begin{frame}{Determining the gain}
-	Once the coefficients $a_1, \ldots, a_N$ have been found, we just need to determine the gain $G$ to completely specify $H(z)$.
-	
-	\vspace{0.5cm}
-	We can pick $G$ so that the mean-square value of the model output matches the mean-square value of the signal $s[n]$:
-	
-	\begin{align*}
-		\langle \hat{s}^2[n] \rangle &= \langle s^2[n] \rangle \\
-		G^2 &= r_{ss}[0] - \sum_{k =1}^N a_kr_{ss}[k] \tag{after some algebra}
-	\end{align*}
+\begin{frame}{The periodogram as a random variable}
+The periodogram is a function of the random variable $x[n]$, therefore it is itself a random variable
+
+\textbf{The mean of the periodogram}
+\begin{align*}
+	\E(P(\omega)) &= \E\bigg(\frac{1}{LU}\mathcal{F}\{c_{vv}[m]\}\bigg) = \E\bigg(\frac{1}{LU}\sum_{m=L-1}^{L-1}c_{vv}[m]e^{-j\omega m}\bigg) \\
+	& = \frac{1}{LU}\sum_{m=L-1}^{L-1}\E(c_{vv}[m])e^{-j\omega m} \\
+	& = \frac{1}{LU}\sum_{m=L-1}^{L-1}c_{ww}[m]\phi_{xx}[m]e^{-j\omega m} \tag{the window is deterministic} \\
+	& = \frac{1}{2\pi LU}C_{ww}(e^{j\omega})\ast \Phi_{xx}(e^{j\omega}) \tag{product in time $\Longleftrightarrow$ convolution in frequency} \\
+\end{align*}
+
+\vspace{-0.25cm}
+\textbf{Conclusion:} \textit{in average}, the periodogram is the PSD of $x[n]$, $\Phi_{xx}(e^{j\omega})$, \textit{smeared} by the deterministic PSD of the window $C_{ww}(e^{j\omega}) = |W(e^{j\omega})|^2$
 \end{frame}
 
-\begin{frame}{Spectrum analysis with all-pole model}
-	
-	\textbf{Deterministic case:}
-	\begin{equation*}
-		|S(e^{j\omega})|^2 \approx |H(e^{j\omega})|^2|V(e^{j\omega})|^2 = |H(e^{j\omega})|^2
-	\end{equation*}
-	since by assumption $v[n] = \delta[n]$, it follows that $|V(e^{j\omega})|^2 = 1$
-	
-	\vspace{0.5cm}
-	\textbf{Random case:}
-	\begin{equation*}
-	P_{ss}(e^{j\omega}) \approx |H(e^{j\omega})|^2P_{vv}(e^{j\omega}) = |H(e^{j\omega})|^2
-	\end{equation*}
-	since by assumption $v[n]$ is white noise, it follows that $P_{vv}(e^{j\omega}) = 1$
-		
-	\vspace{0.5cm}
-	\textbf{Conclusion:}
-	\begin{equation*}
-		|H(e^{j\omega})|^2 = \bigg|\frac{G}{1 - \sum_{k =1}^Na_ke^{-j\omega k}}\bigg|^2
-	\end{equation*}
-	is the spectrum estimate of $s[n]$.
+\begin{frame}{The periodogram as a random variable}
+
+\textbf{The variance of the periodogram}
+
+It can be shown that
+\begin{align*}
+	\mathrm{var}(P(\omega)) \approx \Phi_{xx}^2(e^{j\omega})
+\end{align*}
+
+\vspace{-0.25cm}
+\textbf{Conclusion:} the periodogram has \underline{large variance}, making it useless by itself for estimating the power spectrum of a random signal.
+
+\vspace{0.25cm}
+To mitigate this problem we can average several periodograms. 
+
+\begin{equation*}
+\bar{P}(\omega) = \frac{1}{N_{avg}}\sum_{i = 0}^{N_{avg}-1} P_i(\omega)
+\end{equation*}
+where $P_i(\omega) = \Phi_{xx}(e^{j\omega}) + N_i(\omega)$, and $N_i(\omega)$ is the error of the $i$th periodogram. If the error $N_i(\omega)$ has variance $\sigma_N^2$. Then,
+
+\begin{equation*}
+	\mathrm{var}(\bar{P}(\omega)) = \frac{1}{N_{avg}}\sigma_N^2
+\end{equation*}
+The variance is reduced by the number of averages $N_{avg}$
+
 \end{frame}
 
-\begin{frame}{All-pole analysis of speech signals}
-	\centering
-	\includegraphics[scale=0.6]{figs/allpole_model_speech1.png}
+\begin{frame}{Periodogram in Matlab}
+Periodogram definition:
+\begin{align*}
+P[k] &\equiv \frac{1}{LU}|V(e^{j2\pi/Nk})|^2, \quad\text{where}\quad U = \frac{1}{L}\sum_{n = 0}^{L-1}|w[n]|^2 \\
+&= \texttt{1/(L*U)*abs(fft(x.*window, N)).\textasciicircum 2} \tag{Matlab code}
+\end{align*}
+This returns the two-sided periodogram at frequencies $\omega_k = 2\pi/Nk, k=0, \ldots, L-1$.
+
+Matlab's periodogram function:
+\begin{align*}
+&\texttt{>> dw = 2*pi/N} \\
+&\texttt{>> Pw = 2*pi*periodogram(x, window, -pi:dw:pi-dw)}
+\end{align*}
+
+\textbf{Careful with conventions}: this particular call of the \texttt{periodogram} function returns a \textbf{two-sided periodogram} for frequencies in the interval $[-\pi, \pi)$. The multiplicative factor \texttt{2*pi} corrects for the PSD normalization done by Matlab.
 \end{frame}
 
+\begin{frame}{Example}
 
-\begin{frame}{All-pole analysis of speech signals}
-	\centering
-	\includegraphics[scale=0.7]{figs/allpole_model_speech2.png}
-\end{frame}
-
-\begin{frame}{Revisiting the plant identification problem}
-	
 \begin{center}
-	\resizebox{0.5\linewidth}{!}{\SimpleSys{figs/simple_in_dsp_out}{$x[n]$}{$H(z) = ??$}{$y[n]$}}
+	\resizebox{0.4\textwidth}{!}{\SimpleSys{figs/simple_in_dsp_out.tex}{$x[n]$}{$H(z)$}{$y[n]$}}
 \end{center}
 
-Inject a small noise of known PSD $\Phi_{xx}(e^{j\omega})$ at the input and measure the noise PSD at the output $\Phi_{yy}(e^{j\omega})$:
-
+Let's assume that $H(z) = 1 - z^{-2}$. Hence
 \begin{equation*}
-|H(e^{j\omega})|^2 = \frac{\Phi_{yy}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})} \tag{only know the magnitude}
+	H(e^{j\omega}) = 1 - e^{-j2\omega} = 2j\sin(\omega)e^{-j\omega}
+\end{equation*}
+And for the power spectrum density:
+\begin{equation*}
+	\Phi_{yy}(e^{j\omega}) = |H(e^{j\omega})|^2\Phi_{xx}(e^{j\omega}) = 4\sin^2(\omega)\Phi_{xx}(e^{j\omega})
+\end{equation*}
+$\Phi_{yy}(e^{j\omega})$ is the \textbf{two-sided PSD} of $y[n]$, as usual.
+\vspace{0.25cm}
+
+If $x[n]$ is a white noise with average power $\sigma_x^2$
+\begin{equation*}
+\Phi_{yy}(e^{j\omega}) = 4\sin^2(\omega)\sigma_x^2
 \end{equation*}
 
-We can obtain the phase response by computing the Hilbert transform of the log-magnitude
+See Matlab script: Canvas/Files/Matlab/\texttt{periodogram\_example.m}
+\end{frame}
+
+\section{Welch's method}
+\begin{frame}{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+\begin{frame}{Welch's method of estimating the PSD}
+	Welch's PSD estimate is obtained by averaging several periodograms
+	
+	\begin{enumerate}
+	\item Divide $x[n]$ into $K$ overlapping segments
+		\begin{equation*}
+			x_r[n] = x[rR + n], \quad n = 0, \ldots, L-1
+		\end{equation*}
+		Usually $R = L/2$. i.e., the subsequences overlap by $50\%$.
+	\item Compute the periodogram for each sequence $x_r[n]$
+		\begin{align*}
+			P_r(\omega) &= \frac{1}{LU}|\mathcal{F}\{x_r[n]w[n]\}|^2, \quad\text{where}\quad U = \frac{1}{L}\sum_{n = 0}^{L-1}|w[n]|^2 \\
+			P_r[k] &= \frac{1}{LU}|\mathrm{DFT}\{x_r[n]w[n]\}|^2
+		\end{align*}
+	\item Average the periodograms $P_r[k]$:
+		\begin{align*}
+			\bar{P}[k] = \frac{1}{K}\sum_{r = 0}^{K-1}P_r[k]
+		\end{align*}
+	\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Welch's method example}
+Same scenario as before: white noise $x[n]$ filtered by $H(z) = 1 - z^{-2}$
+
+These plots assume $R = 128$, $L = N = 256$.
+\begin{center}
+	\resizebox{0.7\textwidth}{!}{\input{figs/welch_psd.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Welch's method and spectrogram}
+Recall that the spectrogram is defined by
+
+\begin{align*}
+	X[r, k] &= \sum_{m = 0}^{L-1}x[rR+m]w[m]e^{-j(2\pi/N)km} \tag{spectrogram}
+\end{align*}
+For each $r$, the spectrogram is the DFT of $x[rR+m]w[m]$. Hence, we can calculate Welch's PSD estimate from the spectrogram
+
 \begin{equation*}
-\arg(H(e^{j\omega})) = -\mathcal{H}\{\ln |H(e^{j\omega})|\}
+	\bar{P}[k] = \frac{1}{LUK} \sum_{r = 0}^{K-1} |X[r, k]|^2 \tag{Welch's PSD estimate}
 \end{equation*}
 
-This procedure only works if $H(z)$ is causal and minimum phase i.e., it is stable and has a stable inverse.
+This is equivalent to averaging the squared magnitude of the spectrogram over time $r$.
 
 \end{frame}
+
+%
+\begin{frame}{Welch's method in Matlab}
+\begin{itemize}
+	\item Using the \texttt{pwelch} function:
+	\begin{align*}
+	& \texttt{>> dw = 2*pi/Nfft} \\
+	& \texttt{>> Pw = 2*pi*pwelch(x, window, L-R, -pi:dw:pi-dw)} \tag{two-sided PSD estimate}
+	\end{align*}
+	The same \underline{convention considerations} for the periodogram apply to the \texttt{pwelch} function.
+	
+	\item Using the spectrogram
+	\begin{align*}
+		& \texttt{>> dw = 2*pi/Nfft} \\
+		& \texttt{>> S = spectrogram(x, window, L-R, -pi:dw:pi-dw)}\\
+		& \texttt{>> Pw = mean(1/(L*U)*abs(S).\textasciicircum 2, 2)} \tag{two-sided PSD estimate}
+	\end{align*}
+	\texttt{L} is the window length and \texttt{U} is the window power.
+\end{itemize}
+
+\vspace{0.25cm}
+See Matlab script: Canvas/Files/Matlab/\texttt{welch\_example.m}
+\end{frame}
+
+\section{Blackman-Tukey method}
+\begin{frame}{Outline}
+\tableofcontents[currentsection]
+\end{frame}
+
+%
+\begin{frame}{Blackman-Tukey PSD estimate}
+	The Blackman-Tukey method first estimates the autocorrelation function $\hat{\phi}_{xx}[m]$. The PSD follows by computing the DFT of $\hat{\phi}_{xx}[m]$.
+	\begin{enumerate}
+		\item Estimate the autocorrelation function from $Q$ samples of $x[n]$
+		\begin{equation*}
+			\hat{\phi}_{xx}[m] = \frac{1}{Q-|m|}\sum_{n = 0}^{Q-1-|m|} x[m+n]x[n], \quad |m|\leq Q-1
+		\end{equation*}
+		\item Multiply autocorrelation by window $w[m]$ of length $L = 2M-1$.
+		\begin{equation*}
+			s[m] = \begin{cases}
+			\hat{\phi}_{xx}[m]w[m], & -(M-1)\leq m \leq (M-1) \\
+			0, & \text{otherwise}
+			\end{cases}
+		\end{equation*}
+		\item Form DFT-even sequence
+		\begin{equation*}
+			s_e[m] = s[((m))_N]
+		\end{equation*}	
+		This guarantees that the PSD is linear phase.
+		\item Compute DFT
+		\begin{equation*}
+			S[k] = \bigg|\sum_{m = 0}^{N-1}s[m]e^{-j(2\pi/N)k}\bigg|, \quad k = 0, \ldots, N-1
+		\end{equation*}
+	\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{The mean of Blackman-Tukey PSD estimate}
+
+The estimator of the autocorrelation function from $Q$ samples of $x[n]$
+\begin{equation*}
+\hat{\phi}_{xx}[m] = \frac{1}{Q-|m|}\sum_{n = 0}^{Q-1-|m|} x[m+n]x[n], \quad |m|\leq Q-1
+\end{equation*}
+has mean
+\begin{align*}
+\E(\hat{\phi}_{xx}[m]) &= \frac{1}{Q-|m|}\sum_{n=0}^{Q-1-|m|} \E(x[m+n]x[n]) = \frac{1}{Q-|m|}\sum_{n=0}^{Q-1-|m|}\phi_{xx}[m] \\
+&=\phi_{xx}[m], \quad |m|\leq L-1
+\end{align*}
+Therefore, this estimator is \textbf{unbiased} i.e., its mean is equal to the ideal value.
+\end{frame}
+
+%
+\begin{frame}{The mean of Blackman-Tukey PSD estimate}
+The mean of the PSD estimate is simply
+\begin{align*}
+	\E(P(\omega)) &= \sum_{m = 0}^{N-1}\E(\hat{\phi}_{xx}[m]w[m])e^{-j\omega m} \tag{since $s[m] = \hat{\phi}_{xx}[m]w[m]$} \\
+	& = \sum_{m = 0}^{N-1}\E(\hat{\phi}_{xx}[m])w[m]e^{-j\omega m} \tag{window is deterministic}\\
+	& = \sum_{m = 0}^{N-1}\phi_{xx}[m]w[m]e^{-j\omega m} \tag{since $\hat{\phi}_{xx}[m]$ is unbiased} \\
+	&= \frac{1}{2\pi}P(\omega)\ast W(e^{j\omega}) \tag{product in time $\implies$ convolution in frequency}
+\end{align*}
+
+\textbf{Conclusions:} 
+\begin{itemize} 
+	\item\textit{In average}, the Blackman-Tukey PSD estimate is equal to $P(\omega)$ \textit{smeared} by the window $W(e^{j\omega})$.
+	\item For the previous methods: $\E(P(\omega)) = \frac{1}{2\pi}P(\omega)\ast |W(e^{j\omega})|^2$
+	\item If $W(e^{j\omega})$ takes on negative values, the PSD estimate could be negative. Thus, non-negative windows are preferred e.g, Bartlett
+\end{itemize} 
+\end{frame}
+
+%
+\begin{frame}{Blackman-Tukey PSD estimate in Matlab}
+
+\begin{align*}
+& \texttt{>> phi\_hat = xcorr(x, x, M-1, `unbiased')} \tag{unbiased autocorrelation estimate}\\
+& \texttt{>> s = phi\_hat.*w} \tag{windowing} \\
+& \texttt{>> s\_e = ifftshift(s)} \tag{form DFT-even sequence} \\
+& \texttt{>> Pw = abs(fftshift(fft(s\_e)))} \tag{two-sided PSD in interval $[-\pi, \pi)$}
+\end{align*}
+
+As you'll see in HW6, \texttt{xcorr} can be computed using FFT/IFFT with complexity $\mathcal{O}(N\log_2N)$.
+
+\end{frame}
+
+\begin{frame}{Example}
+	See Matlab script: Canvas/Files/Matlab/\texttt{blackman\_tukey\_example.m}. This script requires the function Canvas/Files/Matlab/\texttt{blackman\_tukey\_psd.m}.
+	
+	\vspace{0.25cm}
+	\textbf{Conclusions:} 
+	\begin{itemize}
+		\item Increasing the number of samples $Q$ improves accuracy
+		\item Reducing the window length $L = 2M-1$ improves accuracy at the expense of poorer resolution of the PSD
+		\item The FFT length $N$ determines the number of samples of the estimated PSD
+	\end{itemize}
+\end{frame}
+
 
 %
 \begin{frame}{Summary}
 	\begin{itemize}
-		\item Parametric signal modeling is a form of representing complicated signals as the output to some system to an impulse or to a white noise process
-		\item The all-pole or autoregressive model assumes that all zeros are at the origin
-		\item Under the all-pole model the signal is described by the parameters $a_1, \ldots, a_N$, i.e., the system coefficients
-		\item The coefficients can be determined by solving the normal equations, also known as Yule-Walker equations
-		\item Solving these equations require estimates of either the deterministic autocorrelation function, if the signal is deterministic, or the autocorrelation function, if the system is random
-		\item The magnitude square of the system is equivalent to the spectrum estimate of the signal
+		\item The PSD is the DTFT of the autocorrelation function
+		\item The PSD may be two-sided or one-sided. Careful with conventions!
+		\item The periodogram method estimates the PSD directly from the magnitude squared of the DFT of the windowed signal
+		\item The periodogram is an biased estimator of the PSD, and it has large variance. Hence, the periodogram must be averaged to produce useful estimates
+		\item The Welch method averages several periodograms
+		\item The Welch method breaks the data into overalapping segments, each of length $L$. Usually, the segments overlap by $L/2$.
+		\item Differently from the periodogram and Welch method, the Blackman-Tukey method estimates the PSD by computing the DFT of the estimated autocorrelation function
+		\item Although the estimator of the autocorrelation function may be unbiased, the PSD estimate is biased. Windows with non-negative frequency response are typically preferred e.g., Bartlett
+		\item Increasing the sequence length $Q$ improves accuracy. Reducing the window length $L$ improves accuracy at the expense of poorer frequency resolution.
 	\end{itemize}
 \end{frame}
 

@@ -1,0 +1,55 @@
+\def\layersep{0.5cm}
+\def\outsep{0.7cm}
+\def\dy{0.5}
+
+\begin{tikzpicture}[>=stealth, shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{weight}=[draw=black,circle,fill=none,minimum size=10pt,inner sep=0pt,scale=0.7]
+    \tikzstyle{summer}=[draw=black,circle,fill=none,minimum size=10pt,inner sep=0pt,scale=1, minimum size=15pt]
+    \tikzstyle{sigmoid}=[draw=black,rectangle,fill=none,minimum size=20pt,inner sep=0pt]
+    \tikzstyle{annot} = [scale=0.5]
+
+	\node[summer] (Adder) at (3*\layersep,-\dy*2.5 cm) {\large $\Sigma$}; 
+    \node[node, inner sep=0pt] (mid) at (4.2*\layersep,-\dy*2.5 cm) {}; 
+
+    \coordinate (output) at (5*\layersep,-\dy*2.5 cm) {};
+    \node[summer, minimum size=10pt, scale=1] (error) at (4.2*\layersep,-\dy*4 cm) {$\Sigma$}; 
+    \node[node, inner sep=0pt, right = of error] (dk) {};
+        
+	\draw[->] (error) -- (4.2*\layersep,-\dy*5 cm) -- (\layersep,-\dy*5 cm) -- (\layersep, \dy cm);
+        
+    \foreach \name / \y in {0,...,2} {
+    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+        \node[node] (I-\name) at (0,-\dy*\y) {}; % Draw the input layer nodes
+        \node[weight,fill=white] (W-\name) at (\layersep,-\dy*\y cm) {$w_{k\name}$}; % Draw the hidden layer  layer node     
+     }   	
+
+	\node[node] (I-3) at (0,-4*\dy cm) {}; % Draw the hidden layer 
+	\node[weight, fill=white] (W-3) at (\layersep,-4*\dy cm) {$w_{kL}$};
+	
+    %% Annotations
+    \node[scale=0.5] at (-0.3,0) {$+1$};
+    \node[scale=0.5] at (-0.3,-\dy) {$r_{k}$};
+    \node[scale=0.5] at (-0.3,-\dy*2.9) {$\vdots$};
+    
+    \node[above right = 0.5mm and -1 mm of error, scale = 0.5] {$-$};
+    \node[above right = -1mm and 0.1 mm of error, scale = 0.5] {$+$};
+    \node[annot] at (2.75*\layersep,-\dy*4.7 cm) {error $\epsilon_k$};
+    \node[annot, above = 0.1mm of dk, text width = 3cm, align=center] {$d_k$};
+    \node[annot, above = 1mm of output] {Filter output};
+    
+    \foreach \name in {0,...,3} {
+    		\path[->] (I-\name) edge (W-\name);
+            \path[->] (W-\name) edge (Adder);
+     }
+	
+    \path[-] (Adder) edge (mid);
+    \path[->] (mid) edge (error);
+    \path[->] (mid) edge (output);
+    \path[->] (dk) edge (error);    
+	\path[->] (I-1) edge (I-2) node[below=2.5pt, scale=0.5] {$z^{-1}$};
+    
+    %\draw[-,decoration={brace,mirror,raise=5pt},decorate, thick]
+   % (-0.35,-0.7*\dy) -- node[annot, left=5pt, text width = 1cm, align=center] {$X_k$ input} (-0.35,-\dy*5.2);
+
+\end{tikzpicture}

@@ -1,0 +1,417 @@
+\documentclass[10pt]{article}
+\usepackage{geometry}
+\geometry{a4paper}
+\pagestyle{myheadings}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{fancyvrb} 
+\usepackage[numbered]{bookmark}
+\usepackage{pgfplots}
+\usepackage{ifthen}
+\usepackage{setspace}
+\usepackage{placeins} % for FloatBarrier
+\usepackage[makeroom]{cancel}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../figs/}}
+
+\definecolor{blue2}{RGB}{51, 105, 232}  
+\definecolor{red2}{RGB}{213, 15, 37}  
+\definecolor{green2}{RGB}{0, 153, 37}  
+
+\input{preamble.tex}
+
+%%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
+\def\SOLUTIONS{1} % change to 1 to produce solutions
+\def\SolutionsColor{red2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Header
+\if\SOLUTIONS1
+	\markboth{\em \color{\SolutionsColor} \textbf{EE264: Final exam solutions}}{\em \color{\SolutionsColor} \textbf{EE264: Final exam solutions}}
+    \title{EE 264 Final exam solutions}
+\else
+	\markboth{\em EE264: Midterm, August 1st -- Summer 2017}{\em EE264: Final, Summer 2017}
+    \title{EE 264 Final}
+\fi
+
+% Document
+\begin{document}
+\input{cover.tex}
+\pagebreak
+
+\section*{Problem 1: Hearing aid (55 points)}
+
+Figure~\ref{fig:hearing_aid_diagram} shows the block diagram of a hearing aid device. The signal recorded by the microphone is low-pass filtered by the anti-aliasing filter $H_{aa}(j\Omega)$, and then converted to digital domain by the ADC. A digital filter $H(z)$ corrects for the patient's hearing loss by boosting the signal at particular frequencies or band of frequencies. Once the signal has been filtered, it is converted back to the analog domain using a DAC, which will then drive a speaker that is placed inside the patient's hearing canal. 
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{\textwidth}{!}{\input{figs/hearing_aid_diagram.tex}}
+	\caption{Block diagram of a digital hearing aid device.}
+	\label{fig:hearing_aid_diagram}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\input{figs/audiogram.tex}}
+	\caption{Audiogram of patient.}
+	\label{fig:audiogram}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:audiogram} shows the \textit{audiogram} of a given patient. This plot shows the patient's hearing loss at particular frequencies. For instance, a hearing loss of 0 dB means that no correction needs to be done at that frequency. However, this patient has a hearing loss of 50 dB at 10 kHz. Hence, the system must provide a gain of nearly 50 dB at 10 kHz. The data from this plot is available in the file \texttt{hearing\_aid.m}. 
+
+For the following questions assume that the sampling rate of the ADC is $1/T = 22.05$ kHz, and the same sampling period is used for reconstruction.
+\begin{description}
+	\item[(a)] (3 points) Plot the desired filter specification $|H_d(e^{j\omega})|$ that would compensate for the patient's hearing loss. The $x$-axis of your plot should be the normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
+	
+	\if\SOLUTIONS1
+	{\color{\SolutionsColor} The filter specification is simply the inverse of the patient's hearing loss.
+	
+	\FloatBarrier
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.6]{figs/hearing_aid_spec.eps}
+		\caption{Filter specification for correction of the patient's hearing loss.}
+	\end{figure}
+	\FloatBarrier
+	}
+	\fi
+	
+	\item[(b)] (5 points) The reconstruction filter of the DAC is a linear interpolator. This filter causes an additional attenuation given by
+	\begin{equation}
+		H_{DAC}(j\Omega) = \mathrm{sinc}^2\Big(\frac{\Omega}{2\pi}T\Big), \quad |\Omega| \leq \frac{\pi}{T}
+	\end{equation}
+	Adjust the filter specification $|H_d(e^{j\omega})|$ calculated in part (a) so that the filter $H(z)$ would also compensate for the attenuation introduced by the DAC. Plot the adjusted specification. Once again, the $x$-axis of your plot should be normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
+	
+	\noindent\textit{Note:} In the DSP literature, pre-compensating for a filter response is called \textit{pre-emphasis}. In this question, you're performing pre-emphasis to compensate for the patient's hearing loss and also for the non-ideal reconstruction filter.
+	
+	\if\SOLUTIONS1
+	{\color{\SolutionsColor} The corrected filter specification is given by
+		\begin{equation*}
+			|H_d(e^{j\omega})| = \frac{1}{|A(e^{j\omega})|\mathrm{sinc}^2(\frac{\omega}{2\pi})},
+		\end{equation*}
+		where $|A(e^{j\omega})|$ is patient's audiogram response. At the highest frequencies, the DAC causes about 8 dB of additional attenuation.
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_corrected_spec.eps}
+			\caption{Corrected filter specification that accounts for the DAC attenuation.}
+		\end{figure}
+		\FloatBarrier
+	}
+	\fi
+		
+	\item[(c)] (15 points) Using your specification from part (b), design a generalized \underline{linear-phase} filter $H(z)$ that will approximate $|H_d(e^{j\omega})|$. Select the filter order so that the error between the desired response $H_d(e^{j\omega})$ and your design is \underline{at most} 1 dB at all frequencies. Plot $20\log_{10}(|H_d(e^{j\omega})|/|H(e^{j\omega})|)$ to show that your filter meets this specification. Additionally, plot the magnitude and phase response of your filter. 
+	
+	\if\SOLUTIONS1
+	{\color{\SolutionsColor} Using the least-squares method, the filter that meets the specification to within 1 dB has order $M = 37$. Other answers obtained through the least-squares or Parks-McClellan method are accepted as long as the error is smaller than 1 dB at all frequencies.
+		
+	\FloatBarrier
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.6]{figs/hearing_aid_filter_error.eps}
+		\caption{Magnitude difference between the designed FIR filter and the specification from part (b). The error is smaller than 1 dB at all given frequencies. The filter order is $M = 37$.}
+	\end{figure}
+	\FloatBarrier	
+	
+	The frequency and phase response of filter is shown below
+	\FloatBarrier
+	\begin{figure}
+		\centering
+		\begin{subfigure}[h!]{0.5\textwidth}
+			\includegraphics[scale=0.55]{figs/hearing_aid_filter_mag.eps}
+			\caption{Magnitude}
+		\end{subfigure}~\begin{subfigure}[h!]{0.5\textwidth}
+			\includegraphics[scale=0.55]{figs/hearing_aid_filter_phase.eps}
+			\caption{Phase}
+		\end{subfigure}
+		\caption{(a) magnitude and (b) phase of FIR filter of order $M = 37$ designed by the least-squares algorithm.}
+	\end{figure}
+	\FloatBarrier	
+	}
+	\fi
+	
+	\item[(d)] (3 points) Assuming that your filter is the only cause of delay in the system, what is the time difference between the time that the sound is recorded by the microphone and the time it is outputted by the speaker. Give your answers in samples and in seconds. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Since the filter is linear phase, it has equal group delay at all frequencies. The group delay is
+		\begin{equation*}
+			n_g = \frac{M}{2} = 18.5~\text{samples} \implies \tau_g = Tn_g = 0.839~\text{ms}
+		\end{equation*}	
+	}\fi
+
+	\item[(e)] (7 points) Considering only quantization noise from the ADC, specify the minimum ADC resolution (in bits) so that the quantization noise average power \underline{after} $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the dynamic range of the quantizer is $\Delta X = 2$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Quantization noise has average power given by
+		\begin{equation*}
+			\sigma_Q^2 = \frac{\Delta^2}{12}, \quad \Delta = \frac{\Delta X}{2^B}
+		\end{equation*}
+		
+		However, quantization noise is shaped by the filter $H(z)$. The noise average power after filtering is given by
+		\begin{equation*}
+			\sigma^2_{Q, out} = \sigma_Q^2\sum_{n = 0}^{M}|h[n]|^2 \tag{quantization noise shaping}
+		\end{equation*}
+		
+		The output noise average power is smaller than $-30$ dBm (or $1 \mu$W) when $B = 18$, as can be verified in the plot below
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_quant_noise_var.eps}
+			\caption{Average power of output quantization noise as a function of the resolution of the quantizer.}
+		\end{figure}
+		\FloatBarrier	
+		
+		Slightly different results may be obtained for different filters.
+	}\fi
+	
+	\item[(f)] (7 points) Now include round-off noise from the filter implementation and determine the minimum ADC resolution (in bits) so that the \underline{total noise power} after $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the filter is implemented using the direct form I, and calculations are performed in two's complement using Q($B-1$) representation, where $B$ is the resolution of the ADC quantizer. Assume further that the result of multiplications is quantized \underline{immediately before} any additions are done. For the roundoff noise calculations assume that $X_m = 1$.
+		
+	\noindent\textit{Note:} Recall that in linear-phase implementations not all the coefficients need to be multiplied because of the symmetry in the impulse response.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} The number of required multiplications in a linear phase FIR filter is $\lfloor \frac{M}{2} + 1 \rfloor$. Therefore, the round-off noise resulting from rounding off the numbers immediately before additions is given by
+	\begin{equation*}
+		\sigma_{roundoff}^2 = \Big\lfloor \frac{M}{2} + 1 \Big\rfloor\frac{\Delta^2}{12}, \quad\Delta = \frac{X_m}{2^{B-1}}
+	\end{equation*}
+	Note that we use $B-1$ because the problem statement instructs us to use the Q($B-1$) representation, where $B$ is the number of bits of the ADC. In the lecture notes of roundoff noise, the quantizer had $B+1$ bits and we used the Q$B$ representation for numbers in the $[-1, 1]$ interval. 
+	
+	The roundoff noise is not shaped by the filter, hence the total noise average power after the $H(z)$ is given by
+	\begin{equation*}
+		\sigma^2_{total} = \sigma_Q^2\sum_{n = 0}^{M}|h[n]|^2 + \sigma_{roundoff}^2
+	\end{equation*}
+	
+	The total noise average power after $H(z)$ is smaller than $-30$ dBm (or $1 \mu$W) when $B = 18$, as can be verified in the plot below
+	
+	\FloatBarrier
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[scale=0.6]{figs/hearing_aid_total_noise_var.eps}
+		\caption{Total noise average power after $H(z)$ as a function of the resolution of the quantizer.}
+	\end{figure}
+	\FloatBarrier
+	
+		Slightly different results may be obtained for different filters.
+	}\fi
+	
+		
+	\item[(g)] (15 points) Now perform simulations to check whether your noise calculations are correct. In your simulations, you should include one white noise source to model quantization noise, and another white noise source to model round-off noise. These noise sources have to be \underline{zero mean} and have the appropriate \underline{average power}. Using any technique you prefer, estimate the PSD of the \underline{total noise} at the output of $H(z)$. On the same graph, plot the theoretical PSD and the estimated PSD. Use your result to estimate the average power of the noise and discuss whether it agrees with your theoretical estimates of part (e).
+	
+	\noindent\textit{Note:} Use the function \texttt{rand} to generate a white uniformly distributed noise, and use \texttt{filter} to filter the noise. Make sure that your noise sources are \underline{zero mean} and have the correct \underline{average power}.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		For the quantization noise, we need to generate an uniformly distributed zero-mean white noise signal with average power $\sigma_Q^2$, as calculated in part (e). For the roundoff noise, we need to generate an uniformly distributed zero-mean white noise signal with average power $\sigma_{roundoff}^2$, as calculated in part (f). The total noise will be given by
+		\begin{equation}
+			y[n] = h[n]\ast q[n] + r[n],
+		\end{equation}
+		where $q[n]$ is the quantization noise and $r[n]$ is the roundoff noise. Once we obtain the output noise $y[n]$ we can use Welch's method or the Blackman-Tukey method to estimate the PSD. These solutions assume the Blackman-Tukey method with Bartlett window of length $L = 2047$. See code for more details. The estimated PSD is plotted below
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_psd.eps}
+			\caption{Theoretical and estimated PSD. The PSD was estimated using the Blackman-Tukey method.}
+		\end{figure}
+		\FloatBarrier
+		
+		Note the error of the estimated PSD at small frequencies. To improve the accuracy we would need more samples. However, this error is not important, since the estimated power is nearly identical to the theoretical power. The estimated power is $-35.4977$. Hence, this design meets the specifications.
+	}\fi
+		
+\end{description}
+
+\if\SOLUTIONS1 
+	\subsection*{Code for Problem 1}
+	\input{tex/hearing_aid_sols.tex}
+\fi
+
+\newpage
+\section*{Problem 2: Noise canceling (45 points)}
+
+In this question you will evaluate a noise canceling technique based on cross-correlation.
+
+Figure~\ref{fig:earpod} shows the diagram of a headset with noise canceling capability. In addition to the speaker, the headset contains two microphones. The rear microphone captures \textit{mainly} the outside noise, while the front microphone captures both the outside noise and the signal produced by the speaker. The signal captured by the front microphone is approximately equal to what a person wearing that headset would hear. Hence, the goal is to use the signals recorded by both microphones to calculate a signal that when outputted by the speaker would minimize the noise perceived by the front microphone, and consequently by the user.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/apple_headphone.png}
+	\caption{Diagram of wireless headset with noise canceling capability. Source: Apple EarPod patent (US 20150245129 A1).}
+	\label{fig:earpod}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\input{figs/noise_cancelling.tex}}
+	\caption{Block diagram of noise canceling systems. For convenience, diagram uses discrete-time notation.}
+	\label{fig:noise_cancelling_diagram1}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:noise_cancelling_diagram1} illustrates a diagram of this process. The speaker produces a signal $s[n] + v[n]$. $s[n]$ is the desired signal like a song, for instance. The signal $v[n]$ is the \textit{anti-noise} which will ideally cancel the noise perceived by the user and by the front microphone. The transfer function $H(z)$ is \underline{unknown} and it relates the noise in the rear microphone to the noise in the front microphone. To keep things simple, we will assume that $H(z)$ is \underline{time invariant}. Clearly, if we knew $H(z)$, we could make 
+\begin{equation} \label{eq:v}
+	v[n] = -h[n]\ast x[n] \implies y[n] \approx s[n]
+\end{equation}
+
+Therefore, the noise canceling problem boils down to estimating the filter $h[n] \Longleftrightarrow H(z)$.
+
+To solve the following questions, you will need the files:
+
+\begin{enumerate}
+	\item \texttt{saw\_noise\_front\_mic.wav}: recording from the front microphone when $x[n]$ is the noise produced by a circular saw tool.
+	\item \texttt{saw\_noise\_rear\_mic.wav}: recording from the rear microphone when $x[n]$ is the noise produced by a circular saw tool.
+	\item \texttt{noise\_canceling.m}: this script loads the audio files and splits them into training and testing vectors. You should use the \texttt{*\_train} vectors for estimating the parameters and the \texttt{*\_test} vectors for testing your implementation.
+\end{enumerate}
+
+\begin{description}
+	\item [(a)] (5 points) Show that when the signal $v[n]$ is not present, the cross-correlation between $y[n]$ and $x[n]$, $\phi_{yx}[m]$ is given by
+	\begin{equation}
+		\phi_{yx}[m] = \phi_{xx}[m]\ast h[m],
+	\end{equation}
+	where $h[m]$. Assume that the noise $x[n]$ and the signal $s[n]$ are uncorrelated. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		
+		\begin{align*}
+		\phi_{yx}[m] &= \E(y[m]\ast x^*[-m]) \tag{definition} \\
+		&= \E((s[m] + h[m]\ast x[m])\ast x^*[-n]) \tag{since $y[n] = s[n] + h[n]*x[n]$} \\
+		&= \E(h[m]\ast x[m]\ast x^*[-m]) \tag{$s[n]$ and $x[n]$ are uncorrelated} \\
+		&= h[m]\ast \E(x[m]\ast x^*[-m]) \tag{$h[n]$ is deterministic} \\
+		&= h[m]\ast \phi_{xx}[m]
+		\end{align*}
+	}\fi
+	
+	\item [(b)] (3 points) Using the result from part (a), write an expression for $H(e^{j\omega})$ in terms of the PSD of $x[n]$ and in terms of $\Phi_{yx}[m] = \mathcal{F}\{\phi_{yx}[m]\}$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Convolution in time domain means multiplication in the frequency domain:
+		\begin{align*}
+		H(e^{j\omega}) = \frac{\Phi_{yx}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
+		\end{align*}
+	}\fi
+		
+	\item[(c)] (7 points) Using any of the PSD estimation techniques covered in class, estimate the PSD of $x[n]$. Plot your estimate.
+	
+	\textit{Note:} to estimate the PSD, use the vectors \texttt{x\_train} and \texttt{y\_train} loaded by the script \texttt{noise\_canceling.m}.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} These solutions used the Blackman-Tukey method with Bartlett window of legnth 1023. This calculation could be performed using the function \texttt{blackman\_tukey\_psd.m} available on Canvas. See code for details. The plot is shown below.
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_x_psd.eps}
+			\caption{$\Phi_{xx}(e^{j\omega})$ estimated using the Blackman-Tukey method.}
+			\label{fig:noise_cancel_x_psd}
+		\end{figure}
+		\FloatBarrier
+	}\fi
+	
+	\item[(d)] (7 points) Use the modified Blackman-Tukey PSD estimation method discussed in class to estimate $\Phi_{yx}(e^{j\omega}) = \mathcal{F}\{\phi_{yx}[m]\}$. Plot your estimate.
+
+	\textit{Hint:} make sure to use \texttt{ifftshift} before computing the FFT in order to account for the indexing of the FFT.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} We can compute the Fourier transform of the cross-correlation function using the Blackman-Tukey algorithm as discussed in class:
+		
+		\begin{align*}
+		&\texttt{phi\_yx\_hat = xcorr(y, x, M-1, 'unbiased')} \\
+		&\texttt{s = phi\_yx\_hat.*window} \\
+		&\texttt{S = fftshift(fft(ifftshift(s)))}
+		\end{align*}
+		
+		Note that since the cross-correlation function is not necessarily even symmetric, using \texttt{abs()} or \texttt{real()} functions after the FFT calculation would produce incorrect results.
+		
+		The magnitude of the estimated $\Phi_{yx}(e^{j\omega})$ is shown in the plot below. See code for details.
+			
+		\FloatBarrier
+		\begin{figure}[h!]
+				\centering
+				\includegraphics[scale=0.7]{figs/noise_cancel_cross_psd.eps}
+				\caption{$\Phi_{yx}(e^{j\omega})$ estimated using the Blackman-Tukey method}
+				\label{fig:noise_cancel_cross_psd}
+		\end{figure}
+		\FloatBarrier
+		}\fi
+	
+	\item[(e)] (5 points) Combine your results from parts (b) through (d) to obtain an estimate for $H(e^{j\omega})$. Plot the magnitude response of $H(e^{j\omega})$ in dB.
+	
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Combining the previous results yields
+				
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_Hest.eps}
+			\caption{Magnitude of estimated $H(e^{j\omega})$.}
+			\label{fig:noise_cancel_Hest}
+		\end{figure}
+		\FloatBarrier
+	}\fi
+	
+	\item[(f)] (13 points) Use the leasts-squares method to design an FIR filter to approximate $H(e^{j\omega})$. Note that your filter \underline{does not} have to be linear phase, but it has to have \underline{real coefficients}. Additionally, your filter should have 50 coefficients. On the same graph, plot the magnitude of your filter and the magnitude of the desired response $H(e^{j\omega})$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Since the filter must have 50 coefficients, the order of the filter is $M = 49$. See code for design details. The figure below shows the magnitude of the FIR filter:
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_Hfir.eps}
+			\caption{Magnitude designed FIR filter.}
+			\label{fig:noise_cancel_Hfir}
+		\end{figure}
+		\FloatBarrier	
+	}\fi
+	
+	\item[(g)] (5 points) Use your filter to compute the signal $v[n]$ according to \eqref{eq:v} and use this result to remove the noise from the  signal $y[n]$. Specifically, define
+	\begin{equation}
+		y_{clean}[n] = y[n] + v[n].
+	\end{equation}
+	
+	For these calculations, use the vectors \texttt{x\_test} and \texttt{y\_test} in the script \texttt{noise\_cancelling.m} to obtain the vector \texttt{y\_clean}. Use the function \texttt{sound} to play the new signal $y_{clean}[n]$ and comment on whether the noise was effectively canceled. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} As indicated in the problem statement, we can make
+		\begin{align*}
+			&y_{clean}[n] = y[n] + v[n] = y[n] - h_{FIR}[n]\ast x[n] \\
+			&\texttt{y\_clean = y\_val - filter(h\_FIR), 1, x\_val)}
+		\end{align*}
+		
+		Although this does not result in perfect noise cancellation, it does improve the quality considerably.
+	}\fi
+
+\end{description}
+
+\textbf{Note:} Although this noise canceling technique works well, in practice digital noise canceling systems use adaptive filters, since the cross-correlation computations used in this method require too much data to be accurate. However, this technique can always be applied to remove noise from one signal when we have two correlated measurements of the noise.
+
+\if\SOLUTIONS1 
+\subsection*{Code for Problem 2}
+\input{tex/noise_canceling_sols.tex}
+\fi
+
+
+\end{document}

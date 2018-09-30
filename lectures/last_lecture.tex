@@ -1,0 +1,13 @@
+\begin{frame}{Last lecture}
+\begin{itemize}
+	\item Quantization is unavoidable in DSP systems
+	\item Although quantization is a nonlinear operation on a signal, it is a linear operation on the signal PDF (area sampling)
+	\item The probabilistic interpretation of quantization allows us to model the quantization error as an uniformly distributed random process (linear noise model)
+	\item Using this linear noise model, we simply replace quantizers by noise sources of average power $\sigma_e^2 = \Delta^2/12$
+	\item Quantization noise is assumed white (samples are uncorrelated)
+	\item Every extra bit of resolution in a quantizer improves the SNR by 6.02 dB
+	\item The signal amplitude must be matched to the dynamic range of the quantizer, otherwise there'll be excessive clipping or some bits won't be used
+	\item Noise shaping is a strategy that minimizes quantization noise in A-to-D and D-to-A converters. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
+	\item Noise shaping requires oversampling to minimize noise aliasing
+\end{itemize}
+\end{frame}

@@ -21,6 +21,7 @@
 \usepackage[numbered]{bookmark}
 \usepackage{pgfplots}
 \usepackage{ifthen}
+\usepackage{enumitem}
 \usepackage{setspace}
 \usepackage{placeins} % for FloatBarrier
 \usepackage[makeroom]{cancel}
@@ -47,7 +48,7 @@
 \input{preamble.tex}
 
 %%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
-\def\SOLUTIONS{1} % change to 1 to produce solutions
+\def\SOLUTIONS{0} % change to 1 to produce solutions
 \def\SolutionsColor{red2}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -56,7 +57,7 @@
 	\markboth{\em \color{\SolutionsColor} \textbf{EE264: Final exam solutions}}{\em \color{\SolutionsColor} \textbf{EE264: Final exam solutions}}
     \title{EE 264 Final exam solutions}
 \else
-	\markboth{\em EE264: Midterm, August 1st -- Summer 2017}{\em EE264: Final, Summer 2017}
+	\markboth{\em EE264: Final Exam, Summer 2018}{\em EE264: Final Exam, Summer 2018}
     \title{EE 264 Final}
 \fi
 
@@ -65,7 +66,8 @@
 \input{cover.tex}
 \pagebreak
 
-\section*{Problem 1: Hearing aid (55 points)}
+
+\section*{Problem 1: Hearing aid (60 points)}
 
 Figure~\ref{fig:hearing_aid_diagram} shows the block diagram of a hearing aid device. The signal recorded by the microphone is low-pass filtered by the anti-aliasing filter $H_{aa}(j\Omega)$, and then converted to digital domain by the ADC. A digital filter $H(z)$ corrects for the patient's hearing loss by boosting the signal at particular frequencies or band of frequencies. Once the signal has been filtered, it is converted back to the analog domain using a DAC, which will then drive a speaker that is placed inside the patient's hearing canal. 
 
@@ -89,35 +91,35 @@ Figure~\ref{fig:hearing_aid_diagram} shows the block diagram of a hearing aid de
 
 Figure~\ref{fig:audiogram} shows the \textit{audiogram} of a given patient. This plot shows the patient's hearing loss at particular frequencies. For instance, a hearing loss of 0 dB means that no correction needs to be done at that frequency. However, this patient has a hearing loss of 50 dB at 10 kHz. Hence, the system must provide a gain of nearly 50 dB at 10 kHz. The data from this plot is available in the file \texttt{hearing\_aid.m}. 
 
-For the following questions assume that the sampling rate of the ADC is $1/T = 22.05$ kHz, and the same sampling period is used for reconstruction.
-\begin{description}
-	\item[(a)] (3 points) Plot the desired filter specification $|H_d(e^{j\omega})|$ that would compensate for the patient's hearing loss. The $x$-axis of your plot should be the normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
+For the following questions assume that the sampling rate of the ADC is $1/T = 22.05$ kHz, and the same sampling rate is used for reconstruction.
+\begin{enumerate}[label=(\alph*)]
+	\item (5 points) Plot the desired filter specification $|H_d(e^{j\omega})|$ that would compensate for the patient's hearing loss. The $x$-axis of your plot should be the normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
 	
 	\if\SOLUTIONS1
 	{\color{\SolutionsColor} The filter specification is simply the inverse of the patient's hearing loss.
-	
-	\FloatBarrier
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.6]{figs/hearing_aid_spec.eps}
-		\caption{Filter specification for correction of the patient's hearing loss.}
-	\end{figure}
-	\FloatBarrier
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_spec.eps}
+			\caption{Filter specification for correction of the patient's hearing loss.}
+		\end{figure}
+		\FloatBarrier
 	}
 	\fi
 	
-	\item[(b)] (5 points) The reconstruction filter of the DAC is a linear interpolator. This filter causes an additional attenuation given by
+	\item (5 points) The reconstruction filter of the DAC is a linear interpolator. This filter has a continuous-time frequency response given by
 	\begin{equation}
-		H_{DAC}(j\Omega) = \mathrm{sinc}^2\Big(\frac{\Omega}{2\pi}T\Big), \quad |\Omega| \leq \frac{\pi}{T}
+	H_{DAC}(j\Omega) = \mathrm{sinc}^2\Big(\frac{\Omega}{2\pi}T\Big), \quad |\Omega| \leq \frac{\pi}{T}.
 	\end{equation}
-	Adjust the filter specification $|H_d(e^{j\omega})|$ calculated in part (a) so that the filter $H(z)$ would also compensate for the attenuation introduced by the DAC. Plot the adjusted specification. Once again, the $x$-axis of your plot should be normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
+	As a result, the reconstruction filter will cause some undesired attenuation in the band of interest from 0 to 10 kHz. Adjust the filter specification $|H_d(e^{j\omega})|$ calculated in part (a) so that the filter $H(z)$ would also compensate for the attenuation introduced by the DAC. Plot the adjusted specification. Once again, the $x$-axis of your plot should be normalized frequency $\omega$ or $\omega/\pi$, while the $y$-axis should be the magnitude $20\log_{10}(|H_d(e^{j\omega})|)$ in dB.
 	
 	\noindent\textit{Note:} In the DSP literature, pre-compensating for a filter response is called \textit{pre-emphasis}. In this question, you're performing pre-emphasis to compensate for the patient's hearing loss and also for the non-ideal reconstruction filter.
 	
 	\if\SOLUTIONS1
 	{\color{\SolutionsColor} The corrected filter specification is given by
 		\begin{equation*}
-			|H_d(e^{j\omega})| = \frac{1}{|A(e^{j\omega})|\mathrm{sinc}^2(\frac{\omega}{2\pi})},
+		|H_d(e^{j\omega})| = \frac{1}{|A(e^{j\omega})|\mathrm{sinc}^2(\frac{\omega}{2\pi})},
 		\end{equation*}
 		where $|A(e^{j\omega})|$ is patient's audiogram response. At the highest frequencies, the DAC causes about 8 dB of additional attenuation.
 		
@@ -130,55 +132,55 @@ For the following questions assume that the sampling rate of the ADC is $1/T = 2
 		\FloatBarrier
 	}
 	\fi
-		
-	\item[(c)] (15 points) Using your specification from part (b), design a generalized \underline{linear-phase} filter $H(z)$ that will approximate $|H_d(e^{j\omega})|$. Select the filter order so that the error between the desired response $H_d(e^{j\omega})$ and your design is \underline{at most} 1 dB at all frequencies. Plot $20\log_{10}(|H_d(e^{j\omega})|/|H(e^{j\omega})|)$ to show that your filter meets this specification. Additionally, plot the magnitude and phase response of your filter. 
+	
+	\item (15 points) Using your specification from part (b), design a generalized \underline{linear-phase} filter $H(z)$ that will approximate $|H_d(e^{j\omega})|$. Select the filter order so that the error between the desired response $H_d(e^{j\omega})$ and your design is \underline{at most} 1 dB at all frequencies. Plot $20\log_{10}(|H_d(e^{j\omega})|/|H(e^{j\omega})|)$ to show that your filter meets this specification. Additionally, plot the magnitude and phase response of your filter. 
 	
 	\if\SOLUTIONS1
 	{\color{\SolutionsColor} Using the least-squares method, the filter that meets the specification to within 1 dB has order $M = 37$. Other answers obtained through the least-squares or Parks-McClellan method are accepted as long as the error is smaller than 1 dB at all frequencies.
 		
-	\FloatBarrier
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.6]{figs/hearing_aid_filter_error.eps}
-		\caption{Magnitude difference between the designed FIR filter and the specification from part (b). The error is smaller than 1 dB at all given frequencies. The filter order is $M = 37$.}
-	\end{figure}
-	\FloatBarrier	
-	
-	The frequency and phase response of filter is shown below
-	\FloatBarrier
-	\begin{figure}
-		\centering
-		\begin{subfigure}[h!]{0.5\textwidth}
-			\includegraphics[scale=0.55]{figs/hearing_aid_filter_mag.eps}
-			\caption{Magnitude}
-		\end{subfigure}~\begin{subfigure}[h!]{0.5\textwidth}
-			\includegraphics[scale=0.55]{figs/hearing_aid_filter_phase.eps}
-			\caption{Phase}
-		\end{subfigure}
-		\caption{(a) magnitude and (b) phase of FIR filter of order $M = 37$ designed by the least-squares algorithm.}
-	\end{figure}
-	\FloatBarrier	
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_filter_error.eps}
+			\caption{Magnitude difference between the designed FIR filter and the specification from part (b). The error is smaller than 1 dB at all given frequencies. The filter order is $M = 37$.}
+		\end{figure}
+		\FloatBarrier	
+		
+		The frequency and phase response of filter is shown below
+		\FloatBarrier
+		\begin{figure}
+			\centering
+			\begin{subfigure}[h!]{0.5\textwidth}
+				\includegraphics[scale=0.55]{figs/hearing_aid_filter_mag.eps}
+				\caption{Magnitude}
+			\end{subfigure}~\begin{subfigure}[h!]{0.5\textwidth}
+				\includegraphics[scale=0.55]{figs/hearing_aid_filter_phase.eps}
+				\caption{Phase}
+			\end{subfigure}
+			\caption{(a) magnitude and (b) phase of FIR filter of order $M = 37$ designed by the least-squares algorithm.}
+		\end{figure}
+		\FloatBarrier	
 	}
 	\fi
 	
-	\item[(d)] (3 points) Assuming that your filter is the only cause of delay in the system, what is the time difference between the time that the sound is recorded by the microphone and the time it is outputted by the speaker. Give your answers in samples and in seconds. 
+	\item (5 points) Assuming that your filter is the only cause of delay in the system, what is the time difference between the time that the sound is recorded by the microphone and the time it is outputted by the speaker. Give your answers in samples and in seconds. 
 	
 	\if\SOLUTIONS1 {\color{\SolutionsColor} Since the filter is linear phase, it has equal group delay at all frequencies. The group delay is
 		\begin{equation*}
-			n_g = \frac{M}{2} = 18.5~\text{samples} \implies \tau_g = Tn_g = 0.839~\text{ms}
+		n_g = \frac{M}{2} = 18.5~\text{samples} \implies \tau_g = Tn_g = 0.839~\text{ms}
 		\end{equation*}	
 	}\fi
-
-	\item[(e)] (7 points) Considering only quantization noise from the ADC, specify the minimum ADC resolution (in bits) so that the quantization noise average power \underline{after} $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the dynamic range of the quantizer is $\Delta X = 2$.
+	
+	\item (10 points) Considering only quantization noise from the ADC, specify the minimum ADC resolution (in bits) so that the quantization noise average power \underline{after} $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the dynamic range of the quantizer is $\Delta X = 2$.
 	
 	\if\SOLUTIONS1 {\color{\SolutionsColor} Quantization noise has average power given by
 		\begin{equation*}
-			\sigma_Q^2 = \frac{\Delta^2}{12}, \quad \Delta = \frac{\Delta X}{2^B}
+		\sigma_Q^2 = \frac{\Delta^2}{12}, \quad \Delta = \frac{\Delta X}{2^B}
 		\end{equation*}
 		
 		However, quantization noise is shaped by the filter $H(z)$. The noise average power after filtering is given by
 		\begin{equation*}
-			\sigma^2_{Q, out} = \sigma_Q^2\sum_{n = 0}^{M}|h[n]|^2 \tag{quantization noise shaping}
+		\sigma^2_{Q, out} = \sigma_Q^2\sum_{n = 0}^{M}|h[n]|^2 \tag{quantization noise shaping}
 		\end{equation*}
 		
 		The output noise average power is smaller than $-30$ dBm (or $1 \mu$W) when $B = 18$, as can be verified in the plot below
@@ -194,43 +196,43 @@ For the following questions assume that the sampling rate of the ADC is $1/T = 2
 		Slightly different results may be obtained for different filters.
 	}\fi
 	
-	\item[(f)] (7 points) Now include round-off noise from the filter implementation and determine the minimum ADC resolution (in bits) so that the \underline{total noise power} after $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the filter is implemented using the direct form I, and calculations are performed in two's complement using Q($B-1$) representation, where $B$ is the resolution of the ADC quantizer. Assume further that the result of multiplications is quantized \underline{immediately before} any additions are done. For the roundoff noise calculations assume that $X_m = 1$.
-		
+	\item (10 points) Now include round-off noise from the filter implementation and determine the minimum ADC resolution (in bits) so that the \underline{total noise power} after $H(z)$ is at most $-30$ dBm (or 1 $\mu$W). Assume that the filter is implemented using the direct form I, and calculations are performed in two's complement using Q($B-1$) representation, where $B$ is the resolution of the ADC quantizer. Assume further that the result of multiplications is quantized \underline{immediately before} any additions are done. For the roundoff noise calculations assume that $X_m = 1$.
+	
 	\noindent\textit{Note:} Recall that in linear-phase implementations not all the coefficients need to be multiplied because of the symmetry in the impulse response.
 	
 	\if\SOLUTIONS1 {\color{\SolutionsColor} The number of required multiplications in a linear phase FIR filter is $\lfloor \frac{M}{2} + 1 \rfloor$. Therefore, the round-off noise resulting from rounding off the numbers immediately before additions is given by
-	\begin{equation*}
+		\begin{equation*}
 		\sigma_{roundoff}^2 = \Big\lfloor \frac{M}{2} + 1 \Big\rfloor\frac{\Delta^2}{12}, \quad\Delta = \frac{X_m}{2^{B-1}}
-	\end{equation*}
-	Note that we use $B-1$ because the problem statement instructs us to use the Q($B-1$) representation, where $B$ is the number of bits of the ADC. In the lecture notes of roundoff noise, the quantizer had $B+1$ bits and we used the Q$B$ representation for numbers in the $[-1, 1]$ interval. 
-	
-	The roundoff noise is not shaped by the filter, hence the total noise average power after the $H(z)$ is given by
-	\begin{equation*}
+		\end{equation*}
+		Note that we use $B-1$ because the problem statement instructs us to use the Q($B-1$) representation, where $B$ is the number of bits of the ADC. In the lecture notes of roundoff noise, the quantizer had $B+1$ bits and we used the Q$B$ representation for numbers in the $[-1, 1]$ interval. 
+		
+		The roundoff noise is not shaped by the filter, hence the total noise average power after the $H(z)$ is given by
+		\begin{equation*}
 		\sigma^2_{total} = \sigma_Q^2\sum_{n = 0}^{M}|h[n]|^2 + \sigma_{roundoff}^2
-	\end{equation*}
-	
-	The total noise average power after $H(z)$ is smaller than $-30$ dBm (or $1 \mu$W) when $B = 18$, as can be verified in the plot below
-	
-	\FloatBarrier
-	\begin{figure}[h!]
-		\centering
-		\includegraphics[scale=0.6]{figs/hearing_aid_total_noise_var.eps}
-		\caption{Total noise average power after $H(z)$ as a function of the resolution of the quantizer.}
-	\end{figure}
-	\FloatBarrier
-	
+		\end{equation*}
+		
+		The total noise average power after $H(z)$ is smaller than $-30$ dBm (or $1 \mu$W) when $B = 18$, as can be verified in the plot below
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.6]{figs/hearing_aid_total_noise_var.eps}
+			\caption{Total noise average power after $H(z)$ as a function of the resolution of the quantizer.}
+		\end{figure}
+		\FloatBarrier
+		
 		Slightly different results may be obtained for different filters.
 	}\fi
 	
-		
-	\item[(g)] (15 points) Now perform simulations to check whether your noise calculations are correct. In your simulations, you should include one white noise source to model quantization noise, and another white noise source to model round-off noise. These noise sources have to be \underline{zero mean} and have the appropriate \underline{average power}. Using any technique you prefer, estimate the PSD of the \underline{total noise} at the output of $H(z)$. On the same graph, plot the theoretical PSD and the estimated PSD. Use your result to estimate the average power of the noise and discuss whether it agrees with your theoretical estimates of part (e).
+	
+	\item (10 points) Now perform simulations to check whether your noise calculations are correct. In your simulations, you should include one white noise source to model quantization noise, and another white noise source to model round-off noise. These noise sources have to be \underline{zero mean} and have the appropriate \underline{average power}. Using any technique you prefer, estimate the PSD of the \underline{total noise} at the output of $H(z)$. On the same graph, plot the theoretical PSD and the estimated PSD. Use your result to estimate the average power of the noise and discuss whether it agrees with your theoretical estimates of part (e).
 	
 	\noindent\textit{Note:} Use the function \texttt{rand} to generate a white uniformly distributed noise, and use \texttt{filter} to filter the noise. Make sure that your noise sources are \underline{zero mean} and have the correct \underline{average power}.
 	
 	\if\SOLUTIONS1 {\color{\SolutionsColor}
 		For the quantization noise, we need to generate an uniformly distributed zero-mean white noise signal with average power $\sigma_Q^2$, as calculated in part (e). For the roundoff noise, we need to generate an uniformly distributed zero-mean white noise signal with average power $\sigma_{roundoff}^2$, as calculated in part (f). The total noise will be given by
 		\begin{equation}
-			y[n] = h[n]\ast q[n] + r[n],
+		y[n] = h[n]\ast q[n] + r[n],
 		\end{equation}
 		where $q[n]$ is the quantization noise and $r[n]$ is the roundoff noise. Once we obtain the output noise $y[n]$ we can use Welch's method or the Blackman-Tukey method to estimate the PSD. These solutions assume the Blackman-Tukey method with Bartlett window of length $L = 2047$. See code for more details. The estimated PSD is plotted below
 		
@@ -244,174 +246,248 @@ For the following questions assume that the sampling rate of the ADC is $1/T = 2
 		
 		Note the error of the estimated PSD at small frequencies. To improve the accuracy we would need more samples. However, this error is not important, since the estimated power is nearly identical to the theoretical power. The estimated power is $-35.4977$. Hence, this design meets the specifications.
 	}\fi
-		
-\end{description}
+	
+\end{enumerate}
 
 \if\SOLUTIONS1 
-	\subsection*{Code for Problem 1}
-	\input{tex/hearing_aid_sols.tex}
+\subsection*{Code for Problem 1}
+\input{tex/hearing_aid_sols.tex}
 \fi
 
 \newpage
-\section*{Problem 2: Noise canceling (45 points)}
 
-In this question you will evaluate a noise canceling technique based on cross-correlation.
+\section*{Problem 2: Nonlinear plant identification (60 points)}
 
-Figure~\ref{fig:earpod} shows the diagram of a headset with noise canceling capability. In addition to the speaker, the headset contains two microphones. The rear microphone captures \textit{mainly} the outside noise, while the front microphone captures both the outside noise and the signal produced by the speaker. The signal captured by the front microphone is approximately equal to what a person wearing that headset would hear. Hence, the goal is to use the signals recorded by both microphones to calculate a signal that when outputted by the speaker would minimize the noise perceived by the front microphone, and consequently by the user.
+As discussed in class, we can use adaptive filters to model unknown plants. In many practical applications, however, the plant may exhibit some nonlinear characteristic that cannot be accurately modeled by linear filtering alone. In this question, you'll design and compare linear and nonlinear adaptive filters to model a given nonlinear plant.
 
-\FloatBarrier
+The typical block diagram of plant identification problems is shown in Figure~\ref{fig:block-diagram}. An input signal $r[n]$ is presented to the plant and to the adaptive filter. The output of the plant $d[n]$ is the desired response that we use to compute the error $e[n]$. As usual, the output of the adaptive filter $y[n]$ is expressed as the inner product of an input vector $X_n$ and the weight vector $W$. In a linear adaptive filter, the input vector depends only on linear or affine terms of the input $r[n]$, whereas in a nonlinear adaptive filter, the input vector also contains some nonlinear terms of the input $r[n]$.
+
 \begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/apple_headphone.png}
-	\caption{Diagram of wireless headset with noise canceling capability. Source: Apple EarPod patent (US 20150245129 A1).}
-	\label{fig:earpod}
+	\flushleft
+	\resizebox{\linewidth}{!}{\input{figs/block-diagram.tex}}
+	\caption{Block diagram for nonlinear plant identification problems. } \label{fig:block-diagram}
 \end{figure}
-\FloatBarrier
 
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\resizebox{0.7\textwidth}{!}{\input{figs/noise_cancelling.tex}}
-	\caption{Block diagram of noise canceling systems. For convenience, diagram uses discrete-time notation.}
-	\label{fig:noise_cancelling_diagram1}
-\end{figure}
-\FloatBarrier
-
-Figure~\ref{fig:noise_cancelling_diagram1} illustrates a diagram of this process. The speaker produces a signal $s[n] + v[n]$. $s[n]$ is the desired signal like a song, for instance. The signal $v[n]$ is the \textit{anti-noise} which will ideally cancel the noise perceived by the user and by the front microphone. The transfer function $H(z)$ is \underline{unknown} and it relates the noise in the rear microphone to the noise in the front microphone. To keep things simple, we will assume that $H(z)$ is \underline{time invariant}. Clearly, if we knew $H(z)$, we could make 
-\begin{equation} \label{eq:v}
-	v[n] = -h[n]\ast x[n] \implies y[n] \approx s[n]
+Throughout this question, we'll assume that the nonlinear plant has the structure shown in Figure 1. It has an input linear filter $H_1(z)$ followed by some nonlinear operation $g(\cdot)$, followed by another linear filter $H_2(z)$. We'll also assume that
+\begin{equation}
+H_1(z) = H_2(z) = -0.0078 + 0.0645z^{-1} +  0.4433z^{-2} + 0.4433z^{-3}+ 0.0645z^{-4} -0.0078z^{-5}
+\end{equation}
+\begin{equation}
+g(u) = \exp(u/2) - 1.
 \end{equation}
 
-Therefore, the noise canceling problem boils down to estimating the filter $h[n] \Longleftrightarrow H(z)$.
+The nonlinear plant is provided to you in the Matlab function \texttt{nonlinear\_plant.m}. To calculate the plant output to an input signal \texttt{r}, you can simply call \texttt{d = nonlinear\_plant(r)}.
 
-To solve the following questions, you will need the files:
+We'll consider two types of adaptive filters. In the first part of this question, the adaptive filter consists of a finite impulse response (FIR) filter $F(z) = w_1 + w_2z^{-1}+\ldots+w_{L+1}z^{-L}$, and a bias weight $w_0$. Thus, we have a \underline{total of $L+2$ weights}. A FIR filter is the typical transversal filter you have encountered many times throughout the course. The bias weight is simply a weight whose input is always $+1$. The bias weight is necessary because the plant nonlinearity $g(u)$ is not symmetric about $u = 0$. Therefore, the plant output may have non-zero mean even when the plant input signal is zero mean. Hence, the sole purpose of $w_0$ is to track the mean of the desired response $\E(d[n])$.
 
-\begin{enumerate}
-	\item \texttt{saw\_noise\_front\_mic.wav}: recording from the front microphone when $x[n]$ is the noise produced by a circular saw tool.
-	\item \texttt{saw\_noise\_rear\_mic.wav}: recording from the rear microphone when $x[n]$ is the noise produced by a circular saw tool.
-	\item \texttt{noise\_canceling.m}: this script loads the audio files and splits them into training and testing vectors. You should use the \texttt{*\_train} vectors for estimating the parameters and the \texttt{*\_test} vectors for testing your implementation.
-\end{enumerate}
+In the second part of this question, the adaptive filter consists of a nonlinear filter based on the truncated discrete-time Volterra series\footnote{\normalsize You can think of Volterra series as a Taylor series with memory. In other words, the output depends not only on the input at present time $x[n]$, but it also depends on the input at past times $x[n-1], \ldots, x[n-L]$. The series used here is causal and it is truncated in time by $L$ past samples, and it is truncated on the number of cross products of the input $p = 1, 2$. Interestingly, it can be shown that Volterra series can model any dynamic nonlinear system with arbitrarily small error, provided that $L$ and $p$ are large enough.} shown below:
+\begin{align} \nonumber \label{eq:volterra}
+y[n] &= w_0 + \sum_{p = 1}^{2}\sum_{l_1 = 0}^L\sum_{l_2 = l_1}^L w_{p}(l_1, l_2)\prod_{j = p}^2x[n-l_j] \\
+& = w_0 + \sum_{l = 0}^Lw_2(l)x[n-l] + \sum_{l = 0}^Lw_1(l)x^2[n-l] + \sum_{l_1 = 0}^{L-1}\sum_{l_2 = l_1+1}^L w_{1}(l_1, l_2)x(n-l_1)x(n-l_2),
+\end{align}
+where $x[n]$ is the input signal and $y[n]$ is the output signal.  $w_p(l_1, l_2)$ is commonly referred to as discrete-time Volterra kernel, but for our purposes, it will be weights of the adaptive filter. Note that we have abbreviated the notation by writing $w_1(l)$ and $w_2(l)$. Formally, $w_1(l) = w_1(l, l)$ and $w_2(l) = \sum_{m = 0}^{l}w_2(m, l)$. Following this convention, $w_0, w_2(l), w_1(l)$, and $w_1(l_1, l_2)$ with $l_1\neq l_2$ are the weights of the adaptive nonlinear filter. 
 
-\begin{description}
-	\item [(a)] (5 points) Show that when the signal $v[n]$ is not present, the cross-correlation between $y[n]$ and $x[n]$, $\phi_{yx}[m]$ is given by
-	\begin{equation}
-		\phi_{yx}[m] = \phi_{xx}[m]\ast h[m],
-	\end{equation}
-	where $h[m]$. Assume that the noise $x[n]$ and the signal $s[n]$ are uncorrelated. 
+As an example, Figure~\ref{fig:volterra-diagram} shows the block diagram of a nonlinear filter based on Volterra series for $L = 2$. Inspecting \eqref{eq:volterra} and Figure~\ref{fig:volterra-diagram}, we see that, as before, we have a bias weight $w_0$, and we have the weights $w_2(l), l = 0, \ldots, L$, which weigh the input $x[n], \ldots, x[n-L]$. But now we also have the weights $w_1(l), l = 0, \ldots, L$, which weigh the input squared $x^2[n],\ldots,x^2[n-L]$, and the weights $w_1(l_1, l_2), l_1\neq l_2$, which weigh the cross-products of the input at different times $x[n]x[n-1],\ldots,x[n-L+1]x[n-L]$. Thus, we have a total of $1 + (L+1) + (L+1) + \binom{L+1}{2}$ weights.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.9\linewidth}{!}{\input{figs/volterra-filter-diagram.tex}}
+	\caption{Block diagram of a nonlinear filter based on truncated Volterra series for $L = 2$.} \label{fig:volterra-diagram}
+\end{figure}
+\FloatBarrier
+
+This is a nonlinear filter because its output depends on nonlinear terms of the input. Nevertheless, the output is a linear function of the weights and consequently the performance surface is a hyper-paraboloid whose gradient is a linear function of the weights. Therefore, we can still use the LMS algorithm to calculate the weights of the Volterra series. In fact, the LMS algorithm will find the weights that best fit the data ($x[n], y[n]$) in the least squares sense. 
+
+Based on the given information, please answer the following questions. You may use the Matlab files \texttt{part1\_template.m} and \texttt{part2\_template.m} as templates to develop your answers. These files also contain some Matlab hints that you may find useful while developing the two types of adaptive filters. Please include your code in your solutions file.
+
+\subsection*{Part I. Linear adaptive filter}
+Let's start by modeling the nonlinear plant using a linear adaptive filter that consists of a FIR filter with the addition of a bias weight. With the LMS algorithm, train the adaptive filter using a white and uniformly distributed signal $r[n]$ with zero mean and variance $\sigma_r^2 = 4$. Assume that $L = 9$, so that the adaptive filter has a total of $L+2 = 11$ weights, including the bias weight. Let the number of training iterations be 2000. Assume the adaptation constant $\mu = 0.01\mu_{max}$, where $\mu_{max} = 1/\mathrm{tr}(R)$. 
+
+\begin{enumerate}[label=(\alph*)]
+	\item (5 points) What is the value of $\mu$? Remember to include the bias weight input when calculating $\mathrm{trace}(R)$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		Since the input signal $r[n]$ is white, the $R$ matrix only has non-zero entries in its main diagonal:
+		
+		\begin{equation}
+		R = \mathrm{diag}([1, \sigma^2_r, \ldots, \sigma^2_r]) \implies \mathrm{tr}(R) = (L+1)\sigma^2_r + 1,
+		\end{equation} 
+		where the first entry is 1 because the bias weight input is always $+1$. Therefore,
+		\begin{equation}
+		\mu = 0.01\frac{1}{\mathrm{tr}(R)} = \frac{0.01}{(L+1)\sigma^2_r + 1} = 2.439\times 10^{-4}.
+		\end{equation}
+	}
+	\fi
+	
+	\item (15 points) Plot the experimental learning curve averaged over 100 independent runs. On a separate graph, plot the converged weight vector you obtained at the last iteration of the last run.
+	
+	Note: for each independent run, generate a new $r[n]$ but initialize the weights to the same value.
 	
 	\if\SOLUTIONS1 {\color{\SolutionsColor}
 		
-		\begin{align*}
-		\phi_{yx}[m] &= \E(y[m]\ast x^*[-m]) \tag{definition} \\
-		&= \E((s[m] + h[m]\ast x[m])\ast x^*[-n]) \tag{since $y[n] = s[n] + h[n]*x[n]$} \\
-		&= \E(h[m]\ast x[m]\ast x^*[-m]) \tag{$s[n]$ and $x[n]$ are uncorrelated} \\
-		&= h[m]\ast \E(x[m]\ast x^*[-m]) \tag{$h[n]$ is deterministic} \\
-		&= h[m]\ast \phi_{xx}[m]
-		\end{align*}
-	}\fi
-	
-	\item [(b)] (3 points) Using the result from part (a), write an expression for $H(e^{j\omega})$ in terms of the PSD of $x[n]$ and in terms of $\Phi_{yx}[m] = \mathcal{F}\{\phi_{yx}[m]\}$.
-	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} Convolution in time domain means multiplication in the frequency domain:
-		\begin{align*}
-		H(e^{j\omega}) = \frac{\Phi_{yx}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
-		\end{align*}
-	}\fi
-		
-	\item[(c)] (7 points) Using any of the PSD estimation techniques covered in class, estimate the PSD of $x[n]$. Plot your estimate.
-	
-	\textit{Note:} to estimate the PSD, use the vectors \texttt{x\_train} and \texttt{y\_train} loaded by the script \texttt{noise\_canceling.m}.
-	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} These solutions used the Blackman-Tukey method with Bartlett window of legnth 1023. This calculation could be performed using the function \texttt{blackman\_tukey\_psd.m} available on Canvas. See code for details. The plot is shown below.
+		The Matlab code to calculate the learning curve is included below. Figure~\ref{fig:part1-learning-curve} shows the learning curve averaged over 100 independent input realizations, and  Figure~\ref{fig:part1-weights} shows the converged weight vector. Note that the bias weight value is very significant.
 		
 		\FloatBarrier
 		\begin{figure}[h!]
 			\centering
-			\includegraphics[scale=0.7]{figs/noise_cancel_x_psd.eps}
-			\caption{$\Phi_{xx}(e^{j\omega})$ estimated using the Blackman-Tukey method.}
-			\label{fig:noise_cancel_x_psd}
+			\includegraphics[scale=0.8]{figs/part1_learning_curve.eps}
+			\caption{Experimental learning curve for nonlinear plant indemnification using a linear filter. The learning curve was averaged 100 times.}
+			\label{fig:part1-learning-curve}
 		\end{figure}
 		\FloatBarrier
-	}\fi
-	
-	\item[(d)] (7 points) Use the modified Blackman-Tukey PSD estimation method discussed in class to estimate $\Phi_{yx}(e^{j\omega}) = \mathcal{F}\{\phi_{yx}[m]\}$. Plot your estimate.
-
-	\textit{Hint:} make sure to use \texttt{ifftshift} before computing the FFT in order to account for the indexing of the FFT.
-	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} We can compute the Fourier transform of the cross-correlation function using the Blackman-Tukey algorithm as discussed in class:
 		
-		\begin{align*}
-		&\texttt{phi\_yx\_hat = xcorr(y, x, M-1, 'unbiased')} \\
-		&\texttt{s = phi\_yx\_hat.*window} \\
-		&\texttt{S = fftshift(fft(ifftshift(s)))}
-		\end{align*}
-		
-		Note that since the cross-correlation function is not necessarily even symmetric, using \texttt{abs()} or \texttt{real()} functions after the FFT calculation would produce incorrect results.
-		
-		The magnitude of the estimated $\Phi_{yx}(e^{j\omega})$ is shown in the plot below. See code for details.
-			
-		\FloatBarrier
-		\begin{figure}[h!]
-				\centering
-				\includegraphics[scale=0.7]{figs/noise_cancel_cross_psd.eps}
-				\caption{$\Phi_{yx}(e^{j\omega})$ estimated using the Blackman-Tukey method}
-				\label{fig:noise_cancel_cross_psd}
-		\end{figure}
-		\FloatBarrier
-		}\fi
-	
-	\item[(e)] (5 points) Combine your results from parts (b) through (d) to obtain an estimate for $H(e^{j\omega})$. Plot the magnitude response of $H(e^{j\omega})$ in dB.
-	
-	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} Combining the previous results yields
-				
 		\FloatBarrier
 		\begin{figure}[h!]
 			\centering
-			\includegraphics[scale=0.7]{figs/noise_cancel_Hest.eps}
-			\caption{Magnitude of estimated $H(e^{j\omega})$.}
-			\label{fig:noise_cancel_Hest}
+			\includegraphics[scale=0.8]{figs/part1_weights.eps}
+			\caption{Weight vector after convergence.}
+			\label{fig:part1-weights}
 		\end{figure}
 		\FloatBarrier
-	}\fi
+	}
+	\fi
 	
-	\item[(f)] (13 points) Use the leasts-squares method to design an FIR filter to approximate $H(e^{j\omega})$. Note that your filter \underline{does not} have to be linear phase, but it has to have \underline{real coefficients}. Additionally, your filter should have 50 coefficients. On the same graph, plot the magnitude of your filter and the magnitude of the desired response $H(e^{j\omega})$.
+	\item (5 points) Use the last 200 samples of the averaged learning curve to estimate the minimum mean square error (MMSE) and report its value. 
 	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} Since the filter must have 50 coefficients, the order of the filter is $M = 49$. See code for design details. The figure below shows the magnitude of the FIR filter:
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		As shown in Figure~\ref{fig:part1-learning-curve}, the MMSE estimated using the last 200 samples was equal to $\approx 0.051$.
+	}
+	\fi
+		
+	\item (5 points) Apply the test signal $x_{test}[n] = 2\cos\big(\frac{\pi}{10} n\big), n = 0, 1,\ldots, 50$ to the plant and to the converged adaptive filter and plot their outputs on the same graph. Explain any discrepancies. As in part (b), you should use the weights obtained at the last iteration of the last run. Note that you trained the adaptive filter with a random signal, and now you're testing it with a deterministic sinusoidal signal. 
+	
+	Note: During testing you should treat the adaptive filter as a fixed filter whose coefficients are the coefficients you plotted in part (b).
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		The Matlab code is the same as for part (b) and it is shown below. The output of the plant is compared to the output of the adaptive filter in Figure~\ref{fig:part1-test}.
+		
 		\FloatBarrier
 		\begin{figure}[h!]
 			\centering
-			\includegraphics[scale=0.7]{figs/noise_cancel_Hfir.eps}
-			\caption{Magnitude designed FIR filter.}
-			\label{fig:noise_cancel_Hfir}
+			\includegraphics[scale=0.8]{figs/part1_test.eps}
+			\caption{Test of the adaptive filter after convergence with a sinusoidal signal. During the first $L+1$ samples, the filter was being initialized.}
+			\label{fig:part1-test}
 		\end{figure}
-		\FloatBarrier	
-	}\fi
+		\FloatBarrier
+	}
+	\fi
 	
-	\item[(g)] (5 points) Use your filter to compute the signal $v[n]$ according to \eqref{eq:v} and use this result to remove the noise from the  signal $y[n]$. Specifically, define
-	\begin{equation}
-		y_{clean}[n] = y[n] + v[n].
-	\end{equation}
+	\if\SOLUTIONS1
+	\textbf{Matlab code for part 1}
+	\input{tex/part1.tex}
+	\fi
 	
-	For these calculations, use the vectors \texttt{x\_test} and \texttt{y\_test} in the script \texttt{noise\_cancelling.m} to obtain the vector \texttt{y\_clean}. Use the function \texttt{sound} to play the new signal $y_{clean}[n]$ and comment on whether the noise was effectively canceled. 
+\end{enumerate}
+
+\subsection*{Part II. Nonlinear adaptive filter}
+
+Now let's model the plant using the nonlinear adaptive filter based on the truncated Volterra series. Similarly to part I, assume that $L = 9$, but now we have a total of $2(L+1) + \binom{L+1}{2} + 1 = 66$ weights.
+
+\begin{enumerate}[label=(\alph*)]
+	\item (10 points) Describe how we can use the LMS algorithm to adapt the weights. Specifically, what should be the input vector $X_n$ and the weight vector $W$ in the LMS weight update equation? Your answers should be in terms of the input signal $r[n], \ldots, r_[n-L]$, and the weights $w_0, w_1(l), w_2(l), l = 0, \ldots, L$, and $w_1(l_1, l_2), l_1\neq l_2$.  
 	
-	\if\SOLUTIONS1 {\color{\SolutionsColor} As indicated in the problem statement, we can make
-		\begin{align*}
-			&y_{clean}[n] = y[n] + v[n] = y[n] - h_{FIR}[n]\ast x[n] \\
-			&\texttt{y\_clean = y\_val - filter(h\_FIR), 1, x\_val)}
-		\end{align*}
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		The input vector $X_n$ and the weight vector $W$ must be such that their inner product $X_n^TW$ is equivalent to \eqref{eq:volterra}. By inspection, 
 		
-		Although this does not result in perfect noise cancellation, it does improve the quality considerably.
-	}\fi
+		\begin{equation}
+		X_n = \begin{bmatrix}
+		1 \\
+		r[n] \\
+		r[n-1] \\
+		\vdots \\
+		r[n-L] \\
+		r[n]^2 \\
+		r[n-1]^2 \\
+		\vdots \\
+		r[n-L]^2 \\
+		r[n]r[n-1] \\
+		r[n]r[n-2] \\
+		\vdots \\
+		r[n-L+1]r[n-L]
+		\end{bmatrix} \qquad W = \begin{bmatrix}
+		w_0 \\
+		w_2(0) \\
+		w_2(1) \\
+		\vdots \\
+		w_2(L) \\
+		w_1(0) \\
+		w_1(1) \\
+		\vdots \\
+		w_1(L) \\
+		w_1(0, 1) \\
+		w_1(0, 2) \\
+		\vdots \\
+		w_1(L-1, L)
+		\end{bmatrix}.
+		\end{equation}
+		
+		This way the output of the linear combiner $X_n^TW$ is equal to \eqref{eq:volterra}. And we can use the LMS update equations as usual
+		\begin{align}
+		W \leftarrow W + 2\mu e[n]X_n \\
+		\epsilon[n] = d[n] - X_n^TW
+		\end{align}
+	}
+	\fi
+	
+	\item (10 points) Implement your method from part (a) and train the adaptive filter using a white and uniformly distributed input signal $r[n]$ with zero mean and variance $\sigma_r^2 = 4$. Assume $\mu = 4\times 10^{-4}$ and adapt over 2000 iterations. Plot the learning curve averaged over 100 independent input realizations. On a separate graph, plot the converged weight vector obtained at the last iteration of the last  run. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		The Matlab code to calculate the learning curve is included below. Figure~\ref{fig:part2-learning-curve} shows the learning curve averaged over 100 independent input realizations, and  Figure~\ref{fig:part2-weights} shows the converged weight vector. 
+		
+		Note that the learning curve converged to a much smaller MMSE. Note further that the bias weight is practically negligible now, and some of the weights corresponding to the squared inputs and to the cross-products are significant. 
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.8]{figs/part2_learning_curve.eps}
+			\caption{Experimental learning curve for nonlinear plant identification using a nonlinear filter based on Volterra series. The learning curve was averaged 100 times. The training signal had variance $\sigma_r^2 = 4$.}
+			\label{fig:part2-learning-curve}
+		\end{figure}
+		\FloatBarrier
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.8]{figs/part2_weights.eps}
+			\caption{Weight vector after convergence.}
+			\label{fig:part2-weights}
+		\end{figure}
+		\FloatBarrier
+	}
+	\fi
+	
+	\item (5 points) Use the last 200 samples of the averaged learning curve to estimate the MMSE. Compare this result to what you obtained in Part I(c). 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		As shown in Figure~\ref{fig:part2-learning-curve}, the MMSE estimated using the last 200 samples was equal to $\approx 0.0046$.
+	}
+	\fi
+	
+	\item (5 points) Apply the test signal $x_{test}[n] = 2\cos\big(\frac{\pi}{10} n\big), n = 0, 1,\ldots, 50$ to the plant and to the converged adaptive filter and plot their outputs on the same graph. As before, use the weights obtained at the last iteration of the last run. Was there any improvement compared to Part 1(e)? 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+	The Matlab code is included in the appendix. The output of the plant is compared to the output of the adaptive filter in Figure~\ref{fig:part2-test}. 
+	
+	The adaptive filter was trained with random signal, but it can almost perfectly track the plant output to a sinusoidal input. The same cannot be accomplished when the adaptive filter is linear as in part 1.E.
 
-\end{description}
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.8]{figs/part2_test.eps}
+			\caption{Test of the adaptive filter after convergence with a sinusoidal signal. During the first $L+1$ samples, the filter was being initialized.}
+			\label{fig:part2-test}
+		\end{figure}
+		\FloatBarrier
+	}
+	\fi
+	
+\end{enumerate}
 
-\textbf{Note:} Although this noise canceling technique works well, in practice digital noise canceling systems use adaptive filters, since the cross-correlation computations used in this method require too much data to be accurate. However, this technique can always be applied to remove noise from one signal when we have two correlated measurements of the noise.
-
-\if\SOLUTIONS1 
-\subsection*{Code for Problem 2}
-\input{tex/noise_canceling_sols.tex}
+\if\SOLUTIONS1
+\textbf{Matlab code for part 2}
+\input{tex/part2.tex}
 \fi
-
+	
 
 \end{document}

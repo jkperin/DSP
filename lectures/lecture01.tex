@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -53,14 +53,13 @@
 }
 
 %% 
-% \def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex}
 
 %%
 \title[EE 264]{EE 264: Digital Signal Processing}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{June 27, 2017}
+\date{June 25, 2018}
 
 \begin{document}
 
@@ -75,16 +74,18 @@
 
 \begin{block}{Instructor}
 	\textbf{Jose Krause Perin} \\
-	Office hours: Tuesdays 2--4pm, \href{https://campus-map.stanford.edu/?id=04-040&lat=37.42879024&lng=-122.1740029&zoom=17&srch=spilker}{Spilker building}, room 145, or by appointment \\
+	Office hours: Mondays 8:30 -- 9:30 AM, \href{https://campus-map.stanford.edu/?id=04-040&lat=37.42879024&lng=-122.1740029&zoom=17&srch=spilker}{Spilker 145}, or by appointment. \\
+	SCPD students may join office hours remotely using Webex: \href{ https://stanford.webex.com/stanford-en/j.php?MTID=m07046ca0da0ed2a46b9a203fa6707fb4}{https://stanford.webex.com/meet/jkperin} \\
 	e-mail: jkperin@stanford.edu
 \end{block}
-\vskip 1cm
+
 \begin{block}{Teaching assistant}
-	\textbf{Tahrina Ahmed} \\
-	Office hours: Wednesdays 3:30 -- 5PM, \href{https://campus-map.stanford.edu/?id=07-340&lat=37.43134094&lng=-122.17436685&zoom=17&srch=clark}{Clark Center} 3rd floor in front of Peet's Coffee, or by appointment\\
-	e-mail: trumu@stanford.edu
+	\textbf{Anchit Suri} \\
+	Office hours: Thursdays 2:00 -- 3:00 PM, \href{https://campus-map.stanford.edu/?id=04-030&lat=37.42924401&lng=-122.17383732&zoom=17&srch=packard}{Parkard 106}, or by appointment. \\
+	SCPD students may join office hours remotely using Webex: \href{https://stanford.webex.com/meet/anchit}{https://stanford.webex.com/meet/anchit} \\
+	e-mail: anchit@stanford.edu
 \end{block}
-    	
+   	
 \end{frame}
 
 %
@@ -120,7 +121,7 @@ The development of low-cost and high-speed digital electronics paved the way for
 \end{frame}
 
 %
-\begin{frame}{Why learn DSP?}
+\begin{frame}{Why learn digital signal processing?}
 
 \begin{itemize}
 	\item Present in essentially all fields of modern EE
@@ -128,7 +129,7 @@ The development of low-cost and high-speed digital electronics paved the way for
     \vspace{0.25cm}
     
 	\begin{center}
-		\resizebox{\linewidth}{!}{\includegraphics{figs/ee264_and_related_areas.jpg}}
+		\resizebox{0.9\linewidth}{!}{\includegraphics{figs/ee264_and_related_areas.jpg}}
 	\end{center}
 \end{itemize}
 
@@ -157,26 +158,27 @@ More about filter design on lecture 9
 
 \end{frame}
 
-
 %
 \begin{frame}{Example: speech recognition}
 \centering
-\vspace{1cm}
-\begin{tikzpicture}[draw=black!50, node distance=1cm]
-	\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
-	\node[block] (C1) {\resizebox{0.8\textwidth}{!}{\includegraphics[trim={2cm 2cm 2cm 2cm}]{figs/speech_spectogram.eps}}};
-	
-	\node (the) at (-3.6, 1.2) {\tiny The};
-	\node (discrete) at ($(the.east) + (0.43,0)$) {\tiny discrete};
-	\node (fourier) at ($(discrete.east) + (0.2,0)$) {\tiny Fourier};
-	\node (transform) at ($(fourier.east) + (0.6,0)$) {\tiny transform of a};
-	\node[align=left] (real) at ($(transform.east) + (0.4,0)$) {\tiny r~e~a~l};
-	\node[align=left] (valued) at ($(real.east) + (0.3,0)$) {\tiny valued};
-	\node[align=left] (signal) at ($(valued.east) + (0.59,0)$) {\tiny sig~~~~~n~a~l is};
-	\node[align=left] (conjugate) at ($(signal.east) + (0.37,0)$) {\tiny conjugate};
-	\node[align=left] (symmetric) at ($(conjugate.east) + (0.4,0)$) {\tiny symmetric};
-	%\draw 
-\end{tikzpicture}
+\vspace{1.2cm}
+\resizebox{0.65\textwidth}{!}{
+	\begin{tikzpicture}[draw=black!50, node distance=1cm]
+		\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\node[block] (C1) {\resizebox{245.832pt}{!}{\includegraphics[trim=2cm 2cm 2cm 2cm]{figs/speech_spectogram.eps}}};
+		
+		\node (the) at (-3.6, 1.2) {\tiny The};
+		\node (discrete) at ($(the.east) + (0.43,0)$) {\tiny discrete};
+		\node (fourier) at ($(discrete.east) + (0.2,0)$) {\tiny Fourier};
+		\node (transform) at ($(fourier.east) + (0.6,0)$) {\tiny transform of a};
+		\node[align=left] (real) at ($(transform.east) + (0.4,0)$) {\tiny r~e~a~l};
+		\node[align=left] (valued) at ($(real.east) + (0.3,0)$) {\tiny valued};
+		\node[align=left] (signal) at ($(valued.east) + (0.59,0)$) {\tiny sig~~~~~n~a~l is};
+		\node[align=left] (conjugate) at ($(signal.east) + (0.37,0)$) {\tiny conjugate};
+		\node[align=left] (symmetric) at ($(conjugate.east) + (0.4,0)$) {\tiny symmetric};
+		%\draw 
+	\end{tikzpicture}
+}
 
 \end{frame}
 
@@ -184,7 +186,7 @@ More about filter design on lecture 9
 \begin{frame}{Example: speech recognition}
 
 \centering
-\resizebox{0.8\linewidth}{!}{\input{figs/recurrent_neural_net.tex}}
+\resizebox{0.65\linewidth}{!}{\input{figs/recurrent_neural_net.tex}}
 
 \end{frame}
 
@@ -199,9 +201,37 @@ Spectrogram of the same speech signal, now recorded with sampling rate of 44.1 k
 \end{center}
 
 More on spectrograms and short-time Fourier transform on lecture 11.
-
 \end{frame}
 
+\begin{frame}{Digital processing of analog signals}
+	\vspace{-0.1cm}
+	\begin{figure}[t!]
+		\centering
+		\resizebox{0.7\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+		\label{fig:adc-dsp-dac}
+	\end{figure}
+	\vspace{-0.3cm}
+	\begin{block}{Analog-to-digital converter (ADC)}
+		\begin{itemize}
+			\item Performs filtering, sampling, and quantization
+			\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital signal processor}
+		\begin{itemize} \itemsep 0pt
+			\item Performs some operation e.g., filtering, FFT, etc
+			\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital-to-analog converter (DAC)}
+		\begin{itemize}
+			\item Performs quantization and reconstruction (filtering)
+			\item Sampling rate could be similar to ADC
+		\end{itemize}
+	\end{block}
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Administrative}
@@ -222,13 +252,13 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 	\begin{column}{0.8\textwidth}
 		\begin{itemize}
 			\item ``Discrete-Time Signal Processing'', Oppenheim and Schafer, 3rd edition, 2010.
-			\item Available on 4-hour reserve at the \href{https://campus-map.stanford.edu/?id=04-080&lat=37.42787956&lng=-122.17429865&zoom=17&srch=engineeri}{Engineering Library (Terman)}
+			\item Available on 4-hour reserve at the \href{https://campus-map.stanford.edu/?id=04-080&lat=37.42787956&lng=-122.17429865&zoom=17&srch=engineeri}{Engineering Library (Terman)}.
 		\end{itemize}
 	\end{column}
 	\begin{column}{0.25\textwidth}  %%<--- here
 		\vspace{-1cm}
 		\begin{center}
-			\includegraphics[width=\textwidth]{figs/book_cover.jpg}
+			\includegraphics[width=0.8\textwidth]{figs/book_cover.jpg}
 		\end{center}
 	\end{column}
 \end{columns}
@@ -242,8 +272,9 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 
 \begin{block}{Canvas: \href{https://canvas.stanford.edu}{canvas.stanford.edu}}
 	\begin{itemize}
-		\item Lecture notes, homework assignments and solutions, Matlab code, discussion
-		\item Submit homework on Canvas
+		\item Lecture notes, homework assignments and solutions, Matlab code, discussion.
+		\item Watch lectures online.
+		\item Submit homework on Canvas.
 	\end{itemize}
 \end{block}
 
@@ -253,11 +284,11 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 \begin{frame}{Administrative: homework assignments}
 
 \begin{itemize}
-	\item Assignments will typically be released on Thursday and will be due on the following Thursday at 11:59pm
-	\item Submit a single .pdf file with your solutions online on Canvas
-	\item Homework assignments include analytical derivations and Matlab simulations
-	\item Discussion among students is encouraged, but individual solutions must be submitted
-	\item Late homeworks will be not accepted
+	\item Assignments will typically be released on Friday and due the following Friday at 11:59pm.
+	\item Submit a single .pdf file with your solutions online on Canvas.
+	\item Homework assignments include analytical derivations and Matlab simulations.
+	\item Discussion among students is encouraged, but individual solutions must be submitted.
+	\item Late submissions will be not accepted. If you need an extension, please contact the instructor or TA in advance.
 \end{itemize}
 
 \end{frame}
@@ -267,18 +298,18 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 	
 \begin{block}{Midterm}
 	\begin{itemize} 
-	\item In-class midterm on August, 1st. 
-	\item There will be a midterm review session on Friday, July 28. Time and location TBD
-	\item Midterm covers lectures 1 to 8 (homeworks 1 to 4)
-	\item Midterm is open book and open notes
+	\item In-class midterm on July 23. 
+	\item Midterm review session at 11:30 AM -- 12:20 PM, on Friday, July 20, in Gates B3.
+	\item Midterm covers lectures 1 to 7 (homeworks 1 to 3).
+	\item Midterm is open book and open notes.
 	\end{itemize}
 \end{block}
 
 \begin{block}{Final}
 	\begin{itemize} 
-	\item Final exam will be a 24-hour take home exam. Dates TBD
-	\item The final exam should take just a few hours
-	\item The review session for the final will be on the last lecture
+	\item Final exam will be a 24-hour take home exam. Dates TBD.
+	\item The final exam should take just a few hours.
+	\item The review session for the final will be on the last lecture.
 	\end{itemize}
 \end{block}
 
@@ -300,7 +331,8 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 	
 \begin{itemize}
 	\item Please \textbf{enroll for 3 units}. EE 264 is only offered for 4 units during the Winter quarter.
-	\item The deadline to adjust units is July 7.
+	\item The deadline to adjust units is July 6.
+	\item The deadline to change grading basis is August 3.
 \end{itemize}
 	
 \end{frame}
@@ -318,47 +350,15 @@ More on spectrograms and short-time Fourier transform on lecture 11.
 	\end{itemize}
 \end{frame}
 
-%
-\begin{frame}{Digital processing of analog signals}
-\vspace{-0.5cm}
-\begin{figure}[t!]
-	\centering
-	\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
-	\label{fig:adc-dsp-dac}
-\end{figure}
-\vspace{-0.5cm}
-\begin{block}{Analog-to-digital converter (ADC)}
-	\begin{itemize}
-		\item Performs filtering, sampling, and quantization
-		\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
-	\end{itemize}
-\end{block}
-\vspace{-0.3cm}
-\begin{block}{Digital signal processor}
-	\begin{itemize} \itemsep 0pt
-		\item Performs some operation e.g., filtering, FFT, etc
-		\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
-	\end{itemize}
-\end{block}
-\vspace{-0.3cm}
-\begin{block}{Digital-to-analog converter (DAC)}
-	\begin{itemize}
-		\item Performs quantization and reconstruction (filtering)
-		\item Sampling rate could be similar to ADC
-	\end{itemize}
-\end{block}
-
-\end{frame}
-
-\subsection{The Discrete-Time Signals and Systems}
+\subsection{Discrete-Time Signals and Systems}
 %
 \begin{frame}{Discrete-time signals}
 
-Discrete-time signals (or simply \textit{sequences}) may be inherently discrete or they may be obtained by sampling a continuous-time signal. More about sampling on lecture 3.
+Discrete-time signals (or simply \textit{sequences}) may be inherently discrete or they may be obtained by sampling a continuous-time signal. More about sampling on lectures 4 and 5.
 
 \begin{figure}[t!]
 	\centering
-	\resizebox{0.5\linewidth}{!}{\input{figs/ct_signal_sampled.tex}}
+	\resizebox{0.4\linewidth}{!}{\input{figs/ct_signal_sampled.tex}}
 	\label{fig:ct_signal_sampled}
 \end{figure}
 
@@ -391,12 +391,12 @@ $x[n]$ is only defined for $n\in\mathbb{Z}$
 	\end{columns}
 	\vspace{0.5cm}
 	\begin{columns}[t]
-	\begin{column}{0.5\linewidth}		
+	\begin{column}{0.4\linewidth}		
 		\centering
 		\resizebox{\linewidth}{!}{\input{figs/impulse.tex}}
 	\end{column}		
 	
-	\begin{column}{0.5\linewidth}
+	\begin{column}{0.4\linewidth}
 		\centering
 		\resizebox{\linewidth}{!}{\input{figs/step.tex}}
 	\end{column}
@@ -414,29 +414,29 @@ a^n, & n \geq 0 \\
 	
 \begin{figure}[h!] 
 	\centering 
-	\begin{subfigure}[h!]{0.32\textwidth} 
-		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{0.6}{$0 < a < 1$}{0}{2}}
-	\end{subfigure}% 
-	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
-	%(or a blank line to force the subfigure onto a new line) 
-	\begin{subfigure}[h!]{0.32\textwidth} 
-		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{1.15}{$a > 1$}{0}{2}}
-	\end{subfigure}% 
-
-	\begin{subfigure}[h!]{0.32\textwidth} 
-		%\resizebox{\linewidth}{!}{\input{figs/exponential_neg.tex}}
-		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{-0.6}{$-1 < a < 0$}{-2}{2}}
-	\end{subfigure}% 
-	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
-	%(or a blank line to force the subfigure onto a new line) 
-	\begin{subfigure}[h!]{0.32\textwidth} 
+	\begin{subfigure}[h!]{0.25\textwidth} 
 		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{-1.15}{$a < -1$}{-2}{2}}
+	\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+	%\resizebox{\linewidth}{!}{\input{figs/exponential_neg.tex}}
+	\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{-0.6}{$-1 < a < 0$}{-2}{2}}
+\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{0.6}{$0 < a < 1$}{-2}{2}}
+	\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	%(or a blank line to force the subfigure onto a new line) 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{1.15}{$a > 1$}{-2}{2}}
 	\end{subfigure}% 
 \end{figure}
 
-Exponential exhibits oscillatory behavior for $a < 0$.
-
-Exponential is \textbf{unbounded} if $|a| > 1$.
+\begin{itemize}
+	\item Exponential exhibits oscillatory behavior for $a < 0$.
+	\item Exponential is \textbf{unbounded} if $|a| > 1$.
+\end{itemize}
 \end{frame}
 
 %
@@ -447,7 +447,7 @@ Exponential is \textbf{unbounded} if $|a| > 1$.
 	\vspace{-0.2cm}
 	\begin{figure}[t!]
 		\centering
-		\resizebox{0.4\linewidth}{!}{\input{figs/sinusoid.tex}}
+		\resizebox{0.3\linewidth}{!}{\input{figs/sinusoid.tex}}
 		\label{fig:sinusoid}
 	\end{figure}
 
@@ -469,12 +469,12 @@ Exponential is \textbf{unbounded} if $|a| > 1$.
 \begin{block}{Energy and power signals}
 	\textbf{Energy signals} have finite energy
 	\begin{equation*}
-		E = \sum_{n=-\infty}^{\infty} |x[n]|^2
+		E \equiv \sum_{n=-\infty}^{\infty} |x[n]|^2 < \infty
 	\end{equation*}
 	
 	\textbf{Power signals} have infinite energy (e.g., periodic signals), but they have finite average power
 	\begin{equation*}
-		P = \lim_{N\to\infty}\frac{1}{2N+1}\sum_{n=-N}^{N} |x[n]|^2
+		P \equiv \lim_{N\to\infty}\frac{1}{2N+1}\sum_{n=-N}^{N} |x[n]|^2 < \infty
 	\end{equation*}	
 \end{block}	
 \end{frame}
@@ -506,7 +506,7 @@ Exponential is \textbf{unbounded} if $|a| > 1$.
 
 \begin{figure}
 	\centering
-	\resizebox{0.9\linewidth}{!}{\input{figs/DTsystem.tex}}
+	\resizebox{0.8\linewidth}{!}{\input{figs/DTsystem.tex}}
 	\label{fig:DTsystem}
 \end{figure}
 
@@ -525,12 +525,12 @@ Exponential is \textbf{unbounded} if $|a| > 1$.
 
 %
 \begin{frame}[t]{Linear time-invariant (LTI) systems}
-LTI systems are completely characterized by their impulse response.
+LTI systems are \textbf{completely characterized} by their impulse response.
 
 \begin{figure}
 	\centering
 	\vspace{-0.25cm}
-	\resizebox{0.9\linewidth}{!}{\input{figs/LTI_system_response.tex}}
+	\resizebox{0.7\linewidth}{!}{\input{figs/LTI_system_response.tex}}
 	\label{fig:DTimp}
 \end{figure}
 \vspace{-0.5cm}
@@ -547,7 +547,7 @@ LTI systems are completely characterized by their impulse response.
 
 \begin{frame}{Other properties of discrete-time systems}
 
-\begin{block}{Memoryless}
+\begin{block}{Memorylessness}
 	A system is \textbf{memoryless} if its output at time $n$, $y[n]$,  depends only on the present input $x[n]$.
 \end{block}
 
@@ -570,7 +570,6 @@ LTI systems are completely characterized by their impulse response.
 	\begin{block}{Stability}
 		A system is \textbf{BIBO stable} if every bounded input ($|x[n]| < B_x < \infty$) produces a bounded output ($|y[n]| < B_y < \infty$)
 
-		\vspace{0.25cm}
 		For \textbf{LTI systems},
 		\vspace{-0.25cm}
 		\begin{align*}
@@ -585,11 +584,10 @@ LTI systems are completely characterized by their impulse response.
 	\end{block}
 \end{frame}
 
-
 %
 \begin{frame}<beamer:0>{Classify the following discrete-time systems}
 	\centering
-	\resizebox{\linewidth}{!}{
+	\resizebox{0.92\linewidth}{!}{
 		\begin{tabular}{M{4cm}|c|c|c|c|c}
 			\hline
 			\textbf{System} & \textbf{Linear} & \textbf{Time invariant} & \textbf{Memoryless} & \textbf{Causal} & \textbf{BIBO stable} \\[2ex]
@@ -642,7 +640,7 @@ LTI systems are completely characterized by their impulse response.
 %
 \begin{frame}{Frequency-domain representation of LTI systems}
 
-Output of an LTI system to a complex exponential 
+Let's use the convolution sum to compute the output of an LTI system to a complex exponential: 
 
 \vspace{-0.5cm}
 \begin{columns}[t]
@@ -673,8 +671,8 @@ Output of an LTI system to a complex exponential
 \end{columns}	
 		
 \begin{itemize}
-	\pause\item $H(e^{j\omega})$ only depends on the impulse response of the LTI system
-	\pause\item The output of an LTI system to a complex exponential is a complex exponential of same frequency, but with possibly different amplitude and phase
+	\pause\item $H(e^{j\omega})$ is a complex number that depends only on the impulse response of the LTI system
+	\pause\item The output of an LTI system to a complex exponential is also a complex exponential of same frequency, but with possibly different amplitude and phase
 \end{itemize}
 
 \pause
@@ -744,7 +742,7 @@ x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})e^{j\omega n}d\omega
 \vspace{0.3cm}
 
 \centering
-\resizebox{\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
+\resizebox{0.9\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
 \end{frame}
 
 %
@@ -891,7 +889,7 @@ y[n] &= \sum_{k=-\infty}^{\infty} h[k]z^{(n-k)} \tag{from convolution sum} \\
 
 \vspace{-0.4cm}
 \flushright
-\resizebox{0.35\linewidth}{!}{\input{figs/unit_circle.tex}}
+\resizebox{0.25\linewidth}{!}{\input{figs/unit_circle.tex}}
 \end{frame}
 
 %
@@ -899,7 +897,6 @@ y[n] &= \sum_{k=-\infty}^{\infty} h[k]z^{(n-k)} \tag{from convolution sum} \\
 	\begin{enumerate}
 		\item Representing LTI systems
 		\item Determining stability of LTI systems
-		\item Finding frequency response of stable systems
 		\item Solving difference equations
 	\end{enumerate}
 \end{frame}
@@ -926,27 +923,22 @@ Rational $z$-transforms are a ratio of two polynomials in $z^{-1}$ (or $z$)
 
 %
 \begin{frame}{Examples}
-
 \begin{block}{1. Right-sided exponential $x[n] = a^nu[n]$}
-
 \begin{equation*} 
 X(z) = \sum_{n=0}^\infty a^nz^{-n} = \sum_{n=0}^\infty (az^{-1})^n 
 \end{equation*}
 This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
-~\\
-~\\
 \begin{columns}
-	\begin{column}{0.5\textwidth}
+	\begin{column}{0.6\textwidth}
 		From the sum of an infinite geometric progression:
 		\begin{equation*} 
 		X(z) = \frac{1}{1-az^{-1}} = \frac{z}{z-a}
 		\end{equation*}
 		Pole at $z = a$ and zero at $z = 0$.
 		~\\
-		~\\
 		The ROC of a causal signal is the \textbf{exterior of a circle} whose radius is the magnitude of the outermost pole $|a|$.
 	\end{column}
-	\begin{column}{0.5\textwidth}  %%<--- here
+	\begin{column}{0.4\textwidth}  %%<--- here
 		\begin{figure}
 			\centering
 			\resizebox{0.95\linewidth}{!}{\input{figs/right_sided_exp.tex}}
@@ -973,14 +965,12 @@ This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
 			\begin{equation*} 
 				X(z) = \frac{1}{1-az^{-1}} = \frac{z}{z-a}\tag{\textbf{Same as before!}}
 			\end{equation*}
-			~\\
 			Without the ROC, the $z$-transform is an \textbf{ambiguous representation} of a signal.
-			~\\
 			~\\
 			The ROC of an anti-causal signal is the \textbf{interior of a circle} whose radius is the magnitude of the innermost pole $|a|$.
 		\end{column}
 		\begin{column}{0.4\textwidth}  %%<--- here
-			\resizebox{1.18\linewidth}{!}{\input{figs/left_sided_exp.tex}}
+			\resizebox{0.95\linewidth}{!}{\input{figs/left_sided_exp.tex}}
 		\end{column}
 	\end{columns}
 	
@@ -996,11 +986,10 @@ This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
 	X(z) &= -\sum_{n=-\infty}^{-1} b^nz^{-n} + \sum_{n=0}^\infty a^nz^{-n} = \frac{1}{1-bz^{-1}} + \frac{1}{1-az^{-1}} 
 	\end{align*}
 	
-	The ROC is the intersection of the two previous ROCs because both sums must exist. Therefore:
-	ROC: $|b| < |z| < |a|$.
+	The ROC is the intersection of the two previous ROCs, i.e., ROC = $|b| < |z| < |a|$.
 
 	\begin{columns}
-		\begin{column}{0.5\textwidth}
+		\begin{column}{0.6\textwidth}
 			Assuming $a = -1/3$ and $b=1/2$
 			\begin{equation*} 
 			X(z) = \frac{2z(z-1/12)}{(z+1/3)(z-1/2)}
@@ -1008,11 +997,10 @@ This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
 			Poles at $z = -1/3, 1/2$\\
 			Zeros at $z = 0, 1/12$
 			~\\
-			~\\
 			The ROC of a two-sided signal is an \textbf{annulus} (ring-shaped region).
 			
 		\end{column}
-		\begin{column}{0.5\textwidth}  %%<--- here
+		\begin{column}{0.4\textwidth}  %%<--- here
 			\begin{figure}
 				\centering
 				\resizebox{0.95\linewidth}{!}{\input{figs/two_sided_exp.tex}}
@@ -1068,46 +1056,46 @@ This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
 }
 \end{frame}
 
+%%
+%\begin{frame}{Inverse $z$-transform}
+%\begin{itemize}
+%	\item We generally don't use the inverse $z$-transform contour integral
+%	\item It's typically much easier to use indirect methods such as \textbf{partial fraction expansion}
+%	\item The goal is to write the $z$-transform as a sum of simpler $z$-transforms for which the inverse is tabulated
+%\end{itemize}
+%\vspace{-0.25cm}
+%\begin{align*}
+%X(z) &= \frac{B(z)}{A(z)} = \frac{b_0 + b_1z^{-1}+\ldots+b_Mz^{-M}}{a_0 + a_1z^{-1}+\ldots+a_Nz^{-N}} \tag{$z$-transform we want to invert} \\
+%&= \frac{r_1}{1-p_1z^{-1}} + \ldots + \frac{r_N}{1-p_Nz^{-1}} + k_1 + \ldots + k_{M-N+1}z^{-(M-N)} \tag{sum of simpler $z$-transforms}
+%\end{align*}
+%The equation above assumes all poles are different.
 %
-\begin{frame}{Inverse $z$-transform}
-\begin{itemize}
-	\item We generally don't use the inverse $z$-transform contour integral
-	\item It's typically much easier to use indirect methods such as \textbf{partial fraction expansion}
-	\item The goal is to write the $z$-transform as a sum of simpler $z$-transforms for which the inverse is tabulated
-\end{itemize}
-\vspace{-0.25cm}
-\begin{align*}
-X(z) &= \frac{B(z)}{A(z)} = \frac{b_0 + b_1z^{-1}+\ldots+b_Mz^{-M}}{a_0 + a_1z^{-1}+\ldots+a_Nz^{-N}} \tag{$z$-transform we want to invert} \\
-&= \frac{r_1}{1-p_1z^{-1}} + \ldots + \frac{r_N}{1-p_Nz^{-1}} + k_1 + \ldots + k_{M-N+1}z^{-(M-N)} \tag{sum of simpler $z$-transforms}
-\end{align*}
-The equation above assumes all poles are different.
-
-\begin{itemize}
-	\item $\{r_1,\ldots,r_N\}$ are known as the residues
-	\item $\{p_1,\ldots,p_N\}$ are the poles
-	\item $\{k_1, \ldots, k_{M-N+1}\}$ are the direct terms. The direct terms are only present if $M > N$
-\end{itemize}
-
-\end{frame}
-
+%\begin{itemize}
+%	\item $\{r_1,\ldots,r_N\}$ are known as the residues
+%	\item $\{p_1,\ldots,p_N\}$ are the poles
+%	\item $\{k_1, \ldots, k_{M-N+1}\}$ are the direct terms. The direct terms are only present if $M > N$
+%\end{itemize}
 %
-\begin{frame}{Inverse $z$-transform}
+%\end{frame}
 
-Suppose that the $l$th pole of $X(z)$ has \textbf{multiplicity} $m$ (the pole is repeated $m$ times). In this case, the partial fraction expansion must also include the terms
-~\\
-
-\begin{equation*}
-\frac{r_l}{1-p_lz^{-1}} + \frac{r_{l+1}}{(1-p_lz^{-1})^2} + \ldots + \frac{r_{l+m-1}}{(1-p_lz^{-1})^l}
-\end{equation*}
-~\\
-~\\
-How to obtain $\{r_1,\ldots,r_N\}$, $\{p_1,\ldots,p_N\}$, and $\{k_1 + \ldots + k_{M-N+1}\}$?
-\begin{itemize}
-	\item Analytically
-	\item Matlab function \href{https://www.mathworks.com/help/signal/ref/residuez.html}{\texttt{residuez}}
-\end{itemize}
-
-\end{frame}
+%%
+%\begin{frame}{Inverse $z$-transform}
+%
+%Suppose that the $l$th pole of $X(z)$ has \textbf{multiplicity} $m$ (the pole is repeated $m$ times). In this case, the partial fraction expansion must also include the terms
+%~\\
+%
+%\begin{equation*}
+%\frac{r_l}{1-p_lz^{-1}} + \frac{r_{l+1}}{(1-p_lz^{-1})^2} + \ldots + \frac{r_{l+m-1}}{(1-p_lz^{-1})^l}
+%\end{equation*}
+%~\\
+%~\\
+%How to obtain $\{r_1,\ldots,r_N\}$, $\{p_1,\ldots,p_N\}$, and $\{k_1 + \ldots + k_{M-N+1}\}$?
+%\begin{itemize}
+%	\item Analytically
+%	\item Matlab function \href{https://www.mathworks.com/help/signal/ref/residuez.html}{\texttt{residuez}}
+%\end{itemize}
+%
+%\end{frame}
 
 \subsection{Difference Equations}
 %
@@ -1164,7 +1152,7 @@ $> \mathtt{freqz(1, [1, -0.5])}$
 
 \begin{center}
 	\begin{tikzpicture}
-	\node (img1) {\resizebox{0.65\linewidth}{!}{\includegraphics{figs/first_order_sys_freqz.eps}}};
+	\node (img1) {\resizebox{0.5\linewidth}{!}{\includegraphics{figs/first_order_sys_freqz.eps}}};
 	\node at ($(img1.north east) -(4cm, 0.75cm)$) {$20\log_{10}(|H(e^{j\omega})|)$};
 	\node at ($(img1.east)-(4cm, 1cm)$) {$\angle H(e^{j\omega}) = \arg(H(e^{j\omega}))$};
 	\end{tikzpicture}
@@ -1201,7 +1189,7 @@ In Matlab:\\
 $> \mathtt{freqz([1, 1, 1, 1]/4, 1)}$
 
 \begin{center}
-	\resizebox{0.65\linewidth}{!}{\includegraphics{figs/moving_avg4_freqz.eps}}
+	\resizebox{0.5\linewidth}{!}{\includegraphics{figs/moving_avg4_freqz.eps}}
 \end{center}
 
 \end{frame}
@@ -1213,7 +1201,7 @@ $> \mathtt{freqz([1, 1, 1, 1]/4, 1)}$
 \onslide<3-4|handout:2> {What would happen if $\omega_0 = 0.5\pi$?}
 
 \begin{center}
-	\resizebox{\linewidth}{!}{\input{figs/moving_avg4_demo.tex}}
+	\resizebox{0.95\linewidth}{!}{\input{figs/moving_avg4_demo.tex}}
 \end{center}
 \begin{align*}
 h[n] = \frac{1}{4}(\delta[n] + \ldots + \delta[n-3]) \Longleftrightarrow H(z) = \frac{1}{4}(1 + z^{-1} + \ldots + z^{-3})
@@ -1221,16 +1209,33 @@ h[n] = \frac{1}{4}(\delta[n] + \ldots + \delta[n-3]) \Longleftrightarrow H(z) = 
 
 \end{frame}
 
-\begin{frame}
-	
-In Matlab \\
-\texttt{> n = 0:20} \\
-\texttt{> w0 = 0.2*pi} \\
-\texttt{> x = cos(w0*n)} \\
-\texttt{> y = filter([1 1 1 1]/4, 1, x)} \\
-or equivalently \texttt{> y = conv([1 1 1 1]/4, x)} \\
-\texttt{> stem(n, x)} \\
-\texttt{> stem(n, y)} \\
+%\begin{frame}
+%	
+%In Matlab \\
+%\texttt{> n = 0:20} \\
+%\texttt{> w0 = 0.2*pi} \\
+%\texttt{> x = cos(w0*n)} \\
+%\texttt{> y = filter([1 1 1 1]/4, 1, x)} \\
+%or equivalently \texttt{> y = conv([1 1 1 1]/4, x)} \\
+%\texttt{> stem(n, x)} \\
+%\texttt{> stem(n, y)} \\
+%
+%\end{frame}
+
+\begin{frame}{Summary}
+
+\begin{itemize}
+	\item Systems can be linear, time-invariant, memoryless, causal, and stable
+	\item Linear and time-invariant (LTI) systems are completely characterized by their impulse response
+	\item We can use the convolution sum to calculate the output of an LTI system to any signal 
+	\item The complex exponential $e^{j\omega n}$, and more generally $z^n$, are eigenfunctions of LTI systems
+	\item Frequency-domain representation of signals and systems
+	\begin{itemize}\normalsize
+		\item Discrete-time Fourier transform (DTFT)
+		\item $z$-transform and ROC. Without specifying the ROC the $z$-transform is ambiguous
+	\end{itemize}
+	\item The DTFT is equivalent to the $z$-transform evaluated on the unit circle: $H(e^{j\omega}) = H(z = e^{j\omega})$, provided that the unit circle is in the ROC of the $z$-transform
+\end{itemize}
 
 \end{frame}
 

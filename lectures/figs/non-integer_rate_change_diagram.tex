@@ -11,7 +11,6 @@
 	\node[block, right of=DSP, text width = 3cm, align= center] (LPF) {Lowpass filter \\ Gain = $L$ \\ Cutoff = $\pi/L$};
 
     \draw[dashed] ($(L.south west)-(0.3cm, 0.4cm)$) rectangle ($(LPF.north east)+(0.4cm, 0.4cm)$) {};
-	\node[align=center] at ($(xc)!0.5!(mid2) - (0, 1.5cm)$) {Interpolator};
 
 		
 	%% Decimator	
@@ -21,11 +20,14 @@
 	\coordinate (yc) at ($(M.east)+(1cm, 0)$) {};
 	
 	 \draw[dashed] ($(AA.south west)-(0.3cm, 0.4cm)$) rectangle ($(M.north east)+(0.4cm, 0.4cm)$) {};
-	\node[align=center] at ($(mid2)!0.5!(yc) - (0, 1.5cm)$) {Decimator};
+	
 		
 	\coordinate (mid1) at ($(L.east)!0.5!(LPF.west)$) {};	
 	\coordinate (mid2) at ($(LPF.east)!0.5!(AA.west)$) {};	
-	\coordinate (mid3) at ($(AA.east)!0.5!(M.west)$) {};	
+	\coordinate (mid3) at ($(AA.east)!0.5!(M.west)$) {};
+	
+	\node[align=center] at ($(xc)!0.5!(mid2) - (0, 1.5cm)$) {Interpolator};	
+	\node[align=center] at ($(mid2)!0.5!(yc) - (0, 1.5cm)$) {Decimator};
 		
     \path (xc) edge (L);
     \path (L) edge (LPF);

@@ -140,9 +140,9 @@
 %	NAME AND CLASS SECTION
 %----------------------------------------------------------------------------------------
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\hmwkTitle}{Homework \#04} % Assignment title
+\newcommand{\hmwkTitle}{Homework \#02} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -164,9 +164,6 @@
 \begin{document}
 	
 \section{Problem 1}
-
-Matlab code for parts (a) through (c) is attached at the end of this question.
-
 \subsection{(a)}
 
 \FloatBarrier
@@ -205,7 +202,41 @@ Matlab code for parts (a) through (c) is attached at the end of this question.
 	\item False. The system also has a zero at that frequency, and that zero is actually on the unit circle, so it has a bigger influence on the frequency response. As a result, the magnitude response has a dip at $\omega = \pi/3$.
 	\item False. The system has zeros outside the unit circle.
 	\item False. Since the system has a zero outside the unit circle, its inverse is unstable.
+
 \end{enumerate}
+
+\definecolor{mblue}{rgb}{0,0,1} 
+\definecolor{mgreen}{rgb}{0.13333,0.5451,0.13333} 
+\definecolor{mred}{rgb}{0.62745,0.12549,0.94118} 
+\definecolor{mgrey}{rgb}{0.5,0.5,0.5} 
+\definecolor{mdarkgrey}{rgb}{0.25,0.25,0.25} 
+  
+\DefineShortVerb[fontfamily=courier,fontseries=m]{\$} 
+\DefineShortVerb[fontfamily=courier,fontseries=b]{\#} 
+  
+\noindent                 
+ \hspace*{2.4em}{\scriptsize 1}$  $\color{mgrey}#%% Problem 1 Code - a, b, c#\color{black}$$\\
+ \hspace*{2.4em}{\scriptsize 4}$  b = conv(conv([1 -exp(1j*pi/3)], [1 -exp(-1j*pi/3)]), [1 1/0.85]);$\\
+ \hspace*{2.4em}{\scriptsize 5}$  a = conv(conv([1 -0.9*exp(1j*pi/3)], [1 -0.9*exp(-1j*pi/3)]), [1 0.85]);$\\
+ \hspace*{2.4em}{\scriptsize 6}$  $\\
+ \hspace*{2.4em}{\scriptsize 7}$  $\color{mgrey}#%% a)#\color{black}$$\\
+ \hspace*{2.4em}{\scriptsize 8}$  zplane(b, $\color{mdarkgrey}$a) $\color{black}$$\color{mgrey}$% b and a must be row vectors$\color{black}$$\\
+ \hspace*{2.4em}{\scriptsize 9}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1a_pole_zero'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\
+ \hspace*{2em}{\scriptsize 10}$  $\\
+ \hspace*{2em}{\scriptsize 11}$  $\color{mgrey}#%% b)#\color{black}$$\\
+ \hspace*{2em}{\scriptsize 12}$  figure, $\color{mdarkgrey}$freqz(b, a)$\color{black}$$\\
+ \hspace*{2em}{\scriptsize 13}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1b_mag_phase'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\
+ \hspace*{2em}{\scriptsize 14}$  $\\
+ \hspace*{2em}{\scriptsize 15}$  $\color{mgrey}#%% c)#\color{black}$$\\
+ \hspace*{2em}{\scriptsize 16}$  figure, $\color{mdarkgrey}$grpdelay(b, a)$\color{black}$$\\
+ \hspace*{2em}{\scriptsize 17}$  saveas(gca, $\color{mdarkgrey}$'../figs/hw4q1b_grpdelay'$\color{black}$, $\color{mdarkgrey}$'epsc'$\color{black}$)$\\ 
+  
+\UndefineShortVerb{\$} 
+\UndefineShortVerb{\#}
+
+
+
+
 
 \newpage
 
@@ -281,13 +312,19 @@ H_{lin}(z) = (1 + 3z^{-1})(1 +1/3z^{-1})
 H_{ap}(z) = -\frac{1 - 3z^{-1}}{1 - 1/3z^{-1}}
 \end{equation}
 
+\FloatBarrier
+\begin{figure}[h!]
+	
+\end{figure}
+\FloatBarrier
 \newpage
+
 \section{Problem 3}
 \begin{description}
 	\item[(a)] A, B, and E. All their poles are at the origin.
 	\item[(b)] All. All of them have all poles inside the unit circle.
 	\item[(c)] F. It's the only system that appears to have zeros located at the conjugate symmetric of its poles i.e., if $e_k$ is a pole, then $1/e_k^*$ must be a zero.
-	\item[(d)] E. All its zeros are inside the unit circle.
+	\item[(d)] E. All its zeros are inside the unit circle. [D is also acceptable as no zeroes are outside the unit circle.]
 	\item[(e)] A and B. Their zeros appear in conjugate pairs and conjugate reciprocal pairs.
 	\item[(f)] A and D. They have zeros at $z = -1$, which corresponds to $\omega = \pm\pi$.
 	\item[(g)] A and D. Their maximum frequency response appears at low frequencies. In A for the absence of zeros close to $\omega =0$, and in D the poles near  $\omega =0$ increase the magnitude response.
@@ -300,6 +337,8 @@ H_{ap}(z) = -\frac{1 - 3z^{-1}}{1 - 1/3z^{-1}}
 	\end{align}
 	
 \end{description}	
+
+\mbox{}\\ 
 	
 \section{Problem 4: Kramers-Kronig relations in discrete time}
 \subsection{(a)}
@@ -361,214 +400,5 @@ X_o(e^{j\omega}) &= \frac{1}{2\pi}\Big(-j\frac{\sin\omega}{1-\cos\omega}\ast X_e
 j\mathrm{Im}\{X(e^{j\omega})\} &= \frac{1}{2\pi}\Big(-j\frac{\sin\omega}{1-\cos\omega}\ast \mathrm{Re}\{X(e^{j\omega})\}\Big) \tag{from part (a)} \\
 \mathrm{Im}\{X(e^{j\omega})\} &= -\frac{1}{2\pi}\Big(\frac{\sin\omega}{1-\cos\omega}\ast \mathrm{Re}\{X(e^{j\omega})\}\Big)
 \end{align}
-
-\section{Problem 5: ``Unknown'' plant identification by noise injection}
-
-The Matlab code for parts (a), (b), and (d) are included at the end of this question.
-
-\subsection{(a)}
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04_q3a_emp_xcorr.eps}
-	\caption{Empirical autocorrelation function of $y[n]$ for a white noise input with average power $\sigma_x^2$.}
-\end{figure}
-\FloatBarrier
-\subsection{(b)}
-
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04_q3b_emp_psd.eps}
-	\caption{Empirical power spectrum density of $y[n]$.}
-\end{figure}
-\FloatBarrier
-
-
-\subsection{(c)}
-Using the same strategy outlined in lecture notes 6, slide 41, we can write:
-\begin{equation}
-|H(e^{j\omega})|^2 = \frac{\Phi_{yy}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
-\end{equation}
-
-For this problem, $\Phi_{xx}(e^{j\omega}) = 1$, and we'll obtain $\Phi_{yy}(e^{j\omega})$ through measurements. 
-
-Once we calculate $|H(e^{j\omega})|$, we can write:
-\begin{align*}
-H(e^{j\omega}) &= |H(e^{j\omega})|\exp(j\angle H(e^{j\omega})) \\
-\ln H(e^{j\omega}) &= \underbrace{\ln |H(e^{j\omega})|}_{\text{real part}} + j\underbrace{\angle H(e^{j\omega})}_{\text{imaginary part}} \tag{taking the $\ln$ of both sides}
-\end{align*}
-
-We know that if $H(e^{j\omega})$ is minimum phase, $\ln H(e^{j\omega})$ will be causal. Therefore, we can apply the Kramers-Knronig relations to calculate the imaginary part (phase) from the real part (log magnitude):
-
-
-\begin{align} \nonumber
-\angle H(e^{j\omega}) &= -\frac{1}{2\pi}\bigg[\Big(\frac{\sin\omega}{1-\cos\omega}\Big)\ast \ln |H(e^{j\omega})|\bigg] \\
- &=-\frac{1}{2\pi}\int_{-\pi}^{\pi}\bigg(\frac{\sin\theta}{1-\cos\theta}\bigg)\ln |H(e^{j(\omega- \theta)})|d\theta
-\end{align} 
-And we'll perform this integration numerically.
-
-\subsection{(d)}
-
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04_q3d_phase.eps}
-	\caption{Estimated phase of $H(e^{j\omega})$.}
-\end{figure}
-\FloatBarrier
-
-\subsection{(e)}
-
-The disagreement between estimated and theoretical phase responses appear because the numerical integration method doesn't account for the periodicity of the DTFT. 
-
-In the integral formula:
-\begin{align} \nonumber
-\frac{1}{2\pi}\int_{-\pi}^{\pi}\bigg(\frac{\sin(\omega-\theta)}{1-\cos(\omega-\theta)}\bigg)\mathrm{Re}\{X(e^{j(\omega)})\}d\theta,
-\end{align}
-to accurately estimate the value of this integral at say, $\omega= -\pi$, we would need to evaluate $\frac{\sin(\omega-\theta)}{1-\cos(\omega-\theta)}$ from $-2\pi$ to $0$. However, since the numerical integration assumes that the frequency vector is in the interval $[-\pi, \pi]$, \texttt{conv} assumes that the integrands are zero outside that interval. In other words, it doesn't account for the periodicity of the DTFT.
-
-That discrepancy is not a problem for modeling this plant, since the phase information is not important when the magnitude response is virtually zero.
-
-However, if we wish to obtain accurate phase estimates over the entire range of frequencies, we need to modify the integration slightly:
-
-\begin{equation}
-\frac{1}{2\pi}\int_{-\pi}^{\pi}x(u)y(\omega-u)du \approx \texttt{1/(2*pi)*conv(x, y, `same')*dw},
-\end{equation}
-where now either vector \texttt{x} or \texttt{y} is defined for \texttt{w} in the interval $]-2\pi, 2\pi[$ in steps of \texttt{dw}, while the other vector can still be defined for \texttt{w} in the interval $[-\pi, \pi]$ in steps of \texttt{dw}. 
-
-To illustrate this, consider the same example above by now the code for the phase calculation was modified in the following way
-\begin{align*}
-& \texttt{w2 = -2*pi+dw:dw:2*pi-dw;} \\
-& \texttt{hHT = sin(w2)./(1-cos(w2));} \\
-& \texttt{hHT(w2 == 0) = 0;}\\
-& \texttt{P = -1/(2*pi)*conv(logMag, hHT, 'same')*dw;}
-\end{align*}
-Note that the frequency vector \texttt{w2} is defined in the interval $]-2\pi, 2\pi[$ in steps of \texttt{dw}. The choice of making the interval open in $\pm 2\pi$ is solely to escape the discontinuity of $\frac{\sin\omega}{1-\cos\omega}$ at $0, \pm2\pi, \ldots$.
-
-The result is illustrated in the figure below:
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04_q3d_phase_correct.eps}
-	\caption{Estimated phase of $H(e^{j\omega})$, now with corrected convolution integral calculation.}
-\end{figure}
-\FloatBarrier
-
-\subsection{Matlab code}
-
-\input{tex/plant_id.tex}
-
-\section{Problem 6}
-
-\subsection{(a)}
-
-\begin{align} \nonumber
-H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
-&= 0.05634\frac{1+z^{-1}}{1-0.683z^{-1}}\cdot\frac{1 -1.0166z^{-1} + z^{-2}}{1 -1.4461z^{-1} + 0.7957z^{-2}}
-\end{align}
-
-To implement each subsystem you could choose whatever form. The picture below shows the implementation assuming a direct form II.
-
-\begin{figure}[!h]
-	\resizebox{0.9\textwidth}{!}{\input{figs/hw03q5_flow_graph_cascade.tex}}
-\end{figure}
-\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign, since the diagram assumes a transfer function of the form:
-
-\begin{equation}
-	H(z) = \frac{\sum_{k=0}^M b_kz^{-k}}{1-\sum_{k=1}^N a_kz^{-k}}
-\end{equation}
-
-\subsection{(b)}
-
-\begin{align} \nonumber
-H(z) &= 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})} \\
-&= \frac{0.0563 -0.0009z^{-1}   -0.0009z^{-2}   + 0.0563z^{-3}}{1.0000   -2.1291z^{-1}    +1.7834z^{-2}   -0.5435z^{-3}}
-\end{align}
-
-\FloatBarrier
-\begin{figure}[!h]
-	\centering
-	\resizebox{0.6\textwidth}{!}{\input{figs/hw03q5_flow_graph_direct_form_II.tex}}
-\end{figure}
-\FloatBarrier
-
-\noindent\textbf{Notation warning:} the coefficients corresponding to the poles appear with a different sign.
-\subsection{(c)}
-
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04q6_zplane.eps}
-	\caption{Pole-zero diagram of $H(z)$.}
-\end{figure}
-\FloatBarrier
-
-\subsection{(d)}
-
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04q6_zplane_quant.eps}
-	\caption{Comparison of pole-zero diagram of $H(z)$ before and after coefficient quantization.}
-\end{figure}
-\FloatBarrier
-
-\FloatBarrier
-\begin{figure}[h!]
-	\centering
-	\includegraphics[scale=0.7]{figs/hw04q6_mag.eps}
-	\caption{Comparison of magnitude response of $H(z)$ before and after coefficient quantization.}
-\end{figure}
-\FloatBarrier
-
-The pole-zero diagram shows that the poles and zeros did not change much, and consequently all other properties of the system should remain roughly the same.
-
-\section{Problem 7}
-
-\subsection{(a)}
-By inspection
-\begin{equation}
-	H(z) = \frac{z^{-1} - a}{1 - az^{-1}}
-\end{equation}
-
-\subsection{(b)}
-
-\begin{equation}
-\sigma_{15}^2 = \frac{\Delta^2}{12} = \frac{2^{-30}}{12}
-\end{equation}
-
-\begin{figure}[!h]
-	\centering
-	\input{figs/hw04q7_flow_graphs_midterm_2014.tex}
-\end{figure}
-
-\subsection{(c)}
-
-\begin{equation}
-\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(A)}
-\end{equation}
-
-\begin{equation}
-\Phi_{ff}(e^{j\omega}) = 2\sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{2\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(B)}
-\end{equation}
-
-\begin{equation}
-\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2\bigg|\frac{1}{1-ae^{-j\omega}}\bigg|^2 = \frac{\sigma_{15}^2}{1 + a^2 - 2a\cos\omega} \tag{(C)}
-\end{equation}
-
-\begin{equation}
-\Phi_{ff}(e^{j\omega}) = \sigma_{15}^2 + \sigma_{15}^2|H(e^{j\omega})|^2 = 2\sigma_{15}^2 \tag{(D)}
-\end{equation}
-
-\subsection{(d)}
-
-(A) and (B) will have the largest output noise average power.
-
-\begin{equation}
-	\sigma_{f}^2 = 2\sigma_{15}^2\sum_{k = 0}^\infty (a^2)^k = \frac{2\sigma_{15}^2}{1 - a^2}
-\end{equation}
-
-
 
 \end{document}

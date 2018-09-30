@@ -1,0 +1,22 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.5cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+
+	\node[node] (xc) {};
+	\node[block, right=1.5cm of xc] (Haa) {$H_{aa}(j\Omega)$};
+    \node[block, right of=Haa] (ADC) {ADC};
+    \node[block, right of=ADC] (DSP) {$H(z)$};
+    \node[block, right of=DSP] (DAC) {DAC};
+	\coordinate[right=1.5cm of DAC] (yc) {};
+		
+    \path (xc) edge (Haa);
+    \path (Haa) edge (ADC);
+    \path (ADC) edge (DSP);
+    \path (DSP) edge (DAC);
+    \path (DAC) edge (yc);
+    
+    \node[above = 0mm of xc, text width = 1cm, align=center] {Microphone};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {Speaker};
+    \node[below, align=center, text width=2.5cm] at ($(ADC.south)$) {$\frac{1}{T} = 22.05$ kHz};
+    \node[below, align=center, text width=2.5cm] at ($(DAC.south)$) {$\frac{1}{T} = 22.05$ kHz};
+\end{tikzpicture}

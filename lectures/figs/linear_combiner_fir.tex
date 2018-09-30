@@ -1,0 +1,80 @@
+\def\layersep{0.5cm}
+\def\outsep{0.7cm}
+\def\dy{0.5}
+\usetikzlibrary{backgrounds}
+
+\begin{tikzpicture}[>=latex, shorten >= 0pt, draw=black!50, node distance=\layersep, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=1.5pt,inner sep=0pt]
+    \tikzstyle{weight}=[draw=black,circle,fill=none,minimum size=20pt,inner sep=0pt,scale=0.5]
+    \tikzstyle{summer}=[weight,scale=1.8, minimum size=10pt, inner sep=2pt, scale=0.75]
+    \tikzstyle{sigmoid}=[draw=black,rectangle,fill=none,minimum size=20pt,inner sep=0pt]
+    \tikzstyle{annot} = [scale=0.5]
+
+	\node[summer] (Adder) at (3*\layersep,-\dy*2.5 cm) {\large $\Sigma$}; 
+    \node[node, inner sep=0pt] (mid) at (5*\layersep,-\dy*2.5 cm) {}; 
+    \coordinate (output) at (7*\layersep,-\dy*2.5 cm) {};
+    \node[summer, minimum size=10pt, scale=1] (error) at (5*\layersep,-\dy*5 cm) {$\Sigma$}; 
+    \node[node, inner sep=0pt] (dk) at (7*\layersep,-\dy*5 cm) {};
+    \coordinate[left of=error] (error-out) {};
+    
+    %\coordinate (A) at (\layersep,-6*\dy cm) {};
+    %\coordinate (B) at (\layersep,0 cm) {};
+    %\path[->] (A) edge (B);
+    \draw[->] (error) -- (error-out);
+    %\path[-] (error-out) edge (A);
+        
+    \foreach \name / \y in {1,...,3} {
+    % This is the same as writing \foreach \name / \y in {1/1,2/2,3/3,4/4}
+    	\node[node] (I-\name) at (0,-\dy*\y cm) {};
+        \node[weight,fill=white] (W-\name) at (\layersep,-\dy*\y cm) {$w_{\name}$}; % Draw the hidden layer  layer node     
+        \draw[->] (I-\name) -- (W-\name);
+     } 
+ 	
+ 	\node[weight, fill=white] (W-4) at (\layersep,-5*\dy cm) {$w_{L}$};
+ 	\node[node] (I-4) at (0,-\dy*5 cm) {};
+ 	\draw[->] (I-4) -- (W-4);
+ 	
+	\coordinate (M-1) at ($(I-1)!0.5!(I-2)$) {};  	
+	\coordinate (M-2) at ($(I-2)!0.5!(I-3)$) {};
+	\coordinate (M-3) at ($(I-3)!0.5!(I-4)$) {};
+	
+	\draw[->] (I-1) -- (M-1);
+	\draw[-] (M-1) -- (I-2);
+	\draw[->] (I-2) -- (M-2);
+	\draw[-] (M-2) -- (I-3);
+	\draw[-, dotted] (I-3) -- (I-4);
+	
+	\node[left=0.05cm of M-1, scale=0.5] {$z^{-1}$};
+	\node[left=0.05cm of M-2, scale=0.5] {$z^{-1}$};
+
+	
+
+	
+	
+    %% Annotations
+    \node[node] (x) at (-0.5,-\dy) {};
+    \draw[->] (x) -- (I-1);
+    \draw[->] (I-1) -- (W-1);
+    \node[left=0.1cm of x, scale=0.5] {$x[n]$};
+    
+    \node[right, anchor=south west, scale=0.5] at ($(error.north)$){$-$};
+    \node[right, anchor=north west, scale=0.5] at ($(error.east)$){$+$};
+    \node[annot, above of=mid] {$x[n] \ast w[n]$};
+    \node[annot, below of=error-out] {error $e[n]$};
+    \node[annot, right=0.01cm of output, text width=1.5cm, align=center] {$y[n]$ \\ Output};
+    \node[annot, right=0.01cm of dk, text width=2cm, align=center] {$d[n]$ \\ Desired response};
+    
+    \foreach \name in {1,...,4} {
+    		\begin{scope}[on background layer]
+    			\draw[->, shorten >= -5pt, shorten <= -2pt] (W-\name.south west) -- (W-\name.north east);
+   			\end{scope}
+            %\path[->] (W-\name) edge (Adder);
+            \draw[->] (W-\name) -- ++(15pt,0) -- (Adder);
+     }
+	
+    \path[-] (Adder) edge (mid);
+    \path[->] (mid) edge (error.north);
+    \path[->] (mid) edge (output);
+    \path[->] (dk) edge (error);
+
+\end{tikzpicture}

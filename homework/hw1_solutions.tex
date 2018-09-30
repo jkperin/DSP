@@ -144,7 +144,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hmwkTitle}{Homework \#01} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -356,33 +356,16 @@ Note that while signal $x[n]$ undergoes system $h_1[n]\ast h_2[n]$ (the cascade 
 \end{center}
 
 \subsection{(b)}
-
-Following the hint, we rewrite \eqref{psd_yy} so that we can use the DTFT relation: 
-\begin{equation}
-e^{-a|n|} \longleftrightarrow \frac{1- e^{-2a}}{1+e^{-2a} -2e^{-a}\cos\omega}
-\end{equation}
-
-\begin{align} \nonumber
-\Phi_{yy}(e^{j\omega}) &= \frac{50 + 40\cos(\omega)}{1.81 - 1.8\cos(\omega)} \\ \nonumber
-&= \frac{50 + 40\cos(\omega)}{1.81 - 1.8\cos(\omega)}  + 40/1.8 - 40/1.8 \\ \nonumber
-&= \frac{50 + 1.81\cdot 40/1.8}{1.81 - 1.8\cos(\omega)} - 40/1.8 \\ \nonumber
-&= \frac{(50 + 1.81\cdot 40/1.8)}{1-0.81}\frac{1-0.81}{1 + 0.81 - 1.8\cos(\omega)} - 40/1.8 \\
-&= 474.8538\frac{1-0.81}{1 + 0.81 - 1.8\cos(\omega)} - 22.2222
-\end{align}
-
-Now we can finally use the relation, for $a = -\ln(0.9) = 0.1054$. Hence, we can finally write:
-
-\begin{equation}
-\phi_{yy}[m] = 474.8538e^{-0.1054|n|} - 22.2222\delta[m]
-\end{equation}
-
-\subsection{(c)}
 By definition,
 \begin{equation}
 \E(y^2[n]) = \phi_{yy}[0] = 452.6316
 \end{equation}
 
 \section{Problem 4}	
+\noindent {\bf Note:}  The input
+$x[n]$ is a random signal with zero mean and autocorrelation
+$\phi_{xx}[m]=20\delta[m]$ in the assignment, but the solution solves for autocorrelation
+$\phi_{xx}[m]=10\delta[m]$. \\
 \subsection{(a)}
 From the diagram $w[n] = x[n]\ast h_1[n]$. Therefore,
 \begin{align}
@@ -492,6 +475,8 @@ Consequently, $\phi_{yy}[m] = \phi_{ww}[m]$.
 \end{cases}
 \end{align}
 
+\noindent {\bf Note:}  The question in the assignment asks for a plot for L=5, but the concept remains the same and the plot for L=4 is shown below. \\
+
 For $L = 4$, 
 \begin{center}
 	\resizebox{0.5\linewidth}{!}{
@@ -541,121 +526,5 @@ For the average power of $y[m]$:
 \begin{align} \nonumber
 \E(y^2[m]) = \phi_{yy}[0] = \frac{1}{L}
 \end{align}
-
-\subsection{(d)}
-By inspecting all combinations of inputs patterns:
-
-\begin{center}
-	\begin{tabular}{l|c|c}
-	Input patterns & $y$ & $p_y(y)$ \\
-	\hline
-	($-1, -1, -1, -1$) & $-1$ & $1/16$ \\
-	Permutations of ($-1, -1, -1, 1$) & $-1/2$ & $1/4$ \\
-	Permutations of ($-1, -1, 1, 1$) & $0$ & $3/8$ \\
-	Permutations of ($-1, 1, 1, 1$) & $1/2$ & $1/4$ \\	
-	($1, 1, 1, 1$) & $1$ & $1/16$ \\
-	\hline
-\end{tabular}
-\end{center}
-
-\begin{center}
-	\resizebox{0.5\linewidth}{!}{
-		\begin{tikzpicture}
-		\begin{axis}[
-		axis lines*=middle,
-		enlargelimits = true,
-		clip=false,
-		scale only axis,
-		width=0.5\textwidth,
-		height=0.15\textwidth,
-		ymin=0,
-		ymax=0.5,
-		xmin=-1,
-		xmax=1,
-		axis line style={->,>=stealth},
-		xlabel={$y$},
-		ylabel={$p_y(y)$},
-		every axis x label/.style={
-			at={(ticklabel* cs:1)},
-			anchor=north,
-		},
-		every axis y label/.style={
-			at={(ticklabel* cs:1)},
-			anchor=south,
-		},
-		ytick={0.375},
-		yticklabels={$3/8$},
-		xtick={-1, -0.5, 0, 0.5, 1},
-		every outer y axis line/.append style={white!15!black},
-		every y tick label/.append style={font=\color{white!15!black}},
-		legend style={draw=white!15!black,fill=white,legend cell align=left}]
-		\addplot[ycomb, mark=*, fill=white, mark options={scale=0.75, fill=white}, line width=1pt] coordinates {(-1, 1/16) (-1/2, 1/4) (0, 3/8) (1, 1/16) (1/2, 1/4)};
-		\end{axis}
-		\end{tikzpicture}
-}
-\end{center}
-
-\subsection{(e)}
-
-The convolutions are discrete because $x$ is a discrete random variable, and therefore its probability mass function $p_x(x)$ is a discrete function of $x$.
-
-\begin{center}
-	\begin{tabular}{c|c|c}
-	$L$ & Possible $y[m]$  values & Corresponding probabilities \\
-	\hline
-	2 & $-1, 0, 1$ & $1/4, 1/2, 1/4$ \\
-	3 & $-1, -1/3, 1/3, 1$ & $1/8, 3/8, 3/8, 1/8$ \\
-	4 & $-1, -1/2, 0, 1/2, 1$ & $1/16, 1/4, 3/8, 1/4, 1/16$ \\
-	5 & $-1, -3/5, -1/5, 1/5, 3/5, 1$ &  $1/32, 5/32, 5/16, 5/16, 5/32, 1/32$\\
-	\hline
-\end{tabular}
-\end{center}
-
-If the system were an $L$-point running sum, the possible values of $y[m]$ would be scaled by $m$, but the corresponding probabilities would not change.
-\begin{center}
-	\begin{tabular}{c|c|c}
-		$L$ & Possible $y[m]$ values & Corresponding probabilities \\
-		\hline
-		2 & $-2, 0, 2$ & $1/4, 1/2, 1/4$ \\
-		3 & $-3, -1, 1, 3$ & $1/8, 3/8, 3/8, 1/8$ \\
-		4 & $-4, -2, 0, 2, 4$ & $1/16, 1/4, 3/8, 1/4, 1/16$ \\
-		5 & $-5, -3, -1, 1, 3, 5$ &  $1/32, 5/32, 5/16, 5/16, 5/32, 1/32$ \\
-		\hline
-	\end{tabular}
-\end{center}
-
-\subsection{(f)}
-
-\FloatBarrier
-\begin{figure}[ht]
-\centering
-\includegraphics[scale=0.7]{q16f.eps}
-\caption{$p_y(y)$ for $L = 5$ (left) and for $L = 6$ (right).}
-\end{figure}
-\FloatBarrier
-
-\textbf{Code:}
-\input{tex/out_prob.tex}
-
-\subsection{(g)}
-\begin{align} \nonumber
-\Phi_{yy}(e^{j\omega}) &= \Phi_{xx}(e^{j\omega})|H(e^{j\omega})|^2 \\ \nonumber
-& =\frac{1}{L^2}|\bigg|\frac{1-e^{-j\omega L}}{1-e^{-j\omega}}\bigg|^2 \\ \nonumber
-& =\frac{1}{L^2}\bigg(\frac{1-e^{-j\omega  L}}{1-e^{-j\omega}}\bigg)\bigg(\frac{1-e^{j\omega L}}{1-e^{j\omega}}\bigg) \\
-&= \frac{1}{L^2}\bigg(\frac{1-\cos(\omega L)}{1 - \cos(\omega)}\bigg)
-\end{align}
-
-\FloatBarrier
-\begin{figure}[ht]
-\centering
-\includegraphics[scale=0.7]{q16g.eps}
-\caption{Power spectrum density of the output of a 4-point moving average filter.}
-\label{fig:q16f}
-\end{figure}
-\FloatBarrier
-
-\subsection{(h)}
-
-The possible values of the output would remain the same, but the probability mass function of the output would not be symmetric. Autocorrelation function and the power spectrum density do not depend on the input distribution, as long as the input remains uncorrelated. 
 
 \end{document}

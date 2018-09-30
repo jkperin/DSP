@@ -142,7 +142,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hmwkTitle}{Homework \#06} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
-\newcommand{\hmwkClass}{EE 264 (Summer 2017)} % Course/class
+\newcommand{\hmwkClass}{EE 264 (Summer 2018)} % Course/class
 \newcommand{\hmwkAuthorName}{Solutions} % Your name
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %----------------------------------------------------------------------------------------
@@ -164,6 +164,77 @@
 \begin{document}
 	
 \section{Problem 1}
+\begin{description}
+
+\item[(a)] Perfect noise cancellation is achieved if $y[n] = \tilde{r}[n]$, where $\tilde{r}[n]$ is the noise $r[n]$ filtered by $H(z)$. Therefore, the transfer function of the adaptive filter $F(z)$ is simply
+\begin{equation}
+	F(z) = H(z)
+\end{equation}
+
+\item[(b)] If $x[n]$ (the desired response) and $r[n]$ (the input) are uncorrelated, then the vector $P$ is the zero vector, since the $i$th entry of $P$ is simply $P_i = \E(x[n]r[n - i]) = 0$. Therefore,
+\begin{equation}
+	W^\star = R^{-1}P = 0.
+\end{equation}
+That is, the Wiener solution is zero, which implies that all the weights of the adaptive filter are zero. As a result, for any input, the adaptive filter produces a zero output.
+
+\item[(c)] Note that the $R$ matrix is simply $R = \sigma^2_r I_{L+1}$, where $I_{L+1}$ is the $(L+1)\times (L+1)$ identity matrix. Therefore, 
+
+\begin{equation}
+	\mu = \frac{0.001}{\mathrm{trace}(R)} = \frac{0.001}{(L+1)\sigma_r^2} = 0.01
+\end{equation}
+
+\item[(d)] Since $R = \sigma^2_rI_{L+1}$, all eigenvalues of $R$ are equal to $\lambda = \sigma_r^2$. The time constant of the LMS algorithm is given by
+
+\begin{align}
+	\tau &= \frac{1}{4\mu\lambda} = 12,500~\text{samples} \\
+	T = \tau/F_s = 0.63~\text{seconds}
+\end{align}
+
+Therefore, it takes roughly $4T = 2.27$ seconds for the LMS algorithm to converge. This
+convergence time could be substantially shortened by increasing the adaptation constant
+ $\mu$.
+ 
+\item[(e)]
+Assuming that $\mu$ still satisfiesthe stability condition $\mu < \mathrm{trace}(R)$, we can make the following conclusions:
+\begin{itemize}
+	\item The convergence time or learning curve time constants are inversely proportional to the adaptation constant. Therefore, the convergence time decreases by increasing $\mu$.
+	\item The minimum mean square error does not depend on the adaptation constant. Hence, it remains the same.
+	\item The excess MSE is proportional to the misadjustment, which in turn is proportional to $\mu$. Hence, the excess MSE increases by increasing $\mu$.
+\end{itemize}
+
+\item[(f)] 
+The code is attached at the end of this file. The requested plots are shown below.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\textwidth]{figs/part1_average_noise.eps}
+	\caption{Average noise averaged over 20 independent noise realizations. Note that convergence happens approximately after 4.5 seconds, which is consistent with part 1(d)}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/part1_coeff.eps}
+		\caption{Adaptive filter coefficients after adaptation.}
+	\end{subfigure}%
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+	%(or a blank line to force the subfigure onto a new line)
+	\begin{subfigure}[h!]{0.5\textwidth}
+		\includegraphics[width=\textwidth]{figs/part1_freqz.eps}
+		\caption{Magnitude and phase response of adaptive filter after adaptation compared to $H(z)$.}
+	\end{subfigure}
+	\caption{Coefficients and frequency response of adaptive filter.}
+\end{figure}
+
+
+Ideally the adaptive filter would converge to $H(z)$. However, since $H(z)$ is IIR the adaptive FIR filter of order $L = 49$ cannot match it perfectly. Note that the first 20 coefficients of the adaptive filter are zero because of the 20-sample delay in $H(z)$.
+
+\end{description}
+
+\subsection{Code for part (1)}
+\input{tex/hw6q1.tex}
+
+\section{Problem 2}
 
 \begin{description}
 	\item[(a)] The DFT of a constant signal is an impulse scaled by the d.c. value: 
@@ -191,7 +262,7 @@
 	\item[(f)] Circularly shifting a signal in time corresponds to multiplication by a complex exponential in frequency. Using part (e), we find that: $X[k] = \{1, -j, -1, j, 1, -j, -1, j\}$.  
 \end{description}
 
-\section{Problem 2}	
+\section{Problem 3}	
 	\begin{center}
 		\begin{tabular}{c|c|p{10cm}}
 			Signal & DFT & Justification \\
@@ -212,7 +283,7 @@
 	\end{center}
 
 
-\section{Problem 3: Linear convolution and circular convolution}	
+\section{Problem 4: Linear convolution and circular convolution}	
 \subsection{(a)}
 We will have $x[n]\ast h[n] = x[n]~\encircle{N}~h[n]$ as long as
 \begin{equation}
@@ -238,7 +309,7 @@ c_{xx}[m] = \mathrm{IFFT}\{|\mathrm{FFT}\{x[m]\}|^2\}
 \end{align}
 Hence this computation requires one fewer FFT.
 
-\section{Problem 4: Overlap-add or overlap-save}	
+\section{Problem 5: Overlap-add or overlap-save}	
 \subsection{(a)}
 
 The code for for part (a) is attached at the end of this question. The implementation assumes FFT length $N = 256$, and $M = 52$.
@@ -329,7 +400,7 @@ See Matlab code below for solution. Plots are shown in part (a).
 \input{tex/overlap_add_and_save.tex}
 
 
-\section{Problem 5: Spectrograms}
+\section{Problem 6: Spectrograms}
 \begin{description}
 	\item[(a)] Spectrograms (a) and (c) were computed with the rectangular window. This can be infered from the amount of leakage in the spectrogram. This is a result from the large sidelobes of the rectangular window.
 	\item[(b)] Spectrograms (a) \& (b) have approximately the same frequency resolution, as do spectrograms (c) \& (d). Note that the the lines in these spectrograms have approximately the same thickness
@@ -358,7 +429,7 @@ See Matlab code below for solution. Plots are shown in part (a).
 	
 \end{description}
 
-\section{Problem 6: Frequency modulation}
+\section{Problem 7: Frequency modulation}
 
 \subsection{(a)}
 

@@ -3,7 +3,7 @@
 clear, clc, close all
 
 N = 100;                   % number of samples in the frequency domain
-L = 51;                    % Filter length (number of coefficients)
+L = 11;                    % Filter length (number of coefficients)
 M = L - 1;                 % Filter order 
 w = linspace(0, pi, N).';  % frequency vector omega (N x 1)
 

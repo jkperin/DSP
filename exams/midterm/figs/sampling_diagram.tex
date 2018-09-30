@@ -1,10 +1,12 @@
 \begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
     \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
     \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=2pt]
+    \tikzstyle{mult}=[draw=black,circle,fill=none,minimum size=1cm, inner sep=2pt]
 
 	\node[node] (xc) {};    
     \node[block, right=1cm of xc, text width = 1.5cm, align= center] (CTD) {C-to-D};
-    \node[block, right=1cm of CTD, text width = 1.5cm, align= center] (Q) {Quantizer};
+    \node[mult, right=2cm of CTD, align= center] (Q) {\Large $\times$};
+    \node[node, below=1cm of Q] (ec) {};  
     \node[block, right of=Q, text width = 1cm, align= center] (L) {$~~2$};
     \draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(L.south)-(5pt, 0)$) -- ($(L.north)-(5pt, 0)$) {};
     \node[block, right of=L, text width = 1.5cm, align= center] (H) {$H(z)$};
@@ -15,20 +17,25 @@
     \path (Q) edge (L);
     \path (L) edge (H);
     \path (H) edge (yc);
+    \path (ec) edge (Q);
     
+    \coordinate (mid0) at ($(CTD.west)!0.6!(Q.east)$);
     \coordinate (mid1) at ($(Q.east)!0.5!(L.west)$);
     \coordinate (mid2) at ($(L.east)!0.5!(H.west)$);
     
-    \node[above = 0.5mm of mid1] {$x[n]$};
-    \node[below = 0.5mm of mid1] {$X(e^{j\omega})$};
+    \node[above = 0.5mm of mid0] {$x[n]$};
+    \node[below = 0.5mm of mid0] {$X(e^{j\omega})$};
+    \node[above = 0.5mm of mid1] {$x_d[n]$};
+    \node[below = 0.5mm of mid1] {$X_d(e^{j\omega})$};
     \node[above = 0.5mm of mid2] {$x_e[n]$};
     \node[below = 0.5mm of mid2] {$X_e(e^{j\omega})$};
+    \node[right = 0.5mm of ec] {$e^{-j\pi n}$};
     \node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
     \node[below = 0mm of xc, text width = 1cm, align=center] {$X_c(j\Omega)$};
-    \node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
-    \node[below = 0mm of yc, text width = 1cm, align=center] {$Y(e^{j\omega})$};
+    \node[above = 0mm of yc, text width = 1cm, align=center] {$x_f[n]$};
+    \node[below = 0mm of yc, text width = 1cm, align=center] {$X_f(e^{j\omega})$};
     \node[align=center, text width=2cm, below] at ($(CTD.south)$) {$\Omega_s = \frac{2\pi}{T}$};
-    
-    \draw[dashed] ($(CTD.north west)+(-0.25cm, 0.25cm)$) rectangle ($(Q.south east)+(0.25, -0.75cm)$);
-    \node[below] at ($(CTD.south west)!0.5!(Q.south east) -(0, 0.75cm)$) {ADC};
+       
+    %\draw[dashed] ($(CTD.north west)+(-0.25cm, 0.25cm)$) rectangle ($(Q.south east)+(0.25, -0.75cm)$);
+    %\node[below] at ($(CTD.south west)!0.5!(Q.south east) -(0, 0.75cm)$) {ADC};
 \end{tikzpicture}

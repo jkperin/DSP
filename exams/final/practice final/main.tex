@@ -1,0 +1,231 @@
+\documentclass[10pt]{article}
+\usepackage{geometry}
+\geometry{a4paper}
+\pagestyle{myheadings}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{fancyvrb} 
+\usepackage[numbered]{bookmark}
+\usepackage{pgfplots}
+\usepackage{ifthen}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{placeins} % for FloatBarrier
+\usepackage[makeroom]{cancel}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc, angles,quotes}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{decorations.markings}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../figs/}}
+
+\definecolor{blue2}{RGB}{51, 105, 232}  
+\definecolor{red2}{RGB}{213, 15, 37}  
+\definecolor{green2}{RGB}{0, 153, 37}  
+
+\input{preamble.tex}
+
+%%%%%%%%%%%%% SOLUTIONS %%%%%%%%%%%%%%%%%
+\def\SOLUTIONS{1} % change to 1 to produce solutions
+\def\SolutionsColor{red2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Header
+\if\SOLUTIONS1
+	\markboth{\em \color{\SolutionsColor} \textbf{EE264: Sample final exam question}}{\em \color{\SolutionsColor} \textbf{EE264: Sample final exam question}}
+    \title{EE 264 Sample final exam question}
+\else
+	\markboth{\em EE 264 Sample final exam question -- Summer 2018}{\em EE264: Sample final exam question, Summer 2018}
+    \title{EE 264 Final}
+\fi
+
+% Document
+\begin{document}
+% \input{cover.tex}
+\pagebreak
+
+
+\section*{Noise canceling}
+
+In this question you will evaluate a noise canceling technique based on cross-correlation.
+
+Figure~\ref{fig:earpod} shows the diagram of a headset with noise canceling capability. In addition to the speaker, the headset contains two microphones. The rear microphone captures \textit{mainly} the outside noise, while the front microphone captures both the outside noise and the signal produced by the speaker. The signal captured by the front microphone is approximately equal to what a person wearing that headset would hear. Hence, the goal is to use the signals recorded by both microphones to calculate a signal that when outputted by the speaker would minimize the noise perceived by the front microphone, and consequently by the user.
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.7]{figs/apple_headphone.png}
+	\caption{Diagram of wireless headset with noise canceling capability. Source: Apple EarPod patent (US 20150245129 A1).}
+	\label{fig:earpod}
+\end{figure}
+\FloatBarrier
+
+\FloatBarrier
+\begin{figure}[h!]
+	\centering
+	\resizebox{0.7\textwidth}{!}{\input{figs/noise_cancelling.tex}}
+	\caption{Block diagram of noise canceling systems. For convenience, diagram uses discrete-time notation.}
+	\label{fig:noise_cancelling_diagram1}
+\end{figure}
+\FloatBarrier
+
+Figure~\ref{fig:noise_cancelling_diagram1} illustrates a diagram of this process. The speaker produces a signal $s[n] + v[n]$. $s[n]$ is the desired signal like a song, for instance. The signal $v[n]$ is the \textit{anti-noise} which will ideally cancel the noise perceived by the user and by the front microphone. The transfer function $H(z)$ is \underline{unknown} and it relates the noise in the rear microphone to the noise in the front microphone. To keep things simple, we will assume that $H(z)$ is \underline{time invariant}. Clearly, if we knew $H(z)$, we could make 
+\begin{equation} \label{eq:v}
+	v[n] = -h[n]\ast x[n] \implies y[n] \approx s[n]
+\end{equation}
+
+Therefore, the noise canceling problem boils down to estimating the filter $h[n] \Longleftrightarrow H(z)$.
+
+To solve the following questions, you will need the files:
+
+\begin{enumerate}
+	\item \texttt{saw\_noise\_front\_mic.wav}: recording from the front microphone when $x[n]$ is the noise produced by a circular saw tool.
+	\item \texttt{saw\_noise\_rear\_mic.wav}: recording from the rear microphone when $x[n]$ is the noise produced by a circular saw tool.
+	\item \texttt{noise\_canceling.m}: this script loads the audio files and splits them into training and testing vectors. You should use the \texttt{*\_train} vectors for estimating the parameters and the \texttt{*\_test} vectors for testing your implementation.
+\end{enumerate}
+
+\begin{description}
+	\item [(a)] (5 points) Show that when the signal $v[n]$ is not present, the cross-correlation between $y[n]$ and $x[n]$, $\phi_{yx}[m]$ is given by
+	\begin{equation}
+		\phi_{yx}[m] = \phi_{xx}[m]\ast h[m],
+	\end{equation}
+	where $h[m]$. Assume that the noise $x[n]$ and the signal $s[n]$ are uncorrelated. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor}
+		
+		\begin{align*}
+		\phi_{yx}[m] &= \E(y[m]\ast x^*[-m]) \tag{definition} \\
+		&= \E((s[m] + h[m]\ast x[m])\ast x^*[-n]) \tag{since $y[n] = s[n] + h[n]*x[n]$} \\
+		&= \E(h[m]\ast x[m]\ast x^*[-m]) \tag{$s[n]$ and $x[n]$ are uncorrelated} \\
+		&= h[m]\ast \E(x[m]\ast x^*[-m]) \tag{$h[n]$ is deterministic} \\
+		&= h[m]\ast \phi_{xx}[m]
+		\end{align*}
+	}\fi
+	
+	\item [(b)] (3 points) Using the result from part (a), write an expression for $H(e^{j\omega})$ in terms of the PSD of $x[n]$ and in terms of $\Phi_{yx}[m] = \mathcal{F}\{\phi_{yx}[m]\}$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Convolution in time domain means multiplication in the frequency domain:
+		\begin{align*}
+		H(e^{j\omega}) = \frac{\Phi_{yx}(e^{j\omega})}{\Phi_{xx}(e^{j\omega})}
+		\end{align*}
+	}\fi
+		
+	\item[(c)] (7 points) Using any of the PSD estimation techniques covered in class, estimate the PSD of $x[n]$. Plot your estimate.
+	
+	\textit{Note:} to estimate the PSD, use the vectors \texttt{x\_train} and \texttt{y\_train} loaded by the script \texttt{noise\_canceling.m}.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} These solutions used the Blackman-Tukey method with Bartlett window of legnth 1023. This calculation could be performed using the function \texttt{blackman\_tukey\_psd.m} available on Canvas. See code for details. The plot is shown below.
+		
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_x_psd.eps}
+			\caption{$\Phi_{xx}(e^{j\omega})$ estimated using the Blackman-Tukey method.}
+			\label{fig:noise_cancel_x_psd}
+		\end{figure}
+		\FloatBarrier
+	}\fi
+	
+	\item[(d)] (7 points) Use the modified Blackman-Tukey PSD estimation method discussed in class to estimate $\Phi_{yx}(e^{j\omega}) = \mathcal{F}\{\phi_{yx}[m]\}$. Plot your estimate.
+
+	\textit{Hint:} make sure to use \texttt{ifftshift} before computing the FFT in order to account for the indexing of the FFT.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} We can compute the Fourier transform of the cross-correlation function using the Blackman-Tukey algorithm as discussed in class:
+		
+		\begin{align*}
+		&\texttt{phi\_yx\_hat = xcorr(y, x, M-1, 'unbiased')} \\
+		&\texttt{s = phi\_yx\_hat.*window} \\
+		&\texttt{S = fftshift(fft(ifftshift(s)))}
+		\end{align*}
+		
+		Note that since the cross-correlation function is not necessarily even symmetric, using \texttt{abs()} or \texttt{real()} functions after the FFT calculation would produce incorrect results.
+		
+		The magnitude of the estimated $\Phi_{yx}(e^{j\omega})$ is shown in the plot below. See code for details.
+			
+		\FloatBarrier
+		\begin{figure}[h!]
+				\centering
+				\includegraphics[scale=0.7]{figs/noise_cancel_cross_psd.eps}
+				\caption{$\Phi_{yx}(e^{j\omega})$ estimated using the Blackman-Tukey method}
+				\label{fig:noise_cancel_cross_psd}
+		\end{figure}
+		\FloatBarrier
+		}\fi
+	
+	\item[(e)] (5 points) Combine your results from parts (b) through (d) to obtain an estimate for $H(e^{j\omega})$. Plot the magnitude response of $H(e^{j\omega})$ in dB.
+	
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Combining the previous results yields
+				
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_Hest.eps}
+			\caption{Magnitude of estimated $H(e^{j\omega})$.}
+			\label{fig:noise_cancel_Hest}
+		\end{figure}
+		\FloatBarrier
+	}\fi
+	
+	\item[(f)] (13 points) Use the leasts-squares method to design an FIR filter to approximate $H(e^{j\omega})$. Note that your filter \underline{does not} have to be linear phase, but it has to have \underline{real coefficients}. Additionally, your filter should have 50 coefficients. On the same graph, plot the magnitude of your filter and the magnitude of the desired response $H(e^{j\omega})$.
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} Since the filter must have 50 coefficients, the order of the filter is $M = 49$. See code for design details. The figure below shows the magnitude of the FIR filter:
+		\FloatBarrier
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[scale=0.7]{figs/noise_cancel_Hfir.eps}
+			\caption{Magnitude designed FIR filter.}
+			\label{fig:noise_cancel_Hfir}
+		\end{figure}
+		\FloatBarrier	
+	}\fi
+	
+	\item[(g)] (5 points) Use your filter to compute the signal $v[n]$ according to \eqref{eq:v} and use this result to remove the noise from the  signal $y[n]$. Specifically, define
+	\begin{equation}
+		y_{clean}[n] = y[n] + v[n].
+	\end{equation}
+	
+	For these calculations, use the vectors \texttt{x\_test} and \texttt{y\_test} in the script \texttt{noise\_cancelling.m} to obtain the vector \texttt{y\_clean}. Use the function \texttt{sound} to play the new signal $y_{clean}[n]$ and comment on whether the noise was effectively canceled. 
+	
+	\if\SOLUTIONS1 {\color{\SolutionsColor} As indicated in the problem statement, we can make
+		\begin{align*}
+			&y_{clean}[n] = y[n] + v[n] = y[n] - h_{FIR}[n]\ast x[n] \\
+			&\texttt{y\_clean = y\_val - filter(h\_FIR), 1, x\_val)}
+		\end{align*}
+		
+		Although this does not result in perfect noise cancellation, it does improve the quality considerably.
+	}\fi
+
+\end{description}
+
+\textbf{Note:} Although this noise canceling technique works well, in practice digital noise canceling systems use adaptive filters, since the cross-correlation computations used in this method require too much data to be accurate. However, this technique can always be applied to remove noise from one signal when we have two correlated measurements of the noise.
+
+\if\SOLUTIONS1 
+	\subsection*{Code for Problem 2}
+	\input{tex/noise_canceling_sols.tex}
+\fi
+
+
+\end{document}

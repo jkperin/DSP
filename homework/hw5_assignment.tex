@@ -45,22 +45,63 @@
 \begin{centering}
 	{\large Stanford University}\\
 	{\large EE 264: Digital Signal Processing}\\
-	{\large Summer, 2017} \\
+	{\large Summer, 2018} \\
 	\mbox{}\\
 	{\large Homework \#05}\\
 	\mbox{}\\
 \end{centering}
-\noindent Date assigned:  August 3, 2017 \hfill
-Date due: August 10, 2017\\
+\noindent Date assigned:  July 28, 2018 \hfill
+Date due: August 5, 2018\\
 \noindent \rule{6.5 in}{0.5pt}
 %\mbox{}\\
-\noindent {\bf Reading:}  This assignment covers primarily lecture 9, which corresponds to chapter 7 of the textbook {\bf DTSP 3e}. \\
-\noindent {\bf Homework submission:}  Please submit your solutions on Canvas. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if applicable). \\
+\noindent {\bf Reading:}  This assignment covers primarily lecture 8 - July 30 (Problem 1-2) and lecture 9 - August 1 (Problem 3-6). \\
+\noindent {\bf Homework submission:}  Please submit your solutions on Gradescope. Create a single .pdf file containing all your analytical derivations, sketches, plots, and Matlab code (if any). \\
 \noindent
 \rule{6.5 in}{0.5pt}
 \mbox{}\\
 
-\noindent {\bf Problem 1: Classic filters (25 points)} 
+\noindent {\bf Problem 1: (25 points)}
+
+Consider the system of Example 5.8 of the textbook. Its system function is
+\begin{equation}
+H(z) = 0.05634\frac{(1+z^{-1})(1 -1.0166z^{-1} + z^{-2})}{(1-0.683z^{-1})(1 -1.4461z^{-1} + 0.7957z^{-2})}
+\end{equation}
+
+\begin{description}
+	\item[(a)] Draw the signal flow graph of an implementation of the system as a cascade of a second-order system with a first-order system. Mark the values of the coefficients on the signal flow graph.
+	\item[(b)] Draw a direct form II signal flow graph for implementing the system as a single third-order flow graph. 
+	\item[(c)] Plot the pole-zero diagram of $H(z)$ for the unquantified coefficients. You may use \texttt{conv} to multiply out the numerator and denominator and obtain the coefficients vectors \texttt{a} and \texttt{b}. Then use \texttt{zplane} to plot the pole-zero diagram.
+	\item[(d)] Quantize the filter coefficients with 6 bits to the right of the imagined binary point. Call the Q6-quantized coefficient vectors \texttt{ah} and \texttt{bh}. Then compare the pole-zero locations using
+	\begin{align*}
+		&\texttt{plot(roots(b),`ok');~plot(roots(a),`xk'); hold on} \\
+		&\texttt{plot(roots(bh),`or');~plot(roots(ah),`xr');}
+	\end{align*}
+	
+	Also plot the log magnitude of the frequency response of both the ``unquantized" and Q6-quantized coefficients on the same graph. Hand in both plots. You should observe that there is very little difference between the quantized and unquantized systems. What is your intuition about why this is so?
+	
+\end{description}
+
+\mbox{}\\
+\newpage
+\noindent {\bf Problem 2: (25 points)} (from the midterm of Spring-2014)
+
+The following flow graphs represent equivalent difference equations for implementing a digital \underline{all-pass filter}. We will compare these systems when implemented with 16-bit fixed-point arithmetic. In the following diagrams, the signal values and constant multipliers are all scaled as $Q_{15}$ integers. The multiplications shown are quantized to 16 bits (15 bits plus a sign bit) \underline{directly after} the multiplication and \underline{before} any additions are done. Answer the questions below about the flow graphs.
+
+\begin{center}
+	\input{figs/flow_graphs_midterm_2014.tex}
+\end{center}
+
+\begin{description}
+	\item[(a)] What is the system $H(z)$ that describes all the above systems when the difference equations are implemented without quantization?
+	\item[(b)] Re-draw the signal plow graphs inserting noise sources to represent quantization of the multiplications. Mark each of them with the symbol $\sigma_{15}^2$ denoting the average power of the source. Give a formula for $\sigma_{15}^2$.
+	\item[(c)] Assuming that $|a|<1$, and that the output of each system is represented as $\hat{y}[n] = y[n] + f[n]$, determine the power spectrum, $\Phi_{ff}(e^{j\omega})$, of the noise component, $f[n]$, for each flow graph. Be sure to combine independent noise sources to simplify the analysis.
+	\item[(d)] For which system will the total noise power be the largest? Determine a closed-form formula for the largest total noise power, $\sigma_f^2$. Your equations should be a function of $\sigma_{15}^2$ and $a$ only.
+	
+\textit{Hint:} When calculating the total noise power, please avoid the frequency domain integration.
+\end{description}
+
+
+\noindent {\bf Problem 3: Classic filters (25 points)} 
 
 This question will help you familiarize yourself with designing classic filters such as Butterworth, Chebyshev type I \& II, and elliptic filter using Matlab. 
 \begin{description}
@@ -68,7 +109,7 @@ This question will help you familiarize yourself with designing classic filters 
 	
 	\textit{Note:} For this question you may use the Matlab functions \texttt{butter, cheby1, cheby2}, and \texttt{ellip}.  
 	
-	\item[(b)] Use your filters to filter the speech signal \texttt{speech\_dft.wav}, available on Canvas/Files/Matlab. This speech signal was recorded with sampling frequency of 22.05 kHz. Hence, before filtering it with your filters, you need to use your knowledge on changing the sampling rate by a non-integer factor to resample the signal to 16 kHz. Use the smallest upsampling and downsampling integer factors possible.
+	\item[(b)] Use your filters to filter the speech signal \texttt{speech\_dft.wav}, available on Canvas. This speech signal was recorded with sampling frequency of 22.05 kHz. Hence, before filtering it with your filters, you need to use your knowledge on changing the sampling rate by a non-integer factor to resample the signal to 16 kHz. Use the smallest upsampling and downsampling integer factors possible.
 	 
 	\textit{Hint:} Use the function \texttt{decimate} after upsampling, but remember that the lowpass filter after interpolation must have gain equal to the upsampling factor $L$.
 	
@@ -81,7 +122,7 @@ This question will help you familiarize yourself with designing classic filters 
 \end{description}
 
 \newpage
-\noindent {\bf Problem 2: Notch filter for ECG signals (35 points)}
+\noindent {\bf Problem 4: Notch filter for ECG signals (35 points)}
 
 Notch filters are stopband filters with characteristically narrow stopband. They are used to remove specific frequency components from signals. In this problem, you will design digital notch filters to remove 60 Hz interference from an electrocardiogram (ECG) signal. 60 Hz is the frequency of alternating current (AC) in the electric power grid of most countries. The 60-Hz interference appears in many applications, and in particular, in biological signal recordings.
 
@@ -110,7 +151,7 @@ You will design a discrete-time version of this filter, and use it to filter an 
 \end{figure}
 \FloatBarrier
 
-This ECG signal was sampled with sampling period $T = 3$ ms and it's available on Canvas/Files/Matlab/\texttt{ecg\_recordings.mat}. This file also contains a ``clean'' ECG signal, which you can use for comparison. Use the Matlab script \texttt{notch\_filter\_ecg\_template.m} to load the recordings and write your code to solve the following questions.
+This ECG signal was sampled with sampling period $T = 3$ ms and it's available on Canvas. This file also contains a ``clean'' ECG signal, which you can use for comparison. Use the Matlab script \texttt{notch\_filter\_ecg\_template.m} to load the recordings and write your code to solve the following questions.
 
 \begin{description}
 	\item[(a)] Choose appropriate values of $b$ and $\lambda$ that would make the notch filter given in \eqref{eq:analog-notch-filter} suitable for this application. There is more than one right answer. 
@@ -152,7 +193,7 @@ This ECG signal was sampled with sampling period $T = 3$ ms and it's available o
 \end{description}
 
 \mbox{}\\
-\noindent {\bf Problem 3: Hilbert transformer (25 points)}
+\noindent {\bf Problem 5: Hilbert transformer (25 points)}
 
 In Homework \#4 you saw some applications of the Hilbert transform. In this problem, we will focus on the Hibert transformer, which is an LTI system used to calculate the Hilbert transform of time-domain signals. More specifically, the Hilbert transformer is used to phase-shift signals by 90 degrees. Hence, the output of a Hilbert transformer to a cosine is a sine of same frequency. This operation has applications in digital communication, radar systems, and medical imaging.
 
@@ -227,7 +268,7 @@ Therefore, they'll look like an all-pass except around $\omega = 0$ and $\omega 
 \end{description}
 
 \mbox{}\\
-\noindent {\bf Problem 4: Linear equalization (25 points)}
+\noindent {\bf Problem 6: Linear equalization (25 points)}
 
 Figure~\ref{fig:linear_eq} shows the block diagram of a digital communication system. In this system, a sequence of bits $x[n]$ is transmitted over a channel, which is a causal LTI system with $z$-transform $C(z)$. Since the channel is causal its output depends not only on the present bit, but also on previous bits transmitted over the channel. Hence, the output of the channel is the result of interference of many bits. This phenomenon is called \textit{inter-symbol interference} (ISI). In addition to ISI, after the channel, a white and zero-mean Gaussian noise $r[n]$ with average power $\sigma^2 = 0.001$ is added to the signal. This models the noise from the receiver circuitry.
 
@@ -257,7 +298,7 @@ In the following questions you will design FIR filters to approximate $H(z)$. In
 	
 	\textit{Hint:} use the Matlab function \texttt{impz} to obtain the impulse response of $H(z)$.
 			
-	\item[(b)] Test your linear equalizer using the function \texttt{simple\_channel.m}, available on Canvas/Files/Matlab. This function takes one parameter \texttt{h}, which is the coefficients of the FIR filter you designed. The function returns the bit-error rate (BER) (number of wrongly detected bits divided by total number of bits) of this system when the receiver equalizer has coefficients \texttt{h}. Hence, \texttt{simple\_channel(1)} returns the BER of the system without any equalization. Report the BER \underline{with} and \underline{without} equalization. For the given noise power, the BER of the equalized system should be close to 0. 
+	\item[(b)] Test your linear equalizer using the function \texttt{simple\_channel.m}, available on Canvas. This function takes one parameter \texttt{h}, which is the coefficients of the FIR filter you designed. The function returns the bit-error rate (BER) (number of wrongly detected bits divided by total number of bits) of this system when the receiver equalizer has coefficients \texttt{h}. Hence, \texttt{simple\_channel(1)} returns the BER of the system without any equalization. Report the BER \underline{with} and \underline{without} equalization. For the given noise power, the BER of the equalized system should be close to 0. 
 	\item[(c)] \textbf{Non-linear phase least-squares algorithm}. Now design an FIR filter using the least squares algorithm to approximate $H(z)$. Since $H(z)$ has no discontinuities, you can assume that the weight function is $W(\omega) = 1~\forall~\omega$. Moreover, since this filter should not be linear phase, you cannot use Matlab's \texttt{firls} function. Instead, use the least-squares algorithm as described in class. You may use the script \texttt{predicing\_bandlimited\_signals.m} as a starting point.
 	
 	On the same graph, plot the frequency response of your FIR filter and H(z). On a different graph, plot the \underline{unwrapped} phase response of your FIR filter and H(z).

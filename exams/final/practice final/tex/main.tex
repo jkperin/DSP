@@ -1,0 +1,123 @@
+\documentclass[10pt]{article}
+\usepackage{geometry}
+ \geometry{a4paper}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{listings} % Required for insertion of code
+\usepackage{courier} % Required for the courier font
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{placeins}
+\usepackage{color} 
+\usepackage{fancyvrb} 
+\usepackage{setspace}
+\usepackage[numbered]{bookmark}
+\usepackage{pdfpages}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../figs/}}
+
+\usepgfplotslibrary{fillbetween}
+\usetikzlibrary{positioning}
+
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{calc}
+
+\usepgfplotslibrary{groupplots}
+
+\pgfplotsset{compat=newest} 
+
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+\begin{document}
+\doublespacing
+\input{cover-Wed.tex}
+\pagebreak
+
+
+\section*{Nonlinear Plant Identification}
+
+\subsection*{General description}
+
+As discussed in class, we can use adaptive filters to model unknown plants. In many practical applications, however, the plant may exhibit some nonlinear characteristic that cannot be accurately modeled by linear filters. In this exam, you'll design and compare linear and nonlinear adaptive filters to model a given nonlinear plant.
+
+The typical block diagram of plant identification problems is shown in Figure~\ref{fig:block-diagram}. An input signal $r_k$ is presented to the plant and to the adaptive filter. The output of the plant $d_k$ is the desired response that we use to compute the error $\epsilon_k$. As usual, the output of the adaptive filter $y_k$ is expressed as the inner product of an input vector $X_k$ and the weight vector $W_k$. In a linear adaptive filter, the input vector depends only on linear or affine terms of the input $r_k$, whereas in a nonlinear adaptive filter, the input vector also contains some nonlinear terms of the input $r_k$.
+
+\begin{figure}[h!]
+	\flushleft
+	\resizebox{\linewidth}{!}{\input{block-diagram.tex}}
+	\caption{Block diagram for nonlinear plant identification problems. } \label{fig:block-diagram}
+\end{figure}
+
+Throughout this exam, we'll assume that the nonlinear plant has the structure shown in Figure 1. It has an input linear filter $H_1(z)$ followed by some nonlinear operation $g(\cdot)$, followed by another linear filter $H_2(z)$. We'll also assume that
+\begin{equation}
+H_1(z) = H_2(z) = -0.0078 + 0.0645z^{-1} +  0.4433z^{-2} + 0.4433z^{-3}+ 0.0645z^{-4} -0.0078z^{-5}
+\end{equation}
+\begin{equation}
+g(u) = \exp(u/2) - 1.
+\end{equation}
+
+The nonlinear plant is provided to you in the Matlab function \texttt{nonlinear\_plant.m}. To calculate the plant output to an input signal \texttt{r}, you can simply call \texttt{d = nonlinear\_plant(r)}.
+
+We'll consider two types of adaptive filters. In the first part of the exam, the adaptive filter consists of a finite impulse response (FIR) filter $F(z) = w_1 + w_2z^{-1}+\ldots+w_{L+1}z^{-L}$, and a bias weight $w_0$. Thus, we have a total of $L+2$ weights. A FIR filter is the typical transversal filter you have encountered many times in homework problems. The bias weight is simply a weight whose input is always $+1$. The bias weight is necessary because the plant nonlinearity $g(u)$ is not symmetric about $u = 0$. Therefore, the plant output may be biased even when the plant input signal has zero mean. The sole purpose of $w_0$ is to track the mean of the desired response $\E[d_k]$.
+
+In the second part of the exam, the adaptive filter consists of a nonlinear filter based on the truncated discrete-time Volterra series\footnote{\normalsize You can think of Volterra series as a Taylor series with memory. In other words, the output depends not only on the input at present time $x(k)$, but it also depends on the input at past times $x(k-1), \ldots, x(k-L)$. The series used here is causal and it is truncated in time by $L$ past samples, and it is truncated on the number of cross products of the input $p = 1, 2$. Interestingly, it can be shown that Volterra series can model any dynamic nonlinear system with arbitrarily small error, provided that $L$ and $p$ are large enough.} shown below:
+\begin{align} \nonumber \label{eq:volterra}
+y(k) &= w_0 + \sum_{p = 1}^{2}\sum_{n_1 = 0}^L\sum_{n_2 = n_1}^L w_{p}(n_1, n_2)\prod_{j = p}^2x(k-n_j) \\
+& = w_0 + \sum_{n = 0}^Lw_2(n)x(k-n) + \sum_{n = 0}^Lw_1(n)x^2(k-n) + \sum_{n_1 = 0}^{L-1}\sum_{n_2 = n_1+1}^L w_{1}(n_1, n_2)x(k-n_1)x(k-n_2),
+\end{align}
+where $x(k)$ is the input signal and $y(k)$ is the output signal.  $w_p(n_1, n_2)$ is commonly referred to as discrete-time Volterra kernel, but for our purposes, it will be weights of the adaptive filter. Note that we have abbreviated the notation by writing $w_1(n)$ and $w_2(n)$. Formally, $w_1(n) = w_1(n, n)$ and $w_2(n) = \sum_{n_1 = 0}^{n}w_2(n_1, n)$. Following this convention, $w_0, w_2(n), w_1(n)$, and $w_1(n_1, n_2)$ with $n_1\neq n_2$ are the weights of the adaptive nonlinear filter. 
+
+As an example, Figure~\ref{fig:volterra-diagram} shows the block diagram of a nonlinear filter based on Volterra series for $L = 2$. Inspecting \eqref{eq:volterra} and Figure~\ref{fig:volterra-diagram}, we see that, as before, we have a bias weight $w_0$ and the weights $w_2(n), n = 0, \ldots, L$, corresponding to linear terms of the input $x(k),\ldots,x(k-L)$. But now we also have the weights $w_1(n), n = 0, \ldots, L$, which weigh the input squared $x^2(k),\ldots,x^2(k-L)$, and the weights $w_1(n_1, n_2), n_1\neq n_2$, which weigh the cross-products of the input at different times $x(k)x(k-1),\ldots,x(k-L+1)x(k-L)$. Thus, we have a total of $1 + (L+1) + (L+1) + \binom{L+1}{2}$ weights.
+
+\begin{figure}[t!]
+	\centering
+	\resizebox{\linewidth}{!}{\input{volterra-filter-diagram.tex}}
+	\caption{Block diagram of a nonlinear filter based on truncated Volterra series for $L = 2$.} \label{fig:volterra-diagram}
+\end{figure}
+
+This is a nonlinear filter because its output depends on nonlinear terms of the input. Nevertheless, the output is a linear function of the weights and consequently the performance surface is a hyper-paraboloid whose gradient is a linear function of the weights. Therefore, we can still use the LMS algorithm to calculate the weights of the Volterra series. In fact, the LMS algorithm will find the weights that best fit the data ($x(k), y(k)$) in the least squares sense. 
+
+Another way to realize nonlinear filters is through neural networks, but we won't cover that in this exam.
+
+\pagebreak
+
+\section*{Questions (100 points total)} Based on the given information, please answer the following questions. You may use the Matlab files \texttt{part1\_template.m} and \texttt{part2\_template.m} as templates to develop your answers. These files also contain some Matlab hints that you may find useful while developing the two types of adaptive filters. Please include your code in your solutions file.
+
+\begin{enumerate}
+	\item\textit{Linear adaptive filter}: Let's start by modeling the nonlinear plant using a linear adaptive filter that consists of a FIR filter with the addition of a bias weight. With the LMS algorithm, train the adaptive filter using a white and uniformly distributed signal $r_k$ with zero mean and variance $\sigma_r^2 = 4$. Assume that $L = 9$, so that the adaptive filter has a total of $L+2 = 11$ weights, including the bias weight. Let the number of training iterations be 2000. Assume the adaptation constant $\mu = 0.01\mu_{max}$, where $\mu_{max} = 1/\mathrm{tr}(R)$. 
+	\begin{enumerate}[label=\textbf{(\Alph*)}]
+		\item What is the value of $\mu$? Remember to include the bias weight input when calculating $\mathrm{tr}(R)$. \textbf{(5 points)}
+		\item Plot the experimental learning curve averaged over 100 independent runs. On a separate graph, plot the converged weight vector you obtained at the last iteration of the last run. \textbf{(15 points)}
+		\item Use the last 200 samples of the averaged learning curve to estimate the minimum mean square error (MMSE) and report its value. \textbf{(5 points)}
+		\item Suppose you had trained the adaptive filter with a training signal $r_k$ having much smaller variance than before, let's say $(L+1)\sigma_r^2 << 1$. Assume that the value of $\mu$ is given as before $\mu = 0.01/\mathrm{tr}(R)$, but it was recalculated for the new input signal variance. Would the convergence time of the learning curve increase, decrease, or remain the same? What about the MMSE? Justify your answers. Hint: the plant becomes approximately linear when the input signal is small.  \textbf{(10 points)}
+		\item Apply the test signal $x_{test}(t) = 2\cos\big(\frac{\pi}{10} t\big), t = 0, 1,\ldots, 50$ to the plant and to the converged adaptive filter and plot their outputs on the same graph. As in part (B), you should use the weights obtained at the last iteration of the last run. Note that you trained the adaptive filter with a random signal, and now you're testing it with a deterministic sinusoidal signal. \textbf{(5 points)}
+		
+		Note: During testing you should treat the adaptive filter as a fixed filter whose coefficients are the coefficients you plotted in part (B).
+	\end{enumerate}
+		
+	\item\textit{Nonlinear adaptive filter}: Now let's model the plant using the nonlinear adaptive filter based on the truncated Volterra series. Similarly to part 1, assume that $L = 9$, but now we have a total of $2(L+1) + \binom{L+1}{2} + 1 = 66$ weights.
+	
+	\begin{enumerate}[label=\textbf{(\Alph*)}]
+		\item Describe how we can use the LMS algorithm to adapt the weights $w_p$. Specifically, what should be the input vector $X_k$ and the weight vector $W_k$ in the LMS weight update equation? Your answers should be in terms of the input signal $r_k, \ldots, r_{k-L}$, and the weights $w_0, w_1(n), w_2(n), n = 0, \ldots, L$, and $w_1(n_1, n_2), n_1\neq n_2$. \textbf{(10 points)} 
+		\item Implement your method from part (A) and train the adaptive filter using a white and uniformly distributed input signal $r_k$ with zero mean and variance $\sigma_r^2 = 4$. Assume $\mu = 4\times 10^{-4}$ and adapt over 2000 iterations. Plot the learning curve averaged over 100 independent input realizations. On a separate graph, plot the converged weight vector obtained at the last iteration of the last  run. \textbf{(20 points)} 
+		\item Use the last 200 samples of the averaged learning curve to estimate the MMSE. Compare this result to what you obtained in 1.C. \textbf{(5 points)} 
+		\item Apply the test signal $x_{test}(t) = 2\cos\big(\frac{\pi}{10} t\big), t = 0, 1,\ldots, 50$ to the plant and to the converged adaptive filter and plot their outputs on the same graph. As before, use the weights obtained at the last iteration of the last run. Was there any improvement compared to part 1.E? \textbf{(5 points)}
+		\item Repeat parts (B) through (D), but now assume that the variance of the training signal $r_k$ is $\sigma_r^2 = 0.4$. Use $\mu = 4\times10^{-3}$. Compare your new results to what you had obtained previously and explain any discrepancies. \textbf{(20 points)}
+	\end{enumerate}
+	
+\end{enumerate}
+
+
+\end{document}

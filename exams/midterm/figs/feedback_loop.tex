@@ -1,0 +1,30 @@
+\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.2cm, font=\sffamily]
+    \tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+    \tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=2pt]
+    \tikzstyle{add}=[draw=black,circle,fill=none,minimum size=0.75cm, inner sep=2pt]
+
+	\node[node] (xc) {};    
+	\node[add, right=1cm of xc, align=center] (S) {\Large $+$};
+    \node[block, right=1cm of S, text width = 1cm, align= center] (F) {$F(z)$};
+	\node[block, below=0.5cm of F, text width = 1cm, align= center] (G) {$G(z)$};
+    \coordinate[right=2cm of F] (yc) {};
+    
+    \node[node] (mid) at ($(F.east)!0.5!(yc.west)$) {};
+    
+    \path (xc) edge (S);
+    \path (S) edge (F);
+    \draw[-] (F) -- (mid);
+    \draw (mid) -- (yc);
+    \draw (mid) |- (G);
+    \draw (G) -| (S);
+    
+    \node[above = 0.5mm of xc] {$x[n]$};
+    \node[above = 0.5mm of yc] {$y[n]$};
+    
+    \node[left] at ($(S.north west)$) {\large $+$};
+    \node[below] at ($(S.south east)$) {\large $-$};
+
+    \draw[dashed] ($(S.north west)+(-0.5cm, 0.5cm)$) rectangle ($(G.south east)+(1.5, -0.25cm)$);
+	\node[below] at ($(G.south west) -(0, 0.5cm)$) {$H(z)$};
+
+\end{tikzpicture}

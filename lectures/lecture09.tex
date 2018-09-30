@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -55,14 +55,13 @@
 }
 
 %% 
-% \def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex} % some definitions
 
 %% 
 \title[EE 264]{Filter Design}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{August 3, 2017}
+\date{July 30, 2018}
 
 \begin{document}
 
@@ -94,7 +93,7 @@
 \begin{block}{In practice}
 	\vspace{-0.5cm}
 	\begin{center}
-		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+		\resizebox{0.8\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
 	\end{center}
 \end{block}
 
@@ -102,7 +101,7 @@
 	\vspace{-0.5cm}
 	\begin{center}
 		\def\Heff{1}
-		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+		\resizebox{0.8\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
 	\end{center}
 \end{block}
 
@@ -133,19 +132,24 @@
 	\item Digital FIR filter design \underline{from specifications}
 	
 	How to find FIR $H(z)$ such that $H(e^{j\omega})$ best approximates a desired frequency response $H_d(e^{j\omega})$? Essentially a polynomial curve fitting problem.
-	\begin{center}
-		\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
-	\end{center}
-	
-	\textbf{Design techniques:}
-	\begin{itemize}
-		\item Window method
-		\item Optimal filter design
-		\begin{itemize}
-			\item Parks-McClellan algorithm
-			\item Least-squares algorithm
-		\end{itemize}
-	\end{itemize}
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			\begin{center}
+				\resizebox{\linewidth}{!}{\input{figs/design_specs.tex}}
+			\end{center}
+		\end{column}
+		\begin{column}{0.4\textwidth}
+			\textbf{Design techniques:}
+			\begin{itemize}
+				\item Window method
+				\item Optimal filter design
+				\begin{itemize}
+					\item Parks-McClellan algorithm
+					\item Least-squares algorithm
+				\end{itemize}
+			\end{itemize}
+		\end{column}
+	\end{columns}
 \end{enumerate}
 \end{frame}
 
@@ -158,7 +162,7 @@
 \begin{frame}{Digital processing of analog signals}
 \begin{center}
 	\def\Heff{1}
-	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\resizebox{0.8\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
 \end{center}
 
 As long as there is no aliasing and that the reconstruction filter is the ideal lowpass filter these equalities hold:
@@ -184,7 +188,7 @@ In practice, these are good approximations.
 
 \begin{center}
 	\def\Heff{1}
-	\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
+	\resizebox{0.8\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
 \end{center}
 
 Design $h[n]$ by sampling $h_{eq}(t)$ with period $T$.
@@ -205,8 +209,7 @@ Butterworth filters are \textbf{maximally flat} in the passband and are monotoni
 For this example, consider the following 6th-order continuous-time lowpass Butterworth filter:
 
 \begin{align*}
-&H_{eq}(s)  \\
-&= \frac{0.12093}{(s^2 + 0.364s + 0.4945)(s^2 + 0.9945s + 0.4945)(s^2 + 1.3385 + 0.4945)}
+H_{eq}(s) = \frac{0.12093}{(s^2 + 0.364s + 0.4945)(s^2 + 0.9945s + 0.4945)(s^2 + 1.3385 + 0.4945)}
 \end{align*}
 
 \end{frame}
@@ -226,7 +229,7 @@ To design an \textbf{FIR filter} by impulse invariance we must
 	$h[n]$ is the FIR filter coefficients. $M$ is typically chosen to satisfy some energy criterion. For instance, samples must contain $95\%$ of the signal energy.
 \end{enumerate} 
 \begin{center}
-	\resizebox{0.7\linewidth}{!}{\input{figs/imp_invar_samples.tex}}
+	\resizebox{0.5\linewidth}{!}{\input{figs/imp_invar_samples.tex}}
 \end{center}
 
 \end{frame}
@@ -238,13 +241,13 @@ To design an \textbf{FIR filter} by impulse invariance we must
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/imp_invar_FIR_butter_mag.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/imp_invar_FIR_butter_mag.tex}}
 		\end{center}
 	\end{column}
 	\begin{column}{0.5\textwidth}
 		\textbf{Phase}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/imp_invar_FIR_butter_phase.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/imp_invar_FIR_butter_phase.tex}}
 		\end{center}
 	\end{column}
 \end{columns}
@@ -305,13 +308,13 @@ For the 6th-order Butterworth example:
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/imp_invar_IIR_butter_mag.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/imp_invar_IIR_butter_mag.tex}}
 		\end{center}
 	\end{column}
 	\begin{column}{0.5\textwidth}
 		\textbf{Phase}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/imp_invar_IIR_butter_phase.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/imp_invar_IIR_butter_phase.tex}}
 		\end{center}
 	\end{column}
 \end{columns}
@@ -330,9 +333,7 @@ For the 6th-order Butterworth example:
 
 %
 \begin{frame}{Bilinear transformation}
-Another way to answer the question: How to design $h[n] \longleftrightarrow H(z)$ if we know $h_{eq}(t) \longleftrightarrow H_{eq}(s)$?
-~\\
-~\\
+Another way to answer the question: How to design $h[n] \longleftrightarrow H(z)$ given $h_{eq}(t) \longleftrightarrow H_{eq}(s)$?
 
 The \textbf{bilinear transformation} maps the left-hand side of the $s$-plane into the unit circle in the $z$-plane.
 	
@@ -341,7 +342,7 @@ The \textbf{bilinear transformation} maps the left-hand side of the $s$-plane in
 \end{equation*}
 
 \begin{center}
-	\resizebox{0.9\linewidth}{!}{\input{figs/bilinear_mapping.tex}}
+	\resizebox{0.75\linewidth}{!}{\input{figs/bilinear_mapping.tex}}
 \end{center}	
 \end{frame}
 
@@ -353,7 +354,7 @@ To design a digital filter from an analog filter using the bilinear transformati
 H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1}}}
 \end{equation*}
 
-The resulting $H(z)$ generally has IIR.
+The resulting $H(z)$ generally is IIR.
 \vspace{0.25cm}
 
 The bilinear transformation method is easier and more systematic than the impulse invariance method.
@@ -377,7 +378,7 @@ This results in the following relation
 \textbf{Problem:} with the bilinear transformation we no longer have the linear relation $\omega = \Omega T$. This is known as \textbf{frequency warping}.
 
 \begin{center}
-	\resizebox{0.5\linewidth}{!}{\input{figs/frequency_warping.tex}}
+	\resizebox{0.4\linewidth}{!}{\input{figs/frequency_warping.tex}}
 \end{center}
 \end{frame}
 
@@ -392,7 +393,7 @@ H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1
 
 \textbf{Pole-zero diagram}
 \begin{center}
-	\resizebox{0.6\linewidth}{!}{\input{figs/bilinear_butter_pole_zero.tex}}
+	\resizebox{0.4\linewidth}{!}{\input{figs/bilinear_butter_pole_zero.tex}}
 \end{center}
 
 \end{frame}
@@ -404,13 +405,13 @@ H(z) = H_{eq}(s)\bigg|_{\displaystyle s = \frac{2}{T}\frac{1 - z^{-1}}{1 + z^{-1
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/bilinear_butter_mag.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/bilinear_butter_mag.tex}}
 		\end{center}
 	\end{column}
 	\begin{column}{0.5\textwidth}
 		\textbf{Phase}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/bilinear_butter_phase.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/bilinear_butter_phase.tex}}
 		\end{center}
 	\end{column}
 \end{columns}
@@ -452,13 +453,13 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 	\begin{column}{0.5\textwidth}
 		\textbf{Magnitude}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/bilinear_prewarp_butter_mag.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/bilinear_prewarp_butter_mag.tex}}
 		\end{center}
 	\end{column}
 	\begin{column}{0.5\textwidth}
 		\textbf{Phase}
 		\begin{center}
-			\resizebox{\linewidth}{!}{\input{figs/bilinear_prewarp_butter_phase.tex}}
+			\resizebox{0.8\linewidth}{!}{\input{figs/bilinear_prewarp_butter_phase.tex}}
 		\end{center}
 	\end{column}
 \end{columns}
@@ -473,7 +474,7 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 \begin{frame}{Common terminology}
 
 \begin{center}
-	\resizebox{0.55\linewidth}{!}{\input{figs/design_specs.tex}}
+	\resizebox{0.5\linewidth}{!}{\input{figs/design_specs.tex}}
 \end{center}
 
 \textbf{Terminology}
@@ -525,7 +526,7 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 
 \textbf{Magnitude}
 \begin{center}
-	\resizebox{0.75\linewidth}{!}{\input{figs/classic_filters_mag.tex}}
+	\resizebox{0.55\linewidth}{!}{\input{figs/classic_filters_mag.tex}}
 \end{center}
 
 \end{frame}
@@ -540,7 +541,7 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 	
 	\textbf{Phase}
 	\begin{center}
-		\resizebox{0.7\linewidth}{!}{\input{figs/classic_filters_phase.tex}}
+		\resizebox{0.5\linewidth}{!}{\input{figs/classic_filters_phase.tex}}
 	\end{center}
 	
 \end{frame}
@@ -548,7 +549,7 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 %
 \begin{frame}{From lowpass to highpass, bandpass, and bandstop}
 \centering
-\includegraphics[scale=0.6]{figs/filter_transformation.png}
+\includegraphics[scale=0.5]{figs/filter_transformation.png}
 \end{frame}
 
 \section{Design from Specifications}
@@ -561,7 +562,7 @@ Example of bilinear transformation \underline{with} frequency pre-warping
 	
 	How to find FIR $H(z)$ such that $H(e^{j\omega})$ best approximates a desired frequency response $H_d(e^{j\omega})$? Essentially a polynomial curve fitting problem.
 	\begin{center}
-		\resizebox{0.6\linewidth}{!}{\input{figs/design_specs.tex}}
+		\resizebox{0.45\linewidth}{!}{\input{figs/design_specs.tex}}
 	\end{center}
 	
 	\textbf{Design techniques:}
@@ -586,7 +587,7 @@ An easy way to design an FIR filter to match a desired frequency response $H_d(e
 	h_d[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}H_d(e^{j\omega})e^{j\omega n} d\omega \tag{inverse DTFT}
 \end{equation}
 
-Then we truncate it to have a most $M+1$ samples
+Then we truncate it to have at most $M+1$ samples
 \begin{equation}
 	h[n] = \begin{cases}
 	h_d[n], & n = 0, 1, \ldots, M \\
@@ -656,7 +657,7 @@ Multiplication in time domain means convolution in the frequency domain:
 \vspace{0.3cm}
 
 \centering
-\resizebox{\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
+\resizebox{0.9\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
 \end{frame}
 
 \begin{frame}{Revisiting the Gibbs phenomenon}
@@ -751,7 +752,7 @@ w[n] = \begin{cases}
 All windows are symmetric about $M/2$.
 
 \begin{center}
-\resizebox{0.9\textwidth}{!}{\input{figs/window_functions_time.tex}}
+\resizebox{0.65\textwidth}{!}{\input{figs/window_functions_time.tex}}
 \end{center}
 \textbf{Note:} $n$ is discrete. These curves were plotted as continuous functions just for easier visualization.
 
@@ -839,13 +840,10 @@ designs a lowpass FIR filter of order $M$ and cutoff frequency $\omega_c$ using 
 	\end{itemize}	
 \end{frame}
 
-\begin{frame}{Optimal FIR filter design}
-
-	\textbf{Example:}
-		
+\begin{frame}{Optimal FIR filter design}		
 	\begin{center}
 		\def\CARE{1}
-		\resizebox{0.9\linewidth}{!}{\input{figs/design_specs.tex}}
+		\resizebox{0.7\linewidth}{!}{\input{figs/design_specs.tex}}
 	\end{center}
 \end{frame}
 
@@ -1011,7 +1009,7 @@ $A^\dagger = (A^HA)^{-1}A^H$ is the \textbf{Moore-Penrose pseudoinverse} (\textt
 	The weight function is zero in the {\color{red!50} \textbf{transition bands}}. Hence, we don't care about the error in those regions.
 	
 	\begin{center}
-		\resizebox{0.7\textwidth}{!}{\input{figs/design_specs_bandpass_example.tex}}
+		\resizebox{0.5\textwidth}{!}{\input{figs/design_specs_bandpass_example.tex}}
 	\end{center}
 	
 	See code on Canvas/Files/Matlab/optimal\_fir\_design\_example.m.
@@ -1062,7 +1060,7 @@ If $H_d(e^{j\omega})$ is \textbf{Hermitian symmetric} i.e., $H_d(e^{j\omega}) = 
 \textbf{Question:} how to predict the next sample from previous samples?
 
 \begin{center}
-	\resizebox{0.7\textwidth}{!}{\input{figs/predict_bandlimited_signals.tex}}
+	\resizebox{0.5\textwidth}{!}{\input{figs/predict_bandlimited_signals.tex}}
 \end{center}
 
 \end{frame}
@@ -1072,7 +1070,7 @@ If $H_d(e^{j\omega})$ is \textbf{Hermitian symmetric} i.e., $H_d(e^{j\omega}) = 
 	Suppose our band-limited signal is such that
 
 	\begin{center}
-		\resizebox{0.7\textwidth}{!}{\input{figs/predict_bandlimited_signals_spectrum.tex}}
+		\resizebox{0.5\textwidth}{!}{\input{figs/predict_bandlimited_signals_spectrum.tex}}
 	\end{center}
 	
 	\onslide<3-|handout:1>{

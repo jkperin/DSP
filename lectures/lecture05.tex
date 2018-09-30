@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt, aspectratio=169]{beamer}
 \usefonttheme{professionalfonts}
 %\usetheme{CambridgeUS}
 %
@@ -51,13 +51,13 @@
 }
 
 %% 
-% \def\EXTERNALIZE{1} % for externalizing figures
+\def\EXTERNALIZE{1} % for externalizing figures
 \input{header.tex}
 
-\title[EE 264]{Quantization}
+\title[EE 264]{Changing the Sampling Rate in DSP}
 \author{Jose Krause Perin}
 \institute{Stanford University}
-\date{July 13, 2017}
+\date{July 11, 2017}
 
 \begin{document}
 
@@ -65,509 +65,534 @@
   \titlepage
 \end{frame}
 
-%
-\begin{frame}{Announcements}
-	\begin{itemize}
-		\item Homework \#2 due today
-		\item Homework \#3 will be released today and it is due next Thursday
-	\end{itemize}
-\end{frame}
-
-
-%
-\section{Outline}
-\begin{frame}{Outline}
+\begin{frame}{Last lecture}
 \begin{itemize}
-	\item Probabilistic interpretation of quantization
-	\item Linear noise model
-	\item Quantization noise shaping
+	\item Sampling a continuous-time signal results in replicas of the spectrum at multiples of the sampling frequency $\Omega_s$ (or $2\pi$ of the normalized frequency $\omega$)
+	\item A band-limited signal has highest frequency $\Omega_N$ ($X_c(j\Omega) = 0, |\Omega| > \Omega_N$)
+	\item If a band-limited signal is oversampled ($\Omega_s > 2\Omega_N$) there'll be gaps between the spectrum replicas
+	\item If the signal is undersampled ($\Omega_s < 2\Omega_N$) the spectrum replicas will overlap resulting in aliasing distortion
+	\item We can perfectly reconstruct a signal from its samples, provided that there is no aliasing and that we use the ideal lowpass filter as reconstruction filter
+	\item In practice, we use different reconstruction filters, since the ideal lowpass filter is unfeasible.
+	\item Oversampling relaxes the reconstruction filter specifications
+	\item In theory, we can perform any LTI continuous-time filtering in discrete-time (in DSP), provided that there is no aliasing and that we use the ideal reconstruction filter
 \end{itemize}
 \end{frame}
 
 %
-\section{Quantization in DSP}
-\begin{frame}{Practice and theory}
-\begin{block}{In practice}
-	\begin{center}
-		\resizebox{\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
-	\end{center}
-\end{block}
+\begin{frame}{Today's lecture} 
 
-\begin{block}{DSP theory}
-	\begin{center}
-		\resizebox{\linewidth}{!}{\input{figs/ctd-lti-dtc.tex}}
-	\end{center}
-
-	\textbf{Problem:} This simplified model does not account for \textbf{quantization} (today's lecture) and \textbf{finite precision arithmetic} (lecture 8)
-\end{block}
+\begin{itemize}
+	\item Downsampling and decimation
+	\item Upsampling and interpolation
+	\item Noninteger rate change
+	\item Multi-rate processing
+\end{itemize}
 \end{frame}
 
 %
-\begin{frame}{Including quantization}
-	\begin{block}{Analog-to-digital converter}
-		A more realistic model
-		\begin{center}
-		\resizebox{0.9\linewidth}{!}{
-			\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2.75cm, font=\sffamily]
-				\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
-				\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
-				
-				\node[node] (xc) {};
-				\node[block, right=1cm of xc] (CTD) {C-to-D};
-				\node[block, right of=CTD, text width = 2cm, align= center] (Q) {Quantizer};
-				\node[block, right of=Q] (coder) {Coder};
-				\coordinate[right=1.5cm of coder] (yc) {};
-				
-				\coordinate (mid1) at ($(CTD.east)!0.5!(Q.west)$) {};
-				\coordinate (mid2) at ($(Q.east)!0.5!(coder.west)$) {};
-				
-				\path (xc) edge (CTD);
-				\path (CTD) edge (Q);
-				\path (Q) edge (coder);
-				\path (coder) edge (yc);
-				
-				\node[above = 0.5mm of mid1] {$x[n]$};
-				\node[above = 0.5mm of mid2] {$x_Q[n]$};
-				\node[above = 0mm of xc, text width = 1cm, align=center] {$x_c(t)$};
-				\node[above = 0mm of yc, align=center] {$x_B[n]$}; 
-				\node[below = 0mm of yc, text width = 2.5cm, align=center] {Binary \\ representation}; 
-				
-				\node[align=center] at ($(CTD.south)-(0, 0.4cm)$) {Sampling \\ $T$};
-				\node[align=center, text width=4cm] at ($(Q.south)-(0, 1.1cm)$) {Analog-to-digital converter};
-				
-				\draw[dashed] ($(CTD.south west)-(0.25, 0.8)$) rectangle ($(coder.north east)+(0.25, 0.3)$) {};
-				
-			\end{tikzpicture}
-		}
-		\end{center}
-	\end{block}
-\end{frame}
+\section{Downsampling and Decimation}
+\begin{frame}{Downsampling}
 
-%
-\begin{frame}{Quantizer}
-	\begin{columns}[t]
-		\begin{column}{0.5\textwidth}
-			\textbf{Mid-tread} uniform quantizer
-			\resizebox{\textwidth}{!}{\input{figs/midtread_quantizer.tex}}
-		\end{column}
-	
-		\begin{column}{0.5\textwidth}
-			\textbf{Mid-rise} uniform quantizer
-			\resizebox{\textwidth}{!}{\input{figs/midrise_quantizer.tex}}
-		\end{column}
-	\end{columns}
-	\begin{center}
-		
-	\end{center}
-	
-	\textbf{Terminology}
-	\begin{itemize}
-		\item The quantizer has $B$ bits of \textbf{resolution}
-		\item $\Delta X$ is the \textbf{dynamic range}
-		\item $\Delta$ is the \textbf{step size}
-	\end{itemize}
+Downsampling by an integer factor $M$ is equivalent to sampling the discrete-time signal $x[n]$ with sampling period $M$. 
 
-	\begin{equation}
-	\Delta = \frac{\Delta X}{2^{B}} \label{eq:Delta}
-	\end{equation}
-\end{frame}
-
-%
-\begin{frame}{Example of quantization}
 \begin{center}
-	\resizebox{0.6\textwidth}{!}{\input{figs/quantization_sine.tex}}
+	\resizebox{0.6\linewidth}{!}{\input{figs/downsampling_block.tex}}
 \end{center}
 
-\onslide<2-|handout:1>{
-Quantization error:
-\begin{align*}
-e[n] = x[n] - Q(x[n]) = x[n] - x_Q[n]
-\end{align*}
-Note that the quantization error is bounded $-\Delta/2 \leq e[n] \leq \Delta/2$.
-}
-
-\onslide<3-|handout:1>{
-The quantization error is deterministic but hard to analyze, so we'll treat it as noise (random process).
-}
-
-\end{frame}
-
-%
-\begin{frame}{Quantization of a sinusoid}
-	\only<1-3|handout:1>{Using a 3-bit quantizer}
-	\only<4-6|handout:2>{Using an 8-bit quantizer}
-	\begin{center}
-		\resizebox{0.75\textwidth}{!}{\input{figs/quantization_sine_full.tex}}
-	\end{center}
-\end{frame}
-
-%
-\section{Probabilistic Interpretation of Quantization}
-\begin{frame}{Probability distribution of the output of a quantizer}
-\textbf{Question:} what's the probability density function (PDF) $p_{x_Q}(x)$ of the quantizer output $x_Q[n] \sim p_{x_Q}(x)$ when the input signal $x[n]$ has PDF $x[n] \sim p_{x}(x)$?
-\begin{center}
-	\resizebox{0.75\textwidth}{!}{\input{figs/quantizer_output_pdf.tex}}
-\end{center}
-
-\onslide<4|handout:1>{
-The PDF of $x_Q[n] \sim p_{x_Q}(x)$ is formed by impulses at the quantization levels. The area of any given impulse is equal to the area under $p_x(x)$ in the quantization interval corresponding to that impulse. In the example of the figure, the area of the impulse at the origin is equal to the highlighted area under $p_x(x)$.
-}
-\end{frame}
-
-%
-\begin{frame}{Area sampling}
-We can view $p_{x_Q}(x)$ as samples of the area of $p_x(x)$ under quantization intervals. This form of sampling is called \textbf{area sampling}.
-
+To understand what happens in the frequency domain, we can think that we're sampling the original continuous-time signal $x_c(t)$ with sampling period $T_d = MT$:
 \begin{equation*}
-p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+x_d[n] = x[Mn] = x_c(nMT)
 \end{equation*}
-where 
+
+\end{frame}
+	
+%	
+\begin{frame}{Downsampling: frequency domain interpretation}
+\fontsize{9pt}{7.2}\selectfont
+%\vspace{-1cm}
+Sampling $x_c(t)$ with sampling period $T_d = MT$ results in
+\begin{align*}
+	X_d(e^{j\omega}) &= \frac{1}{T_d}\sum_{k = -\infty}^{\infty} X_c\Big[j\Big(\frac{\omega}{T_d} - \frac{2\pi k}{T_d}\Big)\Big] \tag{spectrum replicas appear with period $\Omega_s = 2\pi/T_d$} \\
+	&= \frac{1}{MT}\sum_{k = -\infty}^{\infty} X_c\Big[j\Big(\frac{\omega}{MT} - \frac{2\pi k}{MT}\Big)\Big] \tag{$T_d = MT$} \\
+	&= \frac{1}{MT}\sum_{m = 0}^{M-1}\sum_{l = -\infty}^{\infty} X_c\Big(j\Big(\frac{\omega}{MT} - \frac{2\pi l}{T} - \frac{2\pi m}{MT}\Big)\Big) \tag{change of variables: $k = m + lM$} \\
+	&= \frac{1}{M}\sum_{m = 0}^{M-1}\tikz[baseline]{\node[fill=blue!20,anchor=base] (t1) {$\displaystyle\frac{1}{T}\sum_{l = -\infty}^{\infty} X_c\Big(j\Big(\frac{\omega - 2\pi m}{MT} - \frac{2\pi l}{T}\Big)\Big)$};} \tag{rearranging} \\
+	&= \frac{1}{M}\sum_{m = 0}^{M-1} X(e^{j\omega^{\prime}})\Big|_{\omega^{\prime} = \frac{\omega-2\pi m}{M}} \tag{$\tikz[baseline]{\node[fill=blue!20,anchor=base] {$^{~}$};}$ is equivalent to $X(e^{j\omega^{\prime}})$ for $\omega^{\prime} = \frac{\omega-2\pi m}{M}$}
+\end{align*}
+
+\textbf{Conclusion:} $X(e^{j\omega})$ is stretched by a factor of $M$ ($\omega/M$), and there will be replicas of the spectrum with period $2\pi/M$.
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Example of downsampling with $M = 2$ i.e., $T_d = 2T$.
+
+\textbf{Impulse sampling interpretation:}
+\begin{center}
+	\resizebox{0.65\linewidth}{!}{\input{figs/downsampling_freq_domain_ct.tex}}
+\end{center}
+\onslide<3|handout:1>{After downsampling spectrum replicas appear with period $2\pi/T_d$}
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Same example of downsampling with $M = 2$ i.e., $T_d = 2T$.
+
+\textbf{Discrete-time interpretation:}
+\begin{center}
+	\resizebox{0.65\linewidth}{!}{\input{figs/downsampling_freq_domain.tex}}
+\end{center}
+\onslide<3|handout:1>{To obtain the spectrum we discrete time, we just need to use the change of variables $\omega = \Omega T$ and $\omega = \Omega T_d$}
+\end{frame}
+
+%
+\begin{frame}{Downsampling: frequency domain interpretation}
+Downsampling may lead to spectrum overlapping (\textbf{aliasing distortion}).
+
+Example of downsampling with $M = 3$ i.e., $T_d = 3T$.
+\begin{center}
+	\resizebox{0.65\linewidth}{!}{\input{figs/downsampling_freq_domain_aliasing.tex}}
+\end{center}
+\end{frame}
+
+%
+\begin{frame}{Decimation}
+Similarly to sampling, it is common to employ an \textbf{anti-aliasing filter} before downsampling in order to minimize aliasing. 
+
+Pre-filtering followed by downsampling is called \textbf{decimation}.
+
+\begin{center}
+	\resizebox{0.85\linewidth}{!}{\input{figs/decimation_block.tex}}
+\end{center}
+\vspace{-0.5cm}
+\begin{align}
+x[n] \Longleftrightarrow & X(e^{j\Omega T}) = \frac{1}{T}\sum_{k = -\infty}^\infty X_c\Big(j\Big(\Omega - \frac{2\pi k}{T}\Big)\Big) \tag{from sampling} \\
+\tilde{x}[n] \Longleftrightarrow & \tilde{X}(e^{j\Omega T}) = H(e^{j\Omega T})X(e^{j\Omega T}) \tag{LTI output} \\
+x_d[n] = \tilde{x}[nM] \Longleftrightarrow & \frac{1}{M}\sum_{m = 0}^{M-1} \tilde{X}(e^{j(\Omega T - 2\pi T)/M}) \tag{downsampling by $M$}
+\end{align}
+
+\end{frame}
+
+%
+\begin{frame}{Decimation: frequency domain interpretation}
+Decimation with $M = 3$ i.e., $T_d = 3T$.
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/decimation_freq_domain.tex}}
+\end{center}
+\onslide<4|handout:1>{Now the spectrum replicas do not overlap after downsampling by 3.}
+\end{frame}
+
+%
+\section{Upsampling and Interpolation}
+\begin{frame}{Interpolation}
+Interpolation is used to increase the sampling rate by an integer factor $L$.
+
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/upsampling_block.tex}}
+\end{center}
+\vspace{-0.2cm}
 \begin{equation*}
-r(x) = \begin{cases}
-\frac{1}{\Delta}, & -\frac{\Delta}{2} \leq x \leq \frac{\Delta}{2} \\
+x_e[n] = \begin{cases}
+x[n/L], & 0, \pm L, \pm 2L, \ldots \\
 0, & \text{otherwise}
-\end{cases} \tag{rectangular window of area 1}
-\end{equation*}
-
-\begin{equation*}
-s(x) = \sum_{n = -\infty}^{\infty} \delta(x - n\Delta) \tag{impulse train}
-\end{equation*}
-The period of the impulse train (\textit{sampling period}) is $\Delta$
-
-\textbf{Interesting:} although quantization is an nonlinear operation on the signal, it is a linear operation on that signal PDF, since area sampling is linear.
-\end{frame}
-
-%
-\begin{frame}{Area sampling: graphically}
-\begin{center}
-	\resizebox{0.9\textwidth}{!}{\input{figs/area_sampling_graphically.tex}}
-\end{center}	
-\end{frame}
-
-%
-\begin{frame}{Random variables and convolution}
-The area sampling interpretation of quantization gives us a simple equation for the PDF of $x_Q[n]$:
-\begin{equation*}
-p_{x_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}\overbrace{\cdot s(x)}^{\text{\normalsize sampling}},
+\end{cases}\tag{after upsampling}
 \end{equation*}
 
 \pause
-\textbf{Another interpretation:} in probability theory, we use convolution to calculate the PDF of the \textbf{sum of two independent random variables}:
-
-\begin{equation*}
-Z = X + Y \Longrightarrow p_Z = p_X \ast p_Y
-\end{equation*}
-
-\pause
-Applying to our problem:
-
-\begin{equation*}
-\tilde{x}_Q[n] = x[n] + q[n] \Longrightarrow p_{\tilde{x}_Q}(x) = \underbrace{(p_x(x) \ast r(x))}_{\text{\normalsize area calculation}}
-\end{equation*}
-where $q[n]$ is a random variable independent of $x[n]$ and with PDF $p_q(x) = r(x)$. Therefore, $q$ is an \textbf{uniform random variable} ($q\sim\mathcal{U}[-\Delta/2, \Delta/2]$).
-\end{frame}
-
-%
-\begin{frame}
-Comparing with the definition of quantization error:
+In the frequency domain:
 \begin{align*}
-x_Q[n] &= x[n] - e[n] \tag{from definition of quantization error} \\
-\tilde{x}_Q[n] &= x[n] + q[n] \tag{from probabilistic interpreation of area sampling}
+X_e(e^{j\omega}) &= \sum_{n = -\infty}^{\infty} x_e[n]e^{-j\omega n} \tag{definition of DTFT} \\
+&= \sum_{n = 0, \pm L, \ldots} x[n/L]e^{-j\omega n} \tag{from $x_e[n]$ equation above} \\
+&= \sum_{k = -\infty}^{\infty} x[k]e^{-j\omega kL} \tag{change of variable: $k = n/L$} \\
+&= X(e^{j\omega L}) \tag{from DTFT equation with $\omega L$}
 \end{align*}
+\end{frame}
 
-The equations for $x_Q[n]$ and $\tilde{x}_Q[n]$ are very similar, but there's an important difference. The PDF $p_{x_Q}(x)$ is formed by \textbf{sampling} $p_{\tilde{x}_Q}(x)$.
-
-\pause
+%
+\begin{frame}{Interpolation: frequency domain interpretation}
+Example of interpolation with $L = 2$
 \begin{center}
-	\resizebox{0.55\textwidth}{!}{\input{figs/sampled_gaussian_pdf.tex}}
+	\resizebox{0.55\linewidth}{!}{\input{figs/upsampling_freq_domain.tex}}
 \end{center}
-
-\pause
-If the sampled PDF ($p_{x_Q}(x)$) perfectly describes $p_{\tilde{x}_Q}(x)$, we can say that quantization error is perfectly described by an uniform random process.
-
-\pause 
-\textbf{Question:}  under what conditions can we perfectly reconstruct $p_{\tilde{x}_Q}(x)$ from its samples? \\
 \end{frame}
 
 %
-\begin{frame}{Revisiting the Shannon-Nyquist theorem}
-	Recall that the \textbf{Shannon-Nyquist theorem} guarantees that we can perfectly recover a signal from its samples if two conditions are met:
-	\begin{enumerate}
-		\item \textbf{No aliasing; spectrum replicas do not overlap}
-		\item Use ideal reconstruction filter (ideal lowpass filter)
-	\end{enumerate}
-	\pause
-	\begin{block}{Conditions for no aliasing}
-		\begin{enumerate}
-			\item The \textbf{characteristic function} (Fourier transform) of the area-sampled input PDF must satisfy: 
-			\begin{equation*}
-				\Phi_{p_{x_Q}}(j\theta) = \mathcal{F}\{p_{x_Q}(x)\} = 0, |\theta| > \theta_N
-			\end{equation*}
-			This is analogous to the condition of a signal being \textit{band-limited}.
-			\item\pause The \textit{sampling frequency} $\theta_s$ must be such that $\theta_s > 2\theta_N$.
-			
-			In this context, $\theta_s = 2\pi/\Delta$, and the quantization interval $\Delta$ is equivalent to the \textit{sampling period} (period of the impulse train).
-		\end{enumerate}
-	\end{block}
-\end{frame}
-
-%
-\begin{frame}<beamer:0|handout:1>
-Additional comments
+\begin{frame}{Practical interpolation filters}
 \begin{itemize}
-	\item When we used the Shannon-Nyquist theorem for sampling a continuous-time signal, we said that we can use an anti-aliasing filter to minimize aliasing, but we could not use the ideal lowpass filter, as it is unfeasible.
-	\item In this discussion on quantization, we just want theoretical assurance that we can reconstruct the PDF from its samples. Therefore, for this purpose, we can use the ideal lowpass filter.
-	\item On the other hand, we cannot guarantee that there won't be aliasing, as many probability distributions are not \textit{band-limited}.
+	\item Similarly to what we saw in reconstruction (D-to-C), the ideal lowpass filter is not practical. Hence, we must use practical interpolation filters such as ZOH, linear interpolator, or cubic spline.
+	\item \textbf{One important difference:} The interpolation filter used in reconstruction to convert from discrete-time to continuous-time was an analog filter (a continuous-time filter). The interpolation filter used for upsampling is realized in discrete-time (in DSP). Therefore, we have more flexibility.
 \end{itemize}
 \end{frame}
 
 %
-\begin{frame}
-	\textbf{Conclusion:} if the conditions for no aliasing are met, we can perfectly reconstruct the original PDF from its samples, and therefore, quantization noise can be \underline{perfectly modeled} as an uniform random process.
-	
-	\pause
-	\textbf{Bad news:} the conditions for no aliasing are generally not met in practice. \textbf{Example:} Gaussian distribution. The characteristic function of the Gaussian distribution is a Gaussian function. The Gaussian function is not \textit{band-limited}, as it is always non-zero.
-	
-	\pause
-	\textbf{How can we mitigate aliasing?}
-	\begin{enumerate}
-		\item Anti-aliasing filter? This would be equivalent to modify the PDF of the input signal. But what would it do the signal?
-		\item Oversampling $\implies$ shorter sampling period ($\Delta$) $\implies$ finer quantization
-	\end{enumerate}
+\begin{frame}{Example of interpolation}
+\begin{itemize}
+	\item The original signal has maximum frequency $\Omega_N = 1$ rad/s. 
+	\item From the Nyquist-Shannon theorem, we need $\Omega_s > 2\Omega_N$ in order to be able to achieve perfect reconstruction. Or equivalently, $T < \pi$ s. 
+	\item Sampling period is $T = \pi$
+\end{itemize}
+
+\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/interpolation_example.tex}}
+\end{center}
+\onslide<4|handout:1> {Truncated sinc filter had 11 coefficients, while ZOH had 2 and linear interpolator had 3.}
+\end{frame}
+
+%
+\begin{frame}{Example of interpolation}
+Same example as before, but now sampling period is $T = 0.4\pi$.
+
+\begin{center}
+	\resizebox{0.7\linewidth}{!}{\input{figs/interpolation_example_oversampled.tex}}
+\end{center}
+\onslide<4|handout:1> {Truncated sinc filter had 11 coefficients, while ZOH had 2 and linear interpolator had 3.}
+\end{frame}
+
+%
+\begin{frame}<beamer:1|handout:1>
+%\fontsize{9pt}{7.2}\selectfont
+\begin{itemize}
+	\item In the first example the continuous-time signal was sampled at the Nyquist rate, whereas in the second example the continuous-time signal was oversampled by 2.5.
+	\item In both cases, we upsample by a factor of 2 and use practical reconstruction filters: ZOH, a linear interpolator, and a truncated sinc with 11 samples.
+	\item The ZOH filter only has two coefficients, the linear interpolator has three coefficents, and the truncated sinc has 11 coefficients.
+	\item Although we use the same filters in both examples, the interpolated sequences are much closer to the original continuous-time signal in the second example. This illustrates how oversampling can help the interpolation filters.
+	\item In these examples, the linear interpolator offers that best performance vs complexity trade-off, as it achieves performance close to the truncated sinc, but only uses 3 samples.
+	\item Even with high oversampling, we see that the truncated sinc filter didn't achieve perfect reconstruction. This is a consequence of the \textbf{Gibbs phenomenon}, discussed in lecture 1. Recall that a truncated sinc will produce a DTFT that is different from the ideal lowpass filter. Specifically, the DTFT of the truncated sequence will have oscillations, which will affect the signal and will not suppress the spectrum replicas centered at multiples of $2\pi$. Using an even larger sequence (sinc with more samples) would not help much, since the ripples would only become more rapid, but their amplitude would not decrease.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{In Matlab}
+
+Sampled signal with period $T$\\
+\texttt{>> T = 0.5*pi} \\
+\texttt{>> t = -20:T:20} \\
+\texttt{>> x = cos(t/2) - sin(t) + cos(t/2-pi/4) - sin(t/4-deg2rad(154)); {\color{matlabcomment} \% Sampled signal}} \\ 
+
+Upsample\\
+\texttt{>> xu = upsample(x, L)  {\color{matlabcomment} \% Upsample}} \\ 
+
+Interpolation filters \\
+\texttt{>> hZOH = [1 1]  {\color{matlabcomment} \% ZOH}} \\ 
+\texttt{>> hlin = [1/2 1 1/2] {\color{matlabcomment} \% Linear interpolator}} \\ 
+\texttt{>> hsinc = sinc(-(5:5)/2) {\color{matlabcomment} \% truncated sinc with 11 samples}} \\
+
+Interpolate \\
+\texttt{>> yzoh = filter(hZOH, 1, xu)} \\
+\texttt{>> ylin = filter(hlin, 1, xu)} \\
+\texttt{>> ysinc = filter(hsinc, 1, xu)} \\
+\texttt{{\color{matlabcomment} \% since these filters are FIR we could also have used the conv command}}
+~\\
+
+Before plotting we need to remove the group delay introduced by the filters (more on this next week)
 \end{frame}
 
 % 
-\begin{frame}{Example for the Gaussian input distribution}
-	\begin{itemize}
-		\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = 2.1\sigma$};}
-		\item Overlap of spectrum replicas results in \underline{significant aliasing}
-		\item The estimated quantization noise PDF differs from the uniform distribution
-	\end{itemize}
-	
-	\begin{columns}[t]
-		\begin{column}{0.5\textwidth}
-			Fourier transform of sampled PDF
-				\begin{center}
-					\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{2.9920}{$\Delta = 2.1\sigma$}}
-				\end{center}
-		\end{column}
-			\begin{column}{0.5\textwidth}
-			Estimated quantization noise PDF
-			\begin{center}
-					\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=2sigma.tex}}
-			\end{center}
-			\end{column}
-	\end{columns}
-\end{frame}
-
-%
-\begin{frame}{Example for the Gaussian input distribution}
+\section{Non-Integer Rate Change}
+\begin{frame}{Interpolation/Decimation by a non-integer factor}
 \begin{itemize}
-	\item A zero-mean Gaussian distributed signal with variance $\sigma^2$ is quantized with quantization resolution \tikz[baseline]{\node[fill=black!10,anchor=base] {$\Delta = \sigma$};}
-	\item Spectrum replicas are sufficiently apart; \underline{aliasing is negligible}
-	\item The estimated quantization noise PDF agrees well with the uniform distribution
+	\item We have seen how to increase the sampling period by an integer factor $M$ and how to decrease the sampling period by an integer factor $L$
+	\item By cascading interpolation and decimation we can change the sampling period by a non-integer factor $M/L$.
 \end{itemize}
 
-\begin{columns}[t]
-	\begin{column}{0.5\textwidth}
-		Fourier transform of sampled PDF
-		\begin{center}
-			\resizebox{\textwidth}{!}{\PlotGaussianCF{figs/aliased_gaussian_cf.tex}{1}{6.2832}{$\Delta = \sigma$}}
-		\end{center}
-	\end{column}
-	\begin{column}{0.5\textwidth}
-		Estimated quantization noise PDF
-		\begin{center}
-			\resizebox{0.9\textwidth}{!}{\input{figs/gaussian_quantiz_delta=sigma.tex}}
-		\end{center}
-	\end{column}
-\end{columns}
-\end{frame}
-
-%
-\begin{frame}{Summary on the probabilistic interpretation of quantization}
-	\begin{itemize}
-		\item In the probability domain, quantization corresponds to area sampling of the input PDF (a linear operation).		
-		\item If there's no aliasing (spectrum replicas of area-sampled input PDF do not overlap)
-		\begin{enumerate}
-			\item Characteristic function of the area-sampled input PDF is \textit{band-limited} with maximum \textit{frequency} $\theta_N$
-			\item Sampling period $\Delta$ satisfies $\Delta < \pi/\theta_N$
-		\end{enumerate}
-		the quantization error is \underline{perfectly modeled} by an uniform random process.
-		\item In general aliasing cannot be avoided, but oversampling (finer quantization) makes aliasing negligible and consequently we can still accurately model quantization error as an uniform random process.  
-	\end{itemize}
-\end{frame}
-
-%
-\section{Linear Noise Model}
-\begin{frame}{Linear noise model}
-We'll model the quantizer as a noise source of a \textbf{white uniformly distributed noise} that is independent of the input signal. 
-
+\begin{block}{Cascading interpolation and decimation}
 \begin{center}
-	\resizebox{0.6\textwidth}{!}{\input{figs/quantization_linear_model.tex}}
+	\resizebox{0.85\linewidth}{!}{\input{figs/non-integer_rate_change_diagram.tex}}
 \end{center}
+\end{block}
 \vspace{-0.5cm}
-\pause
-From these assumptions:
-\begin{align*}
-\sigma_e^2 &= \frac{\Delta^2}{12} \tag{average power} \\
-\phi_{ee}[n] &= \sigma_e^2\delta[n] \tag{autocorrelation function} \\
-\Phi_{ee}(e^{j\omega}) &= \sigma_e^2, |\omega| \leq \pi \tag{PSD}
-\end{align*}
-\end{frame}
-
-%
-\begin{frame}{Quantizer signal-to-noise ratio (SNR)}
-It's often convinient to characterize the quantizer in terms of a \textbf{signal-to-noise ratio (SNR)}:
-\begin{align*}
-\mathrm{SNR} &= 10\log_{10}\bigg(\frac{\text{Signal Power}}{\text{Quantization noise power}}\bigg)~\text{dB} \\
-&= 10\log_{10}\bigg(\frac{\sigma_x^2}{\sigma_e^2}\bigg) \\
-&= 10\log_{10}\bigg(\frac{12\sigma_x^2}{\Delta^2}\bigg) \\
-&= 10\log_{10}\bigg(\frac{12\sigma_x^2(2^{2B})}{\Delta X^2}\bigg) \tag{substituting \eqref{eq:Delta}} \\
-&= \tikz[baseline]{\node[fill=blue!20,anchor=base] {$6.02B$};} + 10.79  + 20\log_{10}\bigg(\frac{\sigma_x}{\Delta X}\bigg) 
-\end{align*}
-
-For every bit in the quantizer we gain 6.02 dB of SNR.
-
-\textbf{Important:} The signal amplitude must be matched to the quantizer dynamic range, otherwise there'll be excessive clipping or some of the bits may not be used. 
-\end{frame}
-
-\begin{frame}{Effective number of bits (ENOB)}
-
-Another useful metric to evaluate quantizers is the \textbf{effective number of bits (ENOB)}.
-
-\begin{itemize}
-	\item Quantization is not the only source of noise in real quantizers
-	\item Additional noise will consume some bits of resolution
-	\item To continue using the simple linear noise model, we assume that the noisy real quantizer is equal to an ideal quantizer with resolution $ENOB < B$ bits.
-\end{itemize}
-
+\onslide<2|handout:1>{
+\begin{block}{Equivalent diagram}
 \begin{center}
-	\resizebox{0.45\textwidth}{!}{
-\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=2cm, font=\sffamily]
-\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
-\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
-\tikzstyle{annot} = []
-
-\node[node] (xc) {};
-\node[block, right of=xc, text width = 2.5cm, align= center] (DSP) {Real Quantizer};
-\coordinate[right of=DSP] (yc) {};
-
-\path (xc) edge (DSP);
-\path (DSP) edge (yc);
-
-\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
-\node[above = 0mm of yc, text width = 1cm, align=center] {$x_Q[n]$}; 
-\node[align=center, text width=3cm] at ($(DSP.south) - (0, 0.3cm)$) {$B$ bits of resolution};
-
-
-\node[node, below=2.3cm of xc] (xc2) {};
-\node[block, right of=xc2, text width = 2.5cm, align= center] (DSP2) {Ideal Quantizer};
-\coordinate[right of=DSP2] (yc2) {};
-
-\path (xc2) edge (DSP2);
-\path (DSP2) edge (yc2);
-
-\node[above = 0mm of xc2, text width = 1cm, align=center] {$x[n]$};
-\node[above = 0mm of yc2, text width = 1cm, align=center] {$x_Q[n]$}; 
-\node[align=center, text width=4cm] at ($(DSP2.south) - (0, 0.3cm)$) {$ENOB$ bits of resolution};
-\end{tikzpicture}
+	\resizebox{0.55\linewidth}{!}{\input{figs/non-integer_rate_change_equivalent_diagram.tex}}
+\end{center}
+\end{block}
 }
-\end{center}
-
-Datasheets of ADCs will typically give you the ENOB at a certain frequency.
-
 \end{frame}
 
 
-\section{Noise shaping}
-\begin{frame}{Noise shaping}
-
-\begin{itemize}
-	\item Quantization noise is unavoidable, but there are strategies to mitigate it
-	\item One example is \textbf{noise shaping}. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
-	\item To perform noise shaping the signal must be \textbf{oversampled}, otherwise noise aliasing would make most of the noise power fall in the signal band.
-	\item Noise shaping can be used in both A-to-D and D-to-A converters
-\end{itemize}
+\begin{frame}{Example}
+	\only<1-3|handout:1>{
+	\begin{itemize}
+		\item Let's combine the examples we saw earlier with $L = 2$ and $M = 3$. Recall that with $M = 3$, there would be aliasing if we didn't use the anti-aliasing filter. 
+		\item The filter cutoff is $\min(\pi/2, \pi/3) = \pi/3$.
+	\end{itemize}
+	}
+	\only<4-|handout:2>{
+		continuing...
+	}
+	\begin{center}
+		\resizebox{0.65\linewidth}{!}{\input{figs/non-integer_rate_change_freq_domain.tex}}
+	\end{center}
+	\only<5-|handout:2>{
+		The resulting signal has sampling period $MT/L = 3T/2$. Note that aliasing was prevented by selecting the cutoff frequency $\min(\pi/2, \pi/3) = \pi/3$.
+	}
 \end{frame}
 
-\begin{frame}{Noise shaping in A-to-D conversion}
-\begin{center}
-	\def\ALL{1}
-	\resizebox{0.8\textwidth}{!}{\input{figs/noise_shaping_adc_diagram.tex}}
-\end{center}
+% 
+\section{Multi-rate processing}
+\begin{frame}{Multirate processing}
+	In practice, it is common to have parts of the system operating at one sampling rate and other parts operating at a different sampling rate.
+	\begin{itemize}
+		\item Interchanging filtering and downsampling
+		\item Interchanging filtering and upsampling
+		\item Multi-stage decimation
+		\item Multi-stage interpolation
+		\item Polyphase decomposition
+	\end{itemize}
+
 \end{frame}
 
-%
-\begin{frame}{Noise shaping in A-to-D conversion}
-\vspace{-0.3cm}
-\begin{center}
-	\let\ALL\undefined
-	\resizebox{0.6\textwidth}{!}{\input{figs/noise_shaping_adc_diagram.tex}}
-\end{center}
+\begin{frame}{Interchanging filtering and downsampling}
+	These two systems are equivalent i.e., $y_1[n] = y_2[n]$
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/interchange_filter_downsampling.tex}}
+	\end{center}	
 
-Using superposition, we can separately study the effect of the system on the signal $x[n]$ and on quantization noise $e[n]$. 
-
-For the signal
-\begin{align*}
-Y(z) &= (X(z) - Y(z)z^{-1})\frac{1}{1 - z^{-1}} \\
-Y(z)(1 - z^{-1}) &= (X(z) - Y(z)z^{-1}) \\
-Y(z) &= X(z) \tag{signal is unaffected}
-\end{align*}
-
-For the noise
-\begin{align*}
-Y(z) &= E(z) - Y(z)\frac{z^{-1}}{1 - z^{-1}} \\
-&= E(z)(1 - z^{-1}) \tag{noise is filtered}
-\end{align*}
+	To move the filter before downsampling by $M$, we must stretch its frequency response by a factor of $M$: $H(z^M) \xrightarrow{z = e^{j\omega}} H(e^{j\omega M})$.
 \end{frame}
 
-%
 \begin{frame}
-The noise is filtered by
+	\textit{Proof:}
+	
+	Staring with the second system: $X_2(e^{j\omega}) = H(e^{j\omega M})X(e^{j\omega})$. Now we can apply the equation for downsampling to obtain $Y_2(e^{j\omega})$
+	\begin{align*}
+	Y_2(e^{j\omega}) &= \frac{1}{M}\sum_{m= 0}^{M-1} X_2(e^{j(\omega/M - 2\pi m)}) \\
+	&=\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)})H(e^{j(\omega - 2\pi m)}) \\
+	&=H(e^{j\omega})\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)}) \tag{periodicity of the DTFT $\implies H(e^{j(\omega - 2\pi m)}) = H(e^{j\omega})$} \\
+	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$\displaystyle\frac{1}{M}\sum_{m= 0}^{M-1} X(e^{j(\omega/M - 2\pi m)})$};} \\
+	&=H(e^{j\omega})\tikz[baseline]{\node[fill=blue!20,anchor=base] {$X_1(e^{j\omega})$};} = Y_1(e^{j\omega})
+	\end{align*}
+\end{frame}
+
+\begin{frame}
+\textbf{Comments on stability:}
+
+Note that if $H(z)$ is a rational $z$-transform with poles $\{p_1, p_2, \ldots, p_N\}$ and zeros $\{z_1, z_2, \ldots, z_R\}$:
 \begin{equation*}
-\frac{Y(z)}{E(z)} = 1 - z^{-1} 
+H(z) = \frac{b_0}{a_0}z^{N-R}\frac{(z-z_1)(z-z_2)\ldots(z-z_R)}{(z-p_1)(z-p_2)\ldots(z-p_N)}
 \end{equation*}
-Therefore, the noise PSD at the output will be
-\begin{align*}
-\Phi_{\tilde{e}\tilde{e}}(e^{j\omega}) &= |1 - e^{-j\omega}|^2\sigma_e^2 \tag{since $e[n]$ is white} \\
-&= 4\sigma_e^2\sin^2(\omega/2)
-\end{align*}
+Then $H(z^M)$ will be
+\begin{equation*}
+H(z^M) = \frac{b_0}{a_0}z^{M(N-R)}\frac{(z^M-z_1)(z^M-z_2)\ldots(z^M-z_R)}{(z^M-p_1)(z^M-p_2)\ldots(z^M-p_N)},
+\end{equation*}
+with poles $\{\sqrt[M]{p_1}, \sqrt[M]{p_N}, \ldots, \sqrt[M]{p_N}\}$, and zeros $\{\sqrt[M]{z_1}, \sqrt[M]{z_N}, \ldots, \sqrt[M]{z_R}\}$.
+ 
+If $H(z)$ is stable and \textbf{causal}, the poles of $H(z^M)$ will lie \underline{inside the unit circle}, and therefore $H(z^M)$ will also be stable.
 
-\begin{center}
-	\resizebox{0.8\textwidth}{!}{\input{figs/noise_shaping_adc_freq_domain.tex}}
-\end{center}
+Similarly, if $H(z)$ is \textbf{anti-causal} and stable, the poles of $H(z^M)$ will lie \underline{outside the unit circle}, and therefore $H(z^M)$ will also be stable.
 
-After noise shaping most of the noise power falls out of the signal band, so we can use a simple lowpass filter to minimize quantization noise.
+\end{frame}
 
-\pause
-\textbf{Important:} This strategy of noise shaping only works when oversampling is sufficiently high. Otherwise, quantization noise would still fall in the signal band due to aliasing.
+
+\begin{frame}{Interchanging filtering and interpolation}
+	These two systems are equivalent i.e., $y_1[n] = y_2[n]$
+	\begin{center}
+		\resizebox{0.5\linewidth}{!}{\input{figs/interchange_filter_interpolation.tex}}
+	\end{center}	
+	\textit{Proof:}
+	
+	Top diagram:
+	\begin{align*}
+	Y_1(e^{j\omega}) = X_1(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
+	\end{align*}
+	
+	Bottom diagram:
+	\begin{align*}
+	Y_2(e^{j\omega}) = X_2(e^{j\omega})H(e^{j\omega L}) = X(e^{j\omega L})H(e^{j\omega L}) 
+	\end{align*}
+\end{frame}
+
+\begin{frame}{Multi-stage decimation}
+	Suppose we want to decimate by a factor $M = 20$. The cutoff frequency of the lowpass filter would be $\pi/20$. 
+	\begin{equation*}
+	\text{Sharp  filter} \implies \text{long impulse response} \implies \begin{array}{c}
+	\text{higher complexity} \\
+	\text{higher cost} \\
+	\text{higher power consumption} 
+	\end{array}
+	\end{equation*}
+	
+	\pause
+	It's more efficient to use several decimation stages
+	\begin{center}
+		\resizebox{0.45\linewidth}{!}{\input{figs/multistage_decimation_block.tex}}
+	\end{center}	
+	\pause
+	
+	Interchanging filter and downsampling results in the equivalent system:
+	
+	\begin{center}
+	\resizebox{0.45\linewidth}{!}{
+		\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+			\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+			\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+			
+			\node[node] (xc) {};
+			\node[block, right=1cm of xc, text width = 2.5cm, align= center] (AA) {$H_1(z)H_2(z^{M_1})$};
+			\node[block, right of=AA, text width = 2cm, align= center] (DSP) {$~~(M_1M_2)$};
+			\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.north)-(17pt, 0)$) -- ($(DSP.south)-(17pt, 0)$) {};
+			\coordinate (yc) at ($(DSP.east)+(1cm, 0)$) {};
+						
+			\path (xc) edge (AA);
+			\path (AA) edge (DSP);
+			\path (DSP) edge (yc);
+			
+			\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+			\node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+		\end{tikzpicture}
+	}
+	\end{center}
+	
+	\begin{itemize}
+		\item The equivalent downsampling factor is $M = M_1M_2$.
+		\item Design $H_1(z)$ and $H_2(z)$ so that $H_1(z)H_2(z^{M_1})$ has the desired frequency response. 
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Multi-stage interpolation}
+	The same rationale applies to interpolation
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/multistage_interpolation_block.tex}}
+	\end{center}	
+	Interchanging filter and downsampling results in the equivalent system:
+	
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{
+			\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=3.5cm, font=\sffamily]
+			\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+			\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+			
+			\node[node] (xc) {};
+			\node[block, right=1cm of xc, text width = 2cm, align= center] (DSP) {$~~(L_1L_2)$};
+			\draw[-latex, shorten >= 15pt, shorten <= 15pt, line width=0.75pt] ($(DSP.south)-(17pt, 0)$) -- ($(DSP.north)-(17pt, 0)$) {};
+			\node[block, right of=DSP, text width = 2.5cm, align= center] (AA) {$H_1(z^{L_2})H_2(z)$};
+
+			\coordinate (yc) at ($(AA.east)+(1cm, 0)$) {};
+			
+			\path (xc) edge (DSP);
+			\path (DSP) edge (AA);
+			\path (AA) edge (yc);
+			
+			\node[above = 0mm of xc, text width = 1cm, align=center] {$x[n]$};
+			\node[above = 0mm of yc, text width = 1cm, align=center] {$y[n]$};
+			\end{tikzpicture}
+		}
+	\end{center}
+	
+	\begin{itemize}
+		\item The equivalent upsampling factor is $L = L_1L_2$.
+		\item Design $H_1(z)$ and $H_2(z)$ so that $H_1(z^{L_2})H_2(z)$ has the desired frequency response. 
+	\end{itemize}	
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	What if the filter is placed before downsampling?
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/filter_downsampling.tex}}
+	\end{center}
+	\begin{itemize}
+		\item To interchange filter and downsampling in this case, we'd need to express $H(z)$ as some $G(z^M)$. Generally not easy.
+		\item \textbf{Practical problem:} this implementation wastes computation. All samples of the output of $H(z)$ are calculated, but only 1 out of $M$ is used after downsampling. 
+		\item If $H(z)$ is FIR of length $N$, there are $N$ multiplications per sample. Downsampling by $M$ discards $M-1$ samples every $M$ samples.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	We can decompose any given sequence $h[n]$ into $M$ subsequences such that
+	\begin{equation*}
+	h_k[n] = \begin{cases}
+	h[n+k], & n~\text{integer multiple of } M \\
+	0, & \text{otherwise}
+	\end{cases}, k = 0, 1, \ldots, M-1
+	\end{equation*}
+	
+	It follows that
+	\begin{equation*}
+	h[n] = \sum_{k = 0}^{M-1} h_k[n-k] \Longleftrightarrow H(z) = \sum_{k = 0}^{M-1} H_k(z)z^{-k}
+	\end{equation*}
+\end{frame}	
+	
+\begin{frame}{Polyphase decomposition}	
+	Example of decomposition with $M = 2$
+	
+	\begin{center}
+	\resizebox{0.6\linewidth}{!}{\input{figs/polyphase_decomposition_time_domain.tex}}
+\end{center}	
+\end{frame}
+
+
+\begin{frame}{Polyphase decomposition}
+	We can downsample $h_k[n]$ in order to discard the zero samples
+	\begin{equation*}
+	e_k[n] = h_k[Mn] \Longleftrightarrow E_k(z^M) = H_k(z) \tag{upsamling by M}
+	\end{equation*}
+
+	The subsequences $e_k[n]$ are called the \textbf{polyphase components} of $h[n]$
+	\begin{center}
+		\resizebox{0.5\linewidth}{!}{\input{figs/polyphase_decomposition_e_time_domain.tex}}
+	\end{center}	
+\end{frame}
+
+\begin{frame}{Polyphase decomposition}
+	How to recover $h[n]$ from $e_0[n], \ldots, e_{M-1}[n]$?
+	
+	\begin{enumerate}
+		\item Upsample $e_k[n]$ by $M$, and we're back with $h_k[n]$
+		\item Delay by $k$ and add
+	\end{enumerate}
+
+	In terms of the $z$-transform:
+	\begin{equation*}
+	H(z) = \sum_{k=0}^{M-1} E_k(z^M)z^{-k}
+	\end{equation*}
+	
+	\begin{center}
+		\resizebox{0.6\linewidth}{!}{\input{figs/polyphase_decomposition_diagram.tex}}
+	\end{center}
+\end{frame}
+
+\begin{frame}{Polyphase decimation}
+	Back to the original problem: how to interchange filter and downsampling?
+	\begin{center}
+		\resizebox{0.5\linewidth}{!}{\input{figs/filter_downsampling.tex}}
+	\end{center}
+	Using the polyphase decomposition of $H(z)$
+	\begin{center}
+		\def\DOWN{1}
+		\resizebox{0.8\linewidth}{!}{\input{figs/polyphase_decomposition_diagram.tex}}
+	\end{center}
 \end{frame}
 
 %
-\begin{frame}{Noise shaping in A-to-D conversion}
-Table 4.1 of the textbook:
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.9\textwidth]{figs/table41.png}
-\end{figure}
-
+\begin{frame}{Polyphase decimation}
+	First interchange sum and downsampling:
+ 	\begin{center}
+	 	\resizebox{0.9\linewidth}{!}{\input{figs/polyphase_decomposition_diagram2.tex}}
+ 	\end{center}
 \end{frame}
 
+%
+\begin{frame}{Polyphase decimation}
+	Now it is easy to interchange $E_k(\tikz[baseline]{\node[fill=blue!20,anchor=base] {$z^M$};})$ with downsampling resulting in the filters $E_k(\tikz[baseline]{\node[fill=blue!20,anchor=base] {$z$};})$
+	\begin{center}
+		\resizebox{0.9\linewidth}{!}{\input{figs/polyphase_decomposition_diagram3.tex}}
+	\end{center}
+\textbf{Computation:} Each polyphase filter $E_k(z)$ requires $N/M$ multiplications, which are realized at the lower rate (higher sampling period) $TM$.
+
+Similarly for polyphase interpolation (Textbook section 4.7.5)
+
+\end{frame}
 
 %
 \begin{frame}{Summary}
 \begin{itemize}
-	\item Quantization is unavoidable in DSP systems
-	\item Although quantization is a nonlinear operation on a signal, it is a linear operation on the signal PDF (area sampling)
-	\item The probabilistic interpretation of quantization allows us to model the quantization error as a uniformly distributed random process (linear noise model)
-	\item Using this linear noise model, we simply replace quantizers by noise sources of average power $\sigma_e^2 = \Delta^2/12$
-	\item Quantization noise is assumed white (samples are uncorrelated)
-	\item Every extra bit of resolution in a quantizer improves the SNR by 6.02 dB
-	\item The signal amplitude must be matched to the dynamic range of the quantizer, otherwise there'll be excessive clipping or some bits won't be used
-	\item Noise shaping is a strategy that minimizes quantization noise in A-to-D and D-to-A converters. The goal is to shape the quantization noise PSD, so that most of the noise power falls outside the signal band
-	\item Noise shaping requires oversampling to minimize noise aliasing
+	\item Downsampling by an integer factor $M$ stretches the discrete-time spectrum by a factor $M$ and causes replicas of the spectrum to appear at $2\pi/M$. The amplitude of the spectrum is attenuated by $M$
+	\item It's often easier to think of downsampling as sampling the original continuous-time signal with a sampling period $T_d = MT$
+	\item Anti-aliasing filtering followed by downsampling is called decimation
+	\item Upsampling by an integer factor $L$ compresses the discrete-time spectrum by a factor $L$. The interpolation filter is assumed to have gain $L$, so the spectrum amplitude is scaled by $L$
+	\item We can achieve non-integer sampling rate changes by cascading interpolation and decimation stages
+	\item For large downsampling/uspsampling factors, it's generally more efficient to realized multistage decimation/interpolation
+	\item Polyphase decomposition allows efficient implementation of filtering followed by downsampling and upsampling followed by filtering.
 \end{itemize}
 \end{frame}
 
