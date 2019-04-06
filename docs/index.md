@@ -63,3 +63,6 @@
 # Homework assignments
 
 Homework assignments and their solution can be found in this [folder](https://github.com/jkperin/ee264/tree/master/docs/homework).
+
+
+{% include adv.html %}
