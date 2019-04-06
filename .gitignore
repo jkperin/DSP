@@ -230,3 +230,4 @@ homework/m/*.tex
 *.pptx
 *.xlsx
 homework/draft.tex
+!docs/*.pdf
