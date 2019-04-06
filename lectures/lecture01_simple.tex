@@ -1,0 +1,1120 @@
+\documentclass[10pt, aspectratio=169, handout]{beamer}
+\usefonttheme{professionalfonts}
+%\usetheme{CambridgeUS}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{default}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{beaver} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{array}  % for table column M
+\usepackage{makecell} % to break line within a cell
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{epstopdf}
+\captionsetup{compatibility=false}
+%\usepackage{dsfont}
+\usepackage[absolute,overlay]{textpos}
+\usetikzlibrary{calc}
+\usetikzlibrary{pgfplots.fillbetween, backgrounds}
+\usetikzlibrary{positioning}
+
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{plotmarks}
+\usetikzlibrary{calc}
+
+\usepgfplotslibrary{groupplots}
+\pgfplotsset{compat=newest} 
+%\pgfplotsset{plot coordinates/math parser=false}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+%% 
+\input{header.tex}
+
+%%
+\title[EE 264]{EE 264: Digital Signal Processing}
+\author{Jose Krause Perin}
+\institute{Stanford University}
+\date{June 25, 2018}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+%
+\begin{frame}{Why {\bf Digital} Signal Processing?}
+
+\begin{itemize}
+  \item Flexibility
+  \item Accuracy
+  \item Multi-purpose hardware
+  \item Easy to implement sophisticated operations
+  \item Today we have tremendous computer power
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Why {\bf Digital} Signal Processing?}	
+
+The development of low-cost and high-speed digital electronics paved the way for digital signal processing
+\vspace{0.5cm}
+			
+\makebox[\linewidth][c]{%
+	\begin{tikzpicture}[draw=black!50, node distance=4.2cm]
+		\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\node[block] (C1) {\resizebox{!}{3.2cm}{\includegraphics[trim={15mm 10mm 15mm 15mm}, clip]{figs/First_point_contact_transistor_1947.jpg}}};
+		\node[block] (C2) at ($(C1.east) + (2.2cm,0)$) {\resizebox{!}{3.2cm}{\includegraphics[trim={3mm 0 3mm 0}, clip]{figs/first_ic_1961.jpg}}};
+		\node[block] (C3) at ($(C2.east) + (2.5cm,0)$)  {\resizebox{!}{3.2cm}{\includegraphics{figs/modern_i7.jpg}}};
+		\node[below=0.2cm of C1, text width=4cm, align=center] (cap1) {First point contact transistor (1947)};
+		\node[below=0.2cm of C2, text width=4.2cm, align=center] (cap2) {First integrated circuit (1961)};
+		\node[below=0.2cm of C3, text width=4cm, align=center] (cap3) {Modern processor (200X)};	
+	\end{tikzpicture}
+}	
+\end{frame}
+
+%
+\begin{frame}{Why learn digital signal processing?}
+
+\begin{itemize}
+	\item Present in essentially all fields of modern EE
+    \item Countless applications
+    \vspace{0.25cm}
+    
+	\begin{center}
+		\resizebox{0.9\linewidth}{!}{\includegraphics{figs/ee264_and_related_areas.jpg}}
+	\end{center}
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Example: digital communication}
+
+\begin{block}{Problem:}
+\begin{figure}
+	\centering
+	\resizebox{0.7\linewidth}{!}{\input{figs/channel_no_eq.tex}}
+\end{figure}
+\end{block}
+
+\onslide<3-|handout:2->{\begin{block}{Solution:}
+	\begin{figure}
+		\centering
+		\resizebox{\linewidth}{!}{\input{figs/channel_eq.tex}}
+		\label{fig:channel_eq}
+	\end{figure}
+\end{block}
+
+More about filter design on lecture 9
+}
+
+\end{frame}
+
+%
+\begin{frame}{Example: speech recognition}
+\centering
+\vspace{1.2cm}
+\resizebox{0.65\textwidth}{!}{
+	\begin{tikzpicture}[draw=black!50, node distance=1cm]
+		\tikzstyle{block}=[draw=none,rectangle,fill=none,minimum size=1.5cm, inner sep=0pt]
+		\node[block] (C1) {\resizebox{245.832pt}{!}{\includegraphics[trim=2cm 2cm 2cm 2cm]{figs/speech_spectogram.eps}}};
+		
+		\node (the) at (-3.6, 1.2) {\tiny The};
+		\node (discrete) at ($(the.east) + (0.43,0)$) {\tiny discrete};
+		\node (fourier) at ($(discrete.east) + (0.2,0)$) {\tiny Fourier};
+		\node (transform) at ($(fourier.east) + (0.6,0)$) {\tiny transform of a};
+		\node[align=left] (real) at ($(transform.east) + (0.4,0)$) {\tiny r~e~a~l};
+		\node[align=left] (valued) at ($(real.east) + (0.3,0)$) {\tiny valued};
+		\node[align=left] (signal) at ($(valued.east) + (0.59,0)$) {\tiny sig~~~~~n~a~l is};
+		\node[align=left] (conjugate) at ($(signal.east) + (0.37,0)$) {\tiny conjugate};
+		\node[align=left] (symmetric) at ($(conjugate.east) + (0.4,0)$) {\tiny symmetric};
+		%\draw 
+	\end{tikzpicture}
+}
+
+\end{frame}
+
+%
+\begin{frame}{Example: speech recognition}
+
+\centering
+\resizebox{0.65\linewidth}{!}{\input{figs/recurrent_neural_net.tex}}
+
+\end{frame}
+
+%
+\begin{frame}{Example: speech recognition}
+
+Spectrogram of the same speech signal, now recorded with sampling rate of 44.1 kHz
+\vspace{0.5cm}
+
+\begin{center}
+\resizebox{0.7\textwidth}{!}{\includegraphics{figs/speech_spectogram_44k.eps}}
+\end{center}
+
+More on spectrograms and short-time Fourier transform on lecture 11.
+\end{frame}
+
+\begin{frame}{Digital processing of analog signals}
+	\vspace{-0.1cm}
+	\begin{figure}[t!]
+		\centering
+		\resizebox{0.7\linewidth}{!}{\input{figs/adc-dsp-dac.tex}}
+		\label{fig:adc-dsp-dac}
+	\end{figure}
+	\vspace{-0.3cm}
+	\begin{block}{Analog-to-digital converter (ADC)}
+		\begin{itemize}
+			\item Performs filtering, sampling, and quantization
+			\item Sampling rate may be of tens of kHz (audio processing), or it may be of tens of GHz (optical communications)
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital signal processor}
+		\begin{itemize} \itemsep 0pt
+			\item Performs some operation e.g., filtering, FFT, etc
+			\item May be implemented on PCs with 64-bit floating-point precision, or on ASICs with limited arithmetic precision (e.g., 6 bits).
+		\end{itemize}
+	\end{block}
+	\vspace{-0.3cm}
+	\begin{block}{Digital-to-analog converter (DAC)}
+		\begin{itemize}
+			\item Performs quantization and reconstruction (filtering)
+			\item Sampling rate could be similar to ADC
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Review}
+
+%
+\begin{frame}{Review}
+	\begin{itemize}
+		\item Discrete-time signals and systems
+		\item Discrete-time Fourier transform (DTFT)
+		\item The $z$-transform
+		\item Difference equations
+	\end{itemize}
+\end{frame}
+
+\subsection{Discrete-Time Signals and Systems}
+%
+\begin{frame}{Discrete-time signals}
+
+Discrete-time signals (or simply \textit{sequences}) may be inherently discrete or they may be obtained by sampling a continuous-time signal. More about sampling on lectures 4 and 5.
+
+\begin{figure}[t!]
+	\centering
+	\resizebox{0.4\linewidth}{!}{\input{figs/ct_signal_sampled.tex}}
+	\label{fig:ct_signal_sampled}
+\end{figure}
+
+$x[n]$ is only defined for $n\in\mathbb{Z}$
+\end{frame}
+
+%
+\begin{frame}{Basic sequences}
+	\begin{columns}[t]
+		\begin{column}{0.5\linewidth}
+			\textbf{Unit impulse:} 
+			
+			\begin{equation*}
+				\delta[n] = \begin{cases}
+				1, & n = 0 \\
+				0, & \text{otherwise}
+				\end{cases}
+			\end{equation*}
+		\end{column}		
+		
+		\begin{column}{0.5\linewidth}
+			\textbf{Unit step:} 
+			\begin{equation*}
+				u[n] = \begin{cases}
+				1, & n \geq 0 \\
+				0, & \text{otherwise}
+				\end{cases}
+			\end{equation*}
+		\end{column}
+	\end{columns}
+	\vspace{0.5cm}
+	\begin{columns}[t]
+	\begin{column}{0.4\linewidth}		
+		\centering
+		\resizebox{\linewidth}{!}{\input{figs/impulse.tex}}
+	\end{column}		
+	
+	\begin{column}{0.4\linewidth}
+		\centering
+		\resizebox{\linewidth}{!}{\input{figs/step.tex}}
+	\end{column}
+\end{columns}
+\end{frame}
+
+%
+\begin{frame}{Basic sequences}
+	
+\textbf{Right-sided exponential:} $\displaystyle 
+x[n] = a^nu[n] = \begin{cases}
+a^n, & n \geq 0 \\
+0, & \text{otherwise}
+\end{cases}$
+	
+\begin{figure}[h!] 
+	\centering 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{-1.15}{$a < -1$}{-2}{2}}
+	\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+	%\resizebox{\linewidth}{!}{\input{figs/exponential_neg.tex}}
+	\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{-0.6}{$-1 < a < 0$}{-2}{2}}
+\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{0.6}{$0 < a < 1$}{-2}{2}}
+	\end{subfigure}% 
+	~ %add desired spacing between images, e. g. ~, \quad, \qquad etc. 
+	%(or a blank line to force the subfigure onto a new line) 
+	\begin{subfigure}[h!]{0.25\textwidth} 
+		\resizebox{\linewidth}{!}{\PlotExp{figs/exponential_param.tex}{1.15}{$a > 1$}{-2}{2}}
+	\end{subfigure}% 
+\end{figure}
+
+\begin{itemize}
+	\item Exponential exhibits oscillatory behavior for $a < 0$.
+	\item Exponential is \textbf{unbounded} if $|a| > 1$.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{Basic sequences}
+	
+	\textbf{Sinusoids:} $\displaystyle
+	x[n] = \cos(\omega_0 n + \phi)$
+	\vspace{-0.2cm}
+	\begin{figure}[t!]
+		\centering
+		\resizebox{0.3\linewidth}{!}{\input{figs/sinusoid.tex}}
+		\label{fig:sinusoid}
+	\end{figure}
+
+	Differently from continuous-time sinusoids, discrete-time sinusoids...
+	\begin{itemize}
+		\item are periodic only if $\omega_0/\pi$ is rational.
+		\item have maximum frequency $\omega = \pi$.
+	\end{itemize}
+	
+	\pause	
+	\textbf{Complex exponentials:} 
+	\begin{equation*}
+		e^{j(\omega_0n + \phi)} = \cos(\omega_0 n + \phi) + j\sin(\omega_0 n + \phi) \tag{from Euler's equation}
+	\end{equation*}
+\end{frame}
+
+%
+\begin{frame}{Classification of discrete-time signals}
+\begin{block}{Energy and power signals}
+	\textbf{Energy signals} have finite energy
+	\begin{equation*}
+		E \equiv \sum_{n=-\infty}^{\infty} |x[n]|^2 < \infty
+	\end{equation*}
+	
+	\textbf{Power signals} have infinite energy (e.g., periodic signals), but they have finite average power
+	\begin{equation*}
+		P \equiv \lim_{N\to\infty}\frac{1}{2N+1}\sum_{n=-N}^{N} |x[n]|^2 < \infty
+	\end{equation*}	
+\end{block}	
+\end{frame}
+
+%
+\begin{frame}{Classification of discrete-time signals}
+\begin{block}{Symmetry}
+	\begin{equation*}
+	x[n] = x[-n] \tag{even symmetry}
+	\end{equation*}
+	\begin{equation*}
+	x[n] = -x[-n] \tag{odd symmetry}
+	\end{equation*}
+	
+	Any signal $x[n]$ can be decomposed as a sum of an even ($x_e[n]$) and an odd ($x_o[n]$) component:
+	\begin{equation*}
+	x[n] = x_e[n] + x_o[n]
+	\end{equation*}	
+	where 
+	\begin{align}
+	x_e[n] = \frac{1}{2}(x[n] + x[-n]) \tag{even component} \\
+	x_o[n] = \frac{1}{2}(x[n] - x[-n]) \tag{odd component}
+	\end{align}
+\end{block}	
+\end{frame}
+
+%
+\begin{frame}{Discrete-time systems}
+
+\begin{figure}
+	\centering
+	\resizebox{0.8\linewidth}{!}{\input{figs/DTsystem.tex}}
+	\label{fig:DTsystem}
+\end{figure}
+
+\begin{block}{Some important properties}
+	\textbf{Linearity or superposition}
+	\begin{equation*}
+	T\{ax_1[n] + bx_2[n]\} = aT\{x_1[n]\} + bT\{x_2[n]\}
+	\end{equation*}
+	\textbf{Time invariance or shift invariance}
+	\begin{equation*}
+	\text{If } d[n] = x[n-n_d], \text{then } T\{d[n]\} = y[n-n_d]
+	\end{equation*}
+	A time shift of the input causes an equal time shift of the output
+\end{block}
+\end{frame}
+
+%
+\begin{frame}[t]{Linear time-invariant (LTI) systems}
+LTI systems are \textbf{completely characterized} by their impulse response.
+
+\begin{figure}
+	\centering
+	\vspace{-0.25cm}
+	\resizebox{0.7\linewidth}{!}{\input{figs/LTI_system_response.tex}}
+	\label{fig:DTimp}
+\end{figure}
+\vspace{-0.5cm}
+\onslide<4-|handout:4>{
+\begin{block}{The convolution sum}
+	\begin{equation*}
+		y[n] = \sum_{k=-\infty}^{\infty} x[k]h[n-k] = \sum_{k=-\infty}^{\infty} x[n-k]h[k]
+	\end{equation*}
+	Shorthand notation: $y[n] = x[n]\ast h[n]$ or $ y[n] = (x\ast h)[n]$
+\end{block}
+}
+
+\end{frame}
+
+\begin{frame}{Other properties of discrete-time systems}
+
+\begin{block}{Memorylessness}
+	A system is \textbf{memoryless} if its output at time $n$, $y[n]$,  depends only on the present input $x[n]$.
+\end{block}
+
+\begin{block}{Causality}
+	A system is \textbf{causal} if its output at time $n$, $y[n]$, depends only on the present and past samples of the input $\{x[n], x[n-1], x[n-2], \ldots\}$. All physical systems are causal.
+	\vspace{0.5cm}
+	
+	For \textbf{LTI systems}, causality implies $h[n] = 0, n < 0$
+	\begin{equation*}\tag{Convolution sum for causal systems}
+	y[n] = \sum_{\tikz[baseline]{
+			\node[fill=blue!20,anchor=base] (t1) {$k=0$};}}^{\infty} x[n-k]h[k] = \sum_{k=-\infty}^{n} x[k]h[n-k]
+	\end{equation*}
+	
+\end{block}
+
+\end{frame}
+
+\begin{frame}{Other properties of discrete-time systems}
+	
+	\begin{block}{Stability}
+		A system is \textbf{BIBO stable} if every bounded input ($|x[n]| < B_x < \infty$) produces a bounded output ($|y[n]| < B_y < \infty$)
+
+		For \textbf{LTI systems},
+		\vspace{-0.25cm}
+		\begin{align*}
+		|y[n]| &= \bigg|\sum_{k = -\infty}^{\infty} x[n-k]h[k]\bigg| \tag{Convolution sum} \\
+		&\leq \sum_{k = -\infty}^{\infty} |x[n-k]||h[k]| \tag{Triangle inequality} \\
+		& \leq B_x\sum_{k = -\infty}^{\infty} |h[k]| \tag{Bounded input $|x[n]| < B_x < \infty$} \\
+		& < B_y < \infty \tag{only if $\displaystyle\sum_{k=-\infty}^{\infty}|h[k]| < \infty$}
+		\end{align*}
+		\vspace{-0.3cm}
+		 
+		 Therefore, an LTI system is BIBO stable only if its impulse response $h[k]$ is \textbf{absolute summable}.
+	\end{block}
+\end{frame}
+
+%
+\begin{frame}<beamer:0>{Classify the following discrete-time systems}
+	\centering
+	\resizebox{0.92\linewidth}{!}{
+		\begin{tabular}{M{4cm}|c|c|c|c|c}
+			\hline
+			\textbf{System} & \textbf{Linear} & \textbf{Time invariant} & \textbf{Memoryless} & \textbf{Causal} & \textbf{BIBO stable} \\[2ex]
+			\hline
+			\makecell{Constant offset \\ $y[n] = x[n] + C, C \neq 0$} & & & & &  \\[3ex]
+			\hline
+			\makecell{Time shift \\ $y[n] = x[n-n_d]$} & & & & & \\[3ex]	
+			\hline
+			\makecell{Squaring \\ $y[n] = x^2[n]$} & & & & & \\[3ex]
+			\hline
+			\makecell{Accumulator \\ $y[n] = \displaystyle\sum_{k=-\infty}^nx[k]$} & & & & & \\[3ex]
+			\hline
+			\makecell{Compressor \\ $y[n] = x[Mn], M > 1$} & & & & & \\[3ex]
+			\hline
+			\makecell{Differentiator \\ $y[n] = x[n] - x[n-1]$} & & & & & \\[3ex]
+			\hline
+			\makecell{A difference equation \\ $y[n] = x[n] + y[n-1]$} & & & & & \\[3ex]
+			\hline
+		\end{tabular}
+	}
+\end{frame}
+
+%
+\begin{frame}<handout:0>{Classify the following discrete-time systems}
+\centering
+\resizebox{\linewidth}{!}{
+	\begin{tabular}{M{4cm}|c|c|c|c|c}
+		\hline
+		\textbf{System} & \textbf{Linear} & \textbf{Time invariant} & \textbf{Memoryless} & \textbf{Causal} & \textbf{BIBO stable} \\[2ex]
+		\hline
+		\makecell{Constant offset \\ $y[n] = x[n] + C, C \neq 0$} & \onslide<2->{N} & \onslide<2->{Y} & \onslide<2->{Y} & \onslide<2->{Y} & \onslide<2->{Y} \\[3ex]
+		\hline
+		\makecell{Time shift \\ $y[n] = x[n-n_d]$} & \onslide<3->{Y} & \onslide<3->{Y} & \onslide<3->{N, if $n_d \neq 0$} & \onslide<3->{Y, if $n_d > 0$} & \onslide<3->{Y} \\[3ex]	
+		\hline
+		\makecell{Squaring \\ $y[n] = x^2[n]$} & \onslide<4->{N} & \onslide<4->{Y} & \onslide<4->{Y} & \onslide<4->{Y} & \onslide<4->{Y} \\[3ex]
+		\hline
+		\makecell{Accumulator \\ $y[n] = \displaystyle\sum_{k=-\infty}^nx[k]$} & \onslide<5->{Y} & \onslide<5->{Y} & \onslide<5->{N} & \onslide<5->{Y} & \onslide<5->{N} \\[3ex]
+		\hline
+		\makecell{Compressor \\ $y[n] = x[Mn], M > 1$} & \onslide<6->{Y} & \onslide<6->{N} & \onslide<6->{N} & \onslide<6->{N} & \onslide<6->{Y} \\[3ex]
+		\hline
+		\makecell{Differentiator \\ $y[n] = x[n] - x[n-1]$} & \onslide<7->{Y} & \onslide<7->{Y} & \onslide<7->{N} & \onslide<7->{Y} & \onslide<7->{Y} \\[3ex]
+		\hline
+		\makecell{A difference equation \\ $y[n] = x[n] + y[n-1]$} & \onslide<8->{Y} & \onslide<8->{Y} & \onslide<8->{N} & \onslide<8->{Y} & \onslide<8->{N} \\[3ex]
+		\hline
+	\end{tabular}
+}
+\end{frame}
+
+\subsection{The Discrete-Time Fourier Transform}
+%
+\begin{frame}{Frequency-domain representation of LTI systems}
+
+Let's use the convolution sum to compute the output of an LTI system to a complex exponential: 
+
+\vspace{-0.5cm}
+\begin{columns}[t]
+	\begin{column}{0.3\textwidth}
+		\begin{center}
+			\begin{tikzpicture}[->, >=stealth, shorten >= 0pt, draw=black!50, node distance=0.6\textwidth]
+			\tikzstyle{node}=[circle,fill=black,minimum size=2pt,inner sep=0pt]
+			\tikzstyle{block}=[draw=black,rectangle,fill=none,minimum size=1cm, inner sep=0pt]
+			\tikzstyle{annot} = []
+			
+			\node[node] (xc) at (0, 0 cm) {};
+			\node[block, right of=xc, text width = 2cm, align= center] (DSP) {LTI System};
+			\coordinate[right of=DSP] (yc) {};
+			
+			\path (xc) edge (DSP);
+			\path (DSP) edge (yc);
+			
+			\node[above = 0.5mm of xc] {$x[n] = e^{j\omega n}$};			
+			\end{tikzpicture}
+		\end{center}
+	\end{column}
+	\begin{column}{0.8\textwidth}
+		\begin{align*}
+		y[n] &= \sum_{k=-\infty}^{\infty} h[k]e^{j\omega(n-k)}  \\
+		&= \underbrace{\bigg(\sum_{k=-\infty}^{\infty} h[k]e^{-j\omega k}\bigg)}_\text{$H(e^{j\omega})$}e^{j\omega n} = H(e^{j\omega})e^{j\omega n}
+		\end{align*}
+	\end{column}
+\end{columns}	
+		
+\begin{itemize}
+	\pause\item $H(e^{j\omega})$ is a complex number that depends only on the impulse response of the LTI system
+	\pause\item The output of an LTI system to a complex exponential is also a complex exponential of same frequency, but with possibly different amplitude and phase
+\end{itemize}
+
+\pause
+\begin{block}{Conclusions}
+	\begin{itemize}
+		\item Complex exponentials are \textbf{eigenfunctions} of LTI systems, and $H(e^{j\omega})$ are the corresponding eigenvalues.
+		\item By representing signals as a sum of complex exponentials, we can readily calculate their output to an LTI system: $Y(e^{j\omega}) = H(e^{j\omega})X(e^{j\omega})$
+	\end{itemize} 
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Discrete-time Fourier transform (DTFT)}
+
+\begin{block}{Definition}
+\begin{equation} \tag{Direct transform}
+X(e^{j\omega}) = \sum_{n=-\infty}^{\infty} x[n]e^{-j\omega n} 
+\end{equation}
+
+\begin{equation}\tag{Inverse transform}
+x[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})e^{j\omega n}d\omega
+\end{equation}
+\end{block}
+
+\textbf{Important:}
+\begin{itemize}
+	\item The DTFT is periodic with period $2\pi$: $\displaystyle X(e^{j(\omega + 2\pi)}) = X(e^{j\omega})$
+	\item If $x[n]$ is \textbf{absolute summable} i.e., $\sum_{k=-\infty}^{\infty} |x[k]| < \infty$, then the DTFT exists. This is a \textit{sufficient} condition, but it is \textit{not a necessary} condition.
+	\item Absolute summability also implies that the DTFT \textbf{converges uniformly} to a continuous function of $\omega$.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}[t]{Example: the ideal lowpass filter}
+
+\begin{columns}[t]
+	\begin{column}{0.5\linewidth}
+		\textbf{Time domain}
+		\vspace{0.1cm}
+		\begin{equation*}
+			h_{lpf}[n] = \frac{\sin\omega_cn}{\pi n} = \frac{\omega_c}{\pi}\mathrm{sinc}\Big(\frac{\omega_c}{\pi} n\Big)
+		\end{equation*}
+	\end{column}
+
+	\begin{column}{0.5\linewidth}
+		\textbf{Frequency domain}
+		\vspace{-0.2cm}
+		\only<1|handout:1>{
+		\begin{equation*}
+			H_{lpf}(e^{j\omega}) = \begin{cases}
+			1, & |\omega|\leq\omega_c \\
+			0, & \omega_c < |\omega|\leq \pi
+			\end{cases}
+		\end{equation*}	
+		}
+		\only<2-|handout:2->{
+			\begin{equation*}
+			H_{M}(e^{j\omega}) = \sum_{n=\tikz[baseline]{
+					\node[fill=blue!20,anchor=base,scale=0.7] {$-M$};
+			}}^{\tikz[baseline]{
+			\node[fill=blue!20,anchor=base,scale=0.7] {$M$};
+		}} \frac{\sin\omega_cn}{\pi n}e^{-j\omega n}
+			\end{equation*}	
+		}
+	\end{column}
+\end{columns}
+\vspace{0.3cm}
+
+\centering
+\resizebox{0.9\linewidth}{!}{\input{figs/ideal_lowpass_filter.tex}}
+\end{frame}
+
+%
+\begin{frame}{Convergence of the DTFT}
+\begin{itemize}
+	\item The sinc function is not absolute summable, but it is \textbf{square summable}
+	\begin{equation*}
+		\sum_{n=-\infty}^{\infty} |\mathrm{sinc}(n)|^2 < \infty
+	\end{equation*}
+	\item In this case, the DTFT does not converge uniformly; it converges in the mean-square sense
+	\item The oscillations are known as \textbf{Gibbs phenomenon}, and they occur whenever there is a discontinuity in the frequency domain
+	\item Interestingly, as $M\to\infty$ the oscillations become more rapid, but the size of the ripples does not decrease
+	\item The DTFT may exist even when sequences are neither absolute summable nor square summable. Examples: a constant, unit step, complex exponentials
+	\item Although all this may seem like a mathematical curiosity, it has important implications in filter design (lecture 9) and in spectrum analysis (lecture 11)
+\end{itemize}
+	
+\end{frame}
+
+%
+\begin{frame}{DTFT properties}
+\begin{itemize}
+\item Linearity
+	\begin{equation*}
+	ax_1[n]  + bx_2[n] \Longleftrightarrow aX_1(e^{j\omega})+bX_2(e^{j\omega})
+	\end{equation*}
+\item Time shift, delay for $n_d > 0$, advance for $n_d < 0$
+	\begin{equation*}
+	x[n-n_d] \Longleftrightarrow e^{-j\omega n_d}X(e^{j\omega})
+	\end{equation*}
+\item Frequency shift (modulation)
+	\begin{equation*}
+	e^{j\omega_0n}x[n] \Longleftrightarrow X(e^{j(\omega-\omega_0)})
+	\end{equation*}
+\item Convolution
+	\begin{equation*}
+	y[n] = x[n]\ast h[n] \Longleftrightarrow Y(e^{j\omega}) = X(e^{j\omega})H(e^{j\omega})
+	\end{equation*}
+\item Multiplication of sequences (windowing)
+	\begin{equation*}
+	x[n]w[n] \Longleftrightarrow \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\theta})W(e^{j(\omega-\theta)}){d\theta}
+	\end{equation*}
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{DTFT properties}
+\begin{itemize}
+	\item Linear weighting
+		\begin{equation*}
+		nx[n] \Longleftrightarrow j\frac{dX(e^{j\omega})}{d\omega}
+		\end{equation*}
+	\item Time reversal
+		\begin{equation*}
+		x[-n] \Longleftrightarrow X(e^{-j\omega})
+		\end{equation*}
+	\item Parseval's theorem
+		\begin{equation*}
+		\sum_{n=-\infty}^{\infty}x[n]y^*[n] = \frac{1}{2\pi}\int_{-\pi}^{\pi}X(e^{j\omega})Y^*(e^{j\omega})\mathrm{d}\omega
+		\end{equation*}
+		if $x[n] = y[n]$
+		\begin{equation*}\tag{signal energy}
+		\sum_{n=-\infty}^{\infty}|x[n]|^2 = \frac{1}{2\pi}\int_{-\pi}^{\pi}|X(e^{j\omega})|^2\mathrm{d}\omega
+		\end{equation*}	
+	\item Deterministic autocorrelation function
+		\begin{equation*}
+		c_{xx}[n] = \sum_{m=-\infty}^{\infty}x[m]x[n+m] \Longleftrightarrow X(e^{j\omega})X^*(e^{j\omega}) = |X(e^{j\omega})|^2
+		\end{equation*}	
+\end{itemize}
+\end{frame}
+
+%
+\subsection{The $z$-Transform}
+
+\begin{frame}{The $z$-Transform}
+
+The $z$-transform is a generalization of the DTFT and it is applicable to a broader class of signals and systems.
+
+\begin{block}{Definition}
+	\begin{equation} \tag{Direct transform}
+	X(z) = \sum_{n=-\infty}^{\infty} x[n]z^{-n} 
+	\end{equation}
+	
+	\begin{equation}\tag{Inverse transform}
+	x[n] = \frac{1}{2j\pi}\oint_{\mathcal{C}}X(z)z^{n-1}\mathrm{d}z
+	\end{equation}
+\end{block}
+
+\begin{itemize}
+	\item The $z$-transform has a \textbf{region of convergence (ROC)}, which is the values of $z$ for which the infinite sum in the direct transform is finite. Without the ROC, the $z$-transform is an \textbf{ambiguous representation} of a signal.
+	\item The inverse transform is given by the contour integral over some complex path $\mathcal{C}$. This is generally laborious, so we'll obtain the inverse $z$-transform through indirect methods such as \textbf{partial fraction expansion}.
+\end{itemize}
+\end{frame}
+
+%
+\begin{frame}{The $z$-Transform}
+$x[n] = z^n, z\in\mathbb{C}$ is another \textbf{eigenfunction} of LTI systems
+
+\textit{Proof:}
+\begin{align*}
+y[n] &= \sum_{k=-\infty}^{\infty} h[k]z^{(n-k)} \tag{from convolution sum} \\
+&= \bigg(\sum_{k=-\infty}^{\infty} h[k]z^{-k}\bigg)z^{n} \tag{rearranging}\\
+&= H(z)z^{n} \tag{By definition $H(z) \equiv \sum_{k=-\infty}^{\infty} h[k]z^{-k}$}
+\end{align*}	
+
+\begin{itemize}
+	\item We can always write $z^n = r^ne^{j\omega n}$ (polar coordinates)
+	\item The eigenfunction $e^{j\omega n}$, used in the DTFT, is just a particular case ($r=1$) of the eigenfunction used in the $z$-transform
+	\item The factor $r^n$ helps the $z$-transform sum converge to a broader class of signals
+\end{itemize}
+
+\end{frame}
+
+%
+\begin{frame}{Relation between DTFT and the $z$-Transform}
+
+\begin{columns}[t]
+	\begin{column}{0.5\textwidth}
+		\begin{block}{DTFT}
+			\vspace{-0.5cm}
+			\begin{equation} \tag{Direct transform}
+			X(e^{j\omega}) = \sum_{n=-\infty}^{\infty} x[n]\tikz[baseline]{
+				\node[fill=blue!20,anchor=base] (t1) {$e^{-j\omega n}$};
+			}
+			\end{equation}
+		\end{block}
+	\end{column}
+	\begin{column}{0.5\textwidth}
+		\begin{block}{$z$-Transform}
+			\vspace{-0.2cm}
+			\begin{equation} \tag{Direct transform}
+			X(z) = \sum_{n=-\infty}^{\infty} x[n]\tikz[baseline]{
+				\node[fill=blue!20,anchor=base] (t1) {$z^{-n}$};
+			}
+			\end{equation}
+		\end{block}
+	\end{column}
+\end{columns}
+\vspace{0.4cm}
+\begin{itemize}
+	\pause\item The DTFT is equal to the $z$-transform evaluated on the unit circle
+	\item DTFT is periodic with period $2\pi$.
+	\pause\item \textbf{Question:} Does the DTFT exist if the ROC of the $z$-transform does not include the unit circle?
+\end{itemize}
+
+\vspace{-0.4cm}
+\flushright
+\resizebox{0.25\linewidth}{!}{\input{figs/unit_circle.tex}}
+\end{frame}
+
+%
+\begin{frame}{For what will we use the $z$-transform?}
+	\begin{enumerate}
+		\item Representing LTI systems
+		\item Determining stability of LTI systems
+		\item Solving difference equations
+	\end{enumerate}
+\end{frame}
+
+
+%
+\begin{frame}{Rational $z$-transforms}
+	
+Rational $z$-transforms are a ratio of two polynomials in $z^{-1}$ (or $z$)
+\begin{align*}
+	X(z) &= \frac{B(z)}{A(z)} = \frac{b_0 + b_1z^{-1}+\ldots+b_Mz^{-M}}{a_0 + a_1z^{-1}+\ldots+a_Nz^{-N}} \\
+	&= \frac{b_0}{a_0}z^{N-M}\frac{(z-z_1)(z-z_2)\ldots(z-z_M)}{(z-p_1)(z-p_2)\ldots(z-p_N)}
+\end{align*}
+\begin{itemize}
+	\pause\item The \textbf{zeros} of a $z$-transform are the values of $z$ for which $X(z) = 0$
+	\pause\item The \textbf{poles} of a $z$-transform are the values of $z$ for which $X(z) = \infty$. By definition, the ROC cannot contain any pole
+	\pause\item $X(z)$ has $M$ zeros $\{z_1, z_2, \ldots, z_M\}$, which are the roots of the numerator polynomial $B(z)$
+	\pause\item $X(z)$ has $N$ poles $\{p_1, p_2, \ldots, p_M\}$, which are the roots of the denominator polynomial $A(z)$
+	\pause\item If $N-M > 0$, $X(z)$ has more $N-M$ zeros at $z = 0$
+	\pause\item If $N-M < 0$, $X(z)$ has more $M-N$ poles at $z = 0$
+	\pause\item If the coefficients $\{b_0, \ldots, b_M\}, \{a_0, \ldots, a_N\}$ are real, the poles and zeros are either real or they appear in complex conjugate pairs
+\end{itemize}	
+\end{frame}
+
+%
+\begin{frame}{Examples}
+\begin{block}{1. Right-sided exponential $x[n] = a^nu[n]$}
+\begin{equation*} 
+X(z) = \sum_{n=0}^\infty a^nz^{-n} = \sum_{n=0}^\infty (az^{-1})^n 
+\end{equation*}
+This sum converges only if $|az^{-1}| < 1$. Hence, ROC: $|z| > |a|$.
+\begin{columns}
+	\begin{column}{0.6\textwidth}
+		From the sum of an infinite geometric progression:
+		\begin{equation*} 
+		X(z) = \frac{1}{1-az^{-1}} = \frac{z}{z-a}
+		\end{equation*}
+		Pole at $z = a$ and zero at $z = 0$.
+		~\\
+		The ROC of a causal signal is the \textbf{exterior of a circle} whose radius is the magnitude of the outermost pole $|a|$.
+	\end{column}
+	\begin{column}{0.4\textwidth}  %%<--- here
+		\begin{figure}
+			\centering
+			\resizebox{0.95\linewidth}{!}{\input{figs/right_sided_exp.tex}}
+			\label{fig:right_sided_exp}
+		\end{figure}
+	\end{column}
+\end{columns}
+
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Examples}
+\begin{block}{2. Left-sided exponential $x[n] = -a^nu[-n-1]$}
+	\begin{equation*} 
+	X(z) = -\sum_{n=-\infty}^{-1} a^nz^{-n} = -\sum_{n=1}^{\infty} a^{-n}z^{n} = 1-\sum_{n=0}^{\infty} (a^{-1}z)^{n}
+	\end{equation*}
+	
+	This sum converges only if $|a^{-1}z| < 1$. Hence, ROC: $|z| < |a|$.
+	
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			Once again from the sum of an infinite geometric progression:
+			\begin{equation*} 
+				X(z) = \frac{1}{1-az^{-1}} = \frac{z}{z-a}\tag{\textbf{Same as before!}}
+			\end{equation*}
+			Without the ROC, the $z$-transform is an \textbf{ambiguous representation} of a signal.
+			~\\
+			The ROC of an anti-causal signal is the \textbf{interior of a circle} whose radius is the magnitude of the innermost pole $|a|$.
+		\end{column}
+		\begin{column}{0.4\textwidth}  %%<--- here
+			\resizebox{0.95\linewidth}{!}{\input{figs/left_sided_exp.tex}}
+		\end{column}
+	\end{columns}
+	
+\end{block}
+\end{frame}
+
+\begin{frame}{Examples}
+
+\begin{block}{3. Two-sided exponential $x[n] = -b^nu[-n-1] + a^nu[n]$}
+	We can use the previous results and the linearity property of the $z$-transform:
+	\vspace{-0.25cm}
+	\begin{align*} 
+	X(z) &= -\sum_{n=-\infty}^{-1} b^nz^{-n} + \sum_{n=0}^\infty a^nz^{-n} = \frac{1}{1-bz^{-1}} + \frac{1}{1-az^{-1}} 
+	\end{align*}
+	
+	The ROC is the intersection of the two previous ROCs, i.e., ROC = $|b| < |z| < |a|$.
+
+	\begin{columns}
+		\begin{column}{0.6\textwidth}
+			Assuming $a = -1/3$ and $b=1/2$
+			\begin{equation*} 
+			X(z) = \frac{2z(z-1/12)}{(z+1/3)(z-1/2)}
+			\end{equation*}
+			Poles at $z = -1/3, 1/2$\\
+			Zeros at $z = 0, 1/12$
+			~\\
+			The ROC of a two-sided signal is an \textbf{annulus} (ring-shaped region).
+			
+		\end{column}
+		\begin{column}{0.4\textwidth}  %%<--- here
+			\begin{figure}
+				\centering
+				\resizebox{0.95\linewidth}{!}{\input{figs/two_sided_exp.tex}}
+				\label{fig:left_sided_exp}
+			\end{figure}
+		\end{column}
+	\end{columns}
+	
+\end{block}
+\end{frame}
+
+%
+\begin{frame}{Properties of the region of convergence}
+	The ROC tells a lot about a signal or system
+	\begin{enumerate}
+		\item If the ROC is the exterior of a circle (ROC = $\{|z| > |a|\}$), the system/signal is \textbf{causal}, where $a$ is the outermost pole. The ROC cannot contain any pole
+		\pause\item If a \textbf{LTI system is BIBO stable} (i.e., $\sum_{n=-\infty}^{\infty} |h[n]|<\infty$), the ROC must contain the unit circle.
+		
+		\textit{Proof:}
+		\vspace{-0.25cm}
+		\begin{align*}
+		|H(z)| &= \bigg|\sum_{n=-\infty}^{\infty}h[n]z^{-n}\bigg| \\
+		&\leq \sum_{n=-\infty}^{\infty} |h[n]||z|^{-n} \tag{From triangle inequality} \\
+		&= \sum_{n=-\infty}^{\infty} |h[n]| <\infty \tag{$z = e^{j\omega} \implies |z|=1$}
+		\end{align*}
+		\pause\item A \textbf{causal and stable LTI system} has all poles inside the unit circle. This follows from the first two properties.
+	\end{enumerate}
+\end{frame}
+
+%
+\begin{frame}{Properties of the $z$-transform}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{p{3cm}|l|l|p{3.5cm}}
+	\hline
+	Property & Time-Domain & z-Domain & ROC \\
+	\hline
+	~ & $x[n]$ & $X(z)$ & ROC = $\{r_2 < |z| < r_1\}$ \\
+	Notation & $x_1[n]$ & $X_1(z)$ & ROC$_1$ \\
+	~ & $x_2[n]$ & $X_2(z)$ & ROC$_2$ \\
+	Linearity & $a_1x_1[n] + a_2x_2[n]$ & $a_1X_1(z) + a_2X_2(z)$ & at least $\mathrm{ROC}_1 \cap \mathrm{ROC}_2$ \\
+	Time shifting & $x[n-k]$ & $X(z)z^{-k}$ & $\mathrm{ROC}-\begin{cases}\{0\}, k > 0 \\\{\infty\}, k < 0\\\end{cases}$ \\
+	Scaling in the $z$-domain & $a^nx[n]$ & $X(\frac{z}{a})$ & $|ar_1| < |z| < |ar_2|$ \\
+	Time reversal & $x[-n]$ & $X(z^{-1})$ & $|\frac{1}{r_1}| < |z| < |\frac{1}{r_2}|$ \\
+	Conjugation & $x[n]^{*}$ & $X(z^{*})^{*}$ & ROC \\
+	Real part & Re$\{x[n]\}$ & $\frac{X(z) + X(z^{*})^{*}}{2}$ & includes ROC \\
+	Imaginary part & Im$\{x[n]\}$ & $\frac{X(z) - X(z^{*})^{*}}{2}$ & includes ROC \\
+	Differentiation in the $z$-domain & $nx[n]$ & $-z\frac{\mathrm{d}X(z)}{\mathrm{d}z}$ & ROC \\
+	Convolution & $x_1[n]\ast x_2[n]$ & $X_1(z)\cdot X_2(z)$ & at least $\mathrm{ROC}_1\cap \mathrm{ROC}_2$ \\
+	Correlation & $x_1[n]\ast x_2[-n]$ & $X_1(z)\cdot X_2(z^{-1})$ & at least $\mathrm{ROC}_1\cap \mathrm{ROC}_2(z^{-1})$ \\
+	Initial value theorem & for $x[n]$ casual & $x[0] = \lim_{z\to\infty} X(z)$ \\
+	\hline
+\end{tabular}
+}
+\end{frame}
+
+%%
+%\begin{frame}{Inverse $z$-transform}
+%\begin{itemize}
+%	\item We generally don't use the inverse $z$-transform contour integral
+%	\item It's typically much easier to use indirect methods such as \textbf{partial fraction expansion}
+%	\item The goal is to write the $z$-transform as a sum of simpler $z$-transforms for which the inverse is tabulated
+%\end{itemize}
+%\vspace{-0.25cm}
+%\begin{align*}
+%X(z) &= \frac{B(z)}{A(z)} = \frac{b_0 + b_1z^{-1}+\ldots+b_Mz^{-M}}{a_0 + a_1z^{-1}+\ldots+a_Nz^{-N}} \tag{$z$-transform we want to invert} \\
+%&= \frac{r_1}{1-p_1z^{-1}} + \ldots + \frac{r_N}{1-p_Nz^{-1}} + k_1 + \ldots + k_{M-N+1}z^{-(M-N)} \tag{sum of simpler $z$-transforms}
+%\end{align*}
+%The equation above assumes all poles are different.
+%
+%\begin{itemize}
+%	\item $\{r_1,\ldots,r_N\}$ are known as the residues
+%	\item $\{p_1,\ldots,p_N\}$ are the poles
+%	\item $\{k_1, \ldots, k_{M-N+1}\}$ are the direct terms. The direct terms are only present if $M > N$
+%\end{itemize}
+%
+%\end{frame}
+
+%%
+%\begin{frame}{Inverse $z$-transform}
+%
+%Suppose that the $l$th pole of $X(z)$ has \textbf{multiplicity} $m$ (the pole is repeated $m$ times). In this case, the partial fraction expansion must also include the terms
+%~\\
+%
+%\begin{equation*}
+%\frac{r_l}{1-p_lz^{-1}} + \frac{r_{l+1}}{(1-p_lz^{-1})^2} + \ldots + \frac{r_{l+m-1}}{(1-p_lz^{-1})^l}
+%\end{equation*}
+%~\\
+%~\\
+%How to obtain $\{r_1,\ldots,r_N\}$, $\{p_1,\ldots,p_N\}$, and $\{k_1 + \ldots + k_{M-N+1}\}$?
+%\begin{itemize}
+%	\item Analytically
+%	\item Matlab function \href{https://www.mathworks.com/help/signal/ref/residuez.html}{\texttt{residuez}}
+%\end{itemize}
+%
+%\end{frame}
+
+\subsection{Difference Equations}
+%
+\begin{frame}{Linear constant-coefficient difference equation}
+	Many practical problems appear in the form of difference equations
+	\begin{equation*}
+		\sum_{k=0}^N a_k y[n-k] = \sum_{k=0}^Mb_k x[n-k]
+	\end{equation*}
+	\pause This difference equation defines an LTI system only if:
+	\begin{enumerate}
+		\item All coefficients $a_k, b_k$ are constant
+		\item The initial conditions (or \textit{rest} conditions) are zero $y[-N] = y[-N+1] =\ldots=y[-1] = 0$
+	\end{enumerate}	 
+	
+	\pause Applying the linearity and time-shift properties of the $z$-transform:
+	\begin{align*}
+		\sum_{k=0}^N a_kY(z)z^{-k} = \sum_{k=0}^M b_kX(z)z^{-k} \\
+		H(z) = \frac{Y(z)}{X(z)} = \frac{\sum_{k=0}^M b_kz^{-k}}{\sum_{k=0}^N a_kz^{-jk}}
+	\end{align*}
+	
+	$H(z)$ is a \textbf{rational $z$-transform}.
+\end{frame}
+
+\begin{frame}{Example: first-order system}
+	\textbf{First-order system:} $y[n] - ay[n-1] = x[n]$
+	~\\
+	~\\
+	Calculating the $z$-transform:
+	\begin{align*}
+	Y(z) - aY(z)z^{-1} &= X(z) \\
+	Y(z)(1 - az^{-1}) &= X(z) \\
+	H(z) = \frac{Y(z)}{X(z)} &= \frac{1}{1 - az^{-1}} 
+	\end{align*}
+	
+	\begin{itemize}
+		\pause\item This corresponds to the exponential: $h[n] = a^nu[n]$.\\ \textbf{Questions:} Why the causal exponential? 
+		For what values of $a$ is this system stable?
+		\pause\item This system is \textbf{autoregressive} i.e., the present output depends on previous outputs
+		\pause\item Autoregressive systems have \textbf{infinite impulse response (IIR)}
+		\pause\item Systems with rational $z$-transforms with non-zero poles are IIR
+	\end{itemize}
+	
+\end{frame}
+
+\begin{frame}
+\vspace{0.5cm}
+Let's assume $a =0.5$, then $y[n] - 0.5y[n-1] = x[n]$
+\begin{align*}
+	H(z) = \frac{1}{1 - 0.5z^{-1}} \xrightarrow{z = e^{j\omega}} H(e^{j\omega}) = \frac{1}{1 - 0.5e^{-j\omega}} 
+\end{align*}
+
+In Matlab:\\
+$> \mathtt{freqz(1, [1, -0.5])}$
+
+\begin{center}
+	\begin{tikzpicture}
+	\node (img1) {\resizebox{0.5\linewidth}{!}{\includegraphics{figs/first_order_sys_freqz.eps}}};
+	\node at ($(img1.north east) -(4cm, 0.75cm)$) {$20\log_{10}(|H(e^{j\omega})|)$};
+	\node at ($(img1.east)-(4cm, 1cm)$) {$\angle H(e^{j\omega}) = \arg(H(e^{j\omega}))$};
+	\end{tikzpicture}
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Example: moving average system}
+\textbf{Moving average:} $y[n] = \frac{1}{M}(x[n] + x[n-1] + x[n-2] + \ldots+ x[n-M+1])$
+~\\
+~\\
+
+Calculating the $z$-transform:
+\begin{align*}
+Y(z) &= \frac{1}{M}X(z)(1 + z^{-1} + \ldots+ z^{-(n-M+1)}) \\
+H(z) = \frac{Y(z)}{X(z)} &= \frac{1}{M}(1 + z^{-1} + \ldots+ z^{-(n-M+1)})
+\end{align*}	
+
+\begin{itemize}
+	\pause\item This system has impulse response $h[n] = 1/M(\delta[n] + \delta[n-1] + \ldots + \delta[n-M+1])$
+	\pause\item The impulse response only depends on a finite number of previous inputs. Hence, this system has a \textbf{finite impulse response (FIR)}
+\end{itemize}	
+\end{frame}
+
+\begin{frame}
+\vspace{0.5cm}
+Let's assume $M = 4$, then $y[n] = \frac{1}{4}(x[n] + x[n-1] + x[n-2] + x[n-3])$
+\begin{align*}
+H(z) = \frac{1}{4}(1 + z^{-1} + \ldots + z^{-3}) \xrightarrow{z = e^{j\omega}} H(e^{j\omega}) = \frac{1}{4}(1 + e^{-j\omega} + \ldots+ e^{-3j\omega})
+\end{align*}
+
+In Matlab:\\
+$> \mathtt{freqz([1, 1, 1, 1]/4, 1)}$
+
+\begin{center}
+	\resizebox{0.5\linewidth}{!}{\includegraphics{figs/moving_avg4_freqz.eps}}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Example: output of a moving average filter}
+
+\onslide<1-2|handout:1> {Suppose the input signal frequency is $\omega_0 = 0.2\pi$}
+
+\onslide<3-4|handout:2> {What would happen if $\omega_0 = 0.5\pi$?}
+
+\begin{center}
+	\resizebox{0.95\linewidth}{!}{\input{figs/moving_avg4_demo.tex}}
+\end{center}
+\begin{align*}
+h[n] = \frac{1}{4}(\delta[n] + \ldots + \delta[n-3]) \Longleftrightarrow H(z) = \frac{1}{4}(1 + z^{-1} + \ldots + z^{-3})
+\end{align*}
+
+\end{frame}
+
+%\begin{frame}
+%	
+%In Matlab \\
+%\texttt{> n = 0:20} \\
+%\texttt{> w0 = 0.2*pi} \\
+%\texttt{> x = cos(w0*n)} \\
+%\texttt{> y = filter([1 1 1 1]/4, 1, x)} \\
+%or equivalently \texttt{> y = conv([1 1 1 1]/4, x)} \\
+%\texttt{> stem(n, x)} \\
+%\texttt{> stem(n, y)} \\
+%
+%\end{frame}
+
+\begin{frame}{Summary}
+
+\begin{itemize}
+	\item Systems can be linear, time-invariant, memoryless, causal, and stable
+	\item Linear and time-invariant (LTI) systems are completely characterized by their impulse response
+	\item We can use the convolution sum to calculate the output of an LTI system to any signal 
+	\item The complex exponential $e^{j\omega n}$, and more generally $z^n$, are eigenfunctions of LTI systems
+	\item Frequency-domain representation of signals and systems
+	\begin{itemize}\normalsize
+		\item Discrete-time Fourier transform (DTFT)
+		\item $z$-transform and ROC. Without specifying the ROC the $z$-transform is ambiguous
+	\end{itemize}
+	\item The DTFT is equivalent to the $z$-transform evaluated on the unit circle: $H(e^{j\omega}) = H(z = e^{j\omega})$, provided that the unit circle is in the ROC of the $z$-transform
+\end{itemize}
+
+\end{frame}
+
+
+\end{document}
