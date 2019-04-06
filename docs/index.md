@@ -1,3 +1,5 @@
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/jkperin/)
+
 # Lecture notes
 
 1. [Introduction](https://github.com/jkperin/ee264/tree/master/docs/lectures/01_introduction.pdf)
