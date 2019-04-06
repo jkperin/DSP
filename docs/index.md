@@ -38,7 +38,7 @@
 
 10. [Adaptive signal processing](https://github.com/jkperin/ee264/tree/master/docs/lectures/10_adaptive_signal_processing.pdf)
 
->Introdcution to adpative signal processing using the least mean squares (LMS) algorithm.
+    >Introdcution to adpative signal processing using the least mean squares (LMS) algorithm.
 
 11. [Discrete Fourier transform](https://github.com/jkperin/ee264/tree/master/docs/lectures/11_discrete_Fourier_transform.pdf)
 
