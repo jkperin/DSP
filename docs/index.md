@@ -1,10 +1,8 @@
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.me/jkperin/)
-
 # Lecture notes
 
 1. [Introduction](https://github.com/jkperin/ee264/tree/master/docs/lectures/01_introduction.pdf)
 
-    > A short review of signals and systems, convolution, discrete-time Fourier transform, and the _z_-transform.
+    >A short review of signals and systems, convolution, discrete-time Fourier transform, and the _z_-transform.
 
 2. [Discrete-time random signals](https://github.com/jkperin/ee264/tree/master/docs/lectures/02_discrete-time_random_signals.pdf)
 
@@ -12,7 +10,7 @@
 
 3. [Linear and time-invariant systems](https://github.com/jkperin/ee264/tree/master/docs/lectures/03_properties_of_lti_systems.pdf)
 
-    >Linear and time-invariant (LTI) systems are a particularly important class of systems. They're the systems for which convolution holds. We review their most important properties and how to analyze them.
+    > Linear and time-invariant (LTI) systems are a particularly important class of systems. They're the systems for which convolution holds. We review their most important properties and how to analyze them.
 
 4. [Sampling and resconstruction](https://github.com/jkperin/ee264/tree/master/docs/lectures/04_sampling_reconstruction.pdf)
 
@@ -44,7 +42,7 @@
 
 11. [Discrete Fourier transform](https://github.com/jkperin/ee264/tree/master/docs/lectures/11_discrete_Fourier_transform.pdf)
 
-    >The discrete Fourier transform and its properties. This lecture also covers fast algorithms to compute the DFT known as fast Fourier transform (FFT).
+    >The discrete Fourier transform (DFT) and its properties. This lecture also covers fast algorithms to compute the DFT known as fast Fourier transform (FFT).
 
 12. [Spectrum analysis](https://github.com/jkperin/ee264/tree/master/docs/lectures/12_spectrum_analysis.pdf)
 
