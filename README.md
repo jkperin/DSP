@@ -1,6 +1,3 @@
-<div style="text-align: right;">
-<a href="https://www.paypal.me/jkperin/"><img alt="Donate" src="https://img.shields.io/badge/Donate-PayPal-green.svg" /></a></div>
-
 # Lecture notes
 
 1. [Introduction](https://github.com/jkperin/ee264/tree/master/docs/lectures/01_introduction.pdf)
@@ -9,7 +6,7 @@
 
 2. [Discrete-time random signals](https://github.com/jkperin/ee264/tree/master/docs/lectures/02_discrete-time_random_signals.pdf)
 
-    > Theory on random signals and their importance in modeling complicated signals.
+    > Theory on random processes and their importance in modeling complicated signals.
 
 3. [Linear and time-invariant systems](https://github.com/jkperin/ee264/tree/master/docs/lectures/03_properties_of_lti_systems.pdf)
 
@@ -45,7 +42,7 @@
 
 11. [Discrete Fourier transform](https://github.com/jkperin/ee264/tree/master/docs/lectures/11_discrete_Fourier_transform.pdf)
 
-    >The discrete Fourier transform and its properties. This lecture also covers fast algorithms to compute the DFT known as fast Fourier transform (FFT).
+    >The discrete Fourier transform (DFT) and its properties. This lecture also covers fast algorithms to compute the DFT known as fast Fourier transform (FFT).
 
 12. [Spectrum analysis](https://github.com/jkperin/ee264/tree/master/docs/lectures/12_spectrum_analysis.pdf)
 
